@@ -2,7 +2,7 @@
 
 ## Stage
 
-`T0–T7 THROUGH SYMBOLIC BRAID STAGE — F reconstruction audited; R/hexagon re-derived non-blind; braid compiler verified`
+`T0–T7 BRAID STAGE CLOSED — F reconstruction audited; R/hexagon re-derived non-blind; braid compiler and IR cost model verified`
 
 ## Frozen F-stage result
 
@@ -88,9 +88,25 @@ Thus the cyclotomic exchange phase is recovered algebraically from F+hexagon, up
 
 **NEGATIVE BENCHMARK.** This linear sparsity is not an AEG-specific advantage: an optimized categorical fusion-path compiler has the same block locality.
 
+**NEGATIVE BENCHMARK.** `experiments/braid_ir_cost_model.py` shows that replaying an explicit history block \(F\to R\to F^{-1}\) is more expensive at execution time than applying its already-verified precompiled \(2\times2\) block. With shared templates, both representations also require the same number of local block references asymptotically.
+
+**REFORMULATION.** The defensible compiler architecture is therefore two-level:
+
+\[
+\boxed{
+\text{history/proof IR}
+\longrightarrow
+\text{verified compilation}
+\longrightarrow
+\text{optimized fusion-path execution IR}.
+}
+\]
+
+The possible value of AEG has moved from runtime acceleration to provenance, auditability, incremental verification, and proof-carrying compilation.
+
 ## Current research verdict
 
-**COMPUTATIONAL-CLAIM.** No algebraic compression advantage has been demonstrated at either the Fibonacci F or local R/hexagon stage.
+**COMPUTATIONAL-CLAIM.** No algebraic compression, asymptotic storage advantage, or execution-time advantage over an optimized categorical implementation has been demonstrated through the Fibonacci braid stage.
 
 **REFORMULATION.** What survives is a precise explicit-history picture:
 
@@ -105,15 +121,19 @@ braid representation&=&\text{holonomy of the resulting flat local system}.
 \end{array}
 \]
 
-**CONJECTURE.** AEG may still provide value as a compilation/certificate IR, especially for long braid words, incremental verification, larger fusion systems, or Levin--Wen plaquette/string-net operations. This remains unproved.
+**CONJECTURE.** AEG may still provide value as a proof/certificate IR in computations where many recoupling histories must be composed and audited. This remains unproved.
 
 ## Immediate next task
 
-**REFORMULATION.** Build a general \(n\)-anyon non-dense braid-word compiler whose output is a sequence/DAG of local F/R blocks plus coherence certificates rather than a materialized matrix.
+**REFORMULATION.** Advance to the more discriminating Levin--Wen/string-net plaquette benchmark.
 
-**COMPUTATIONAL-CLAIM.** Benchmark certificate size and verification cost against an independently implemented optimized categorical fusion-path baseline. Do not compare only against naive dense matrices.
+1. Freeze the precise plaquette convention and Fibonacci input data independently of any AEG representation.
+2. Implement a direct optimized categorical baseline for a minimal nontrivial plaquette sector.
+3. Compile the same plaquette action as an explicit DAG of local fusion/reassociation histories.
+4. Compare not only numerical execution, but certificate size, repeated-subexpression sharing, incremental verification cost, and sensitivity to local changes.
+5. Record a negative result if the history DAG is simply a more verbose rendering of the direct tensor/category implementation.
 
-**REFORMULATION.** If the braid-word benchmark again shows equivalence, proceed to the more discriminating Levin--Wen plaquette/string-net compilation target.
+**CLASSICAL.** The original Levin--Wen construction remains the baseline; AEG must not redefine the physical model.
 
 ## Reconstruction gates
 
@@ -123,7 +143,7 @@ braid representation&=&\text{holonomy of the resulting flat local system}.
 
 ## Stop conditions
 
-**CLASSICAL.** Record a negative result if the history representation remains only a verbose re-encoding of optimized categorical F/R computations with no structural or computational gain.
+**CLASSICAL.** Record a negative result if the history representation remains only a verbose re-encoding of optimized categorical F/R/string-net computations with no structural or computational gain.
 
 **CLASSICAL.** Record a negative result if no gauge-invariant or representation-complexity information survives beyond known categorical data.
 
