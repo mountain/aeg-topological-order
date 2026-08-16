@@ -10,3 +10,19 @@
 8. Treat gauge-invariant quantities as primary; never interpret basis-dependent F entries physically without qualification.
 9. Prefer exact algebraic arithmetic and symbolic verification for the Fibonacci benchmark.
 10. Record negative results and equivalences to known categorical constructions.
+
+## Upstream AEG knowledge source
+
+Agents working in this repository have permission to inspect the public repository `mountain/aeg-paper`. Treat it as the primary upstream AEG knowledge base: it contains several years of papers, working notes, archived branches of thought, calculations, terminology, and evolving research programs.
+
+Use it proactively when an AEG concept, notation, history/representation idea, or prior calculation is relevant. In particular, inspect the relevant material under `notes/`, `paper-*`, `archive/`, and repository documentation rather than reconstructing AEG from the short category-to-history translation table in this repository.
+
+Source discipline:
+
+- cite or record the exact upstream path and, when a result matters to the research ledger, the commit/revision used;
+- distinguish `AEG-UPSTREAM` material from project-specific reformulations and new calculations;
+- do not assume every old AEG note is current doctrine: the theory is evolving, and later notes may revise earlier interpretations;
+- use `mountain/three-body/docs/note_04.md` and `note_05.md` as methodological calibration for multi-ruler geometry, representation versus ruler rank, and the rule that rank emergence must be diagnosed rather than postulated;
+- do not import three-body-specific geometry (for example its `SL(2,R)/SO(2)` realization) into fusion/category problems unless it is independently derived.
+
+The goal is not to duplicate the full AEG corpus here. This repository should stay focused on topological order while making deliberate use of the richer upstream AEG archive.
