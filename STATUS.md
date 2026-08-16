@@ -2,7 +2,7 @@
 
 ## Stage
 
-`T0–T7 BRAID STAGE CLOSED — F reconstruction audited; R/hexagon re-derived non-blind; braid compiler and IR cost model verified`
+`T0–T8 SINGLE-PLAQUETTE STAGE CLOSED — F reconstruction, symbolic braiding, and Levin–Wen plaquette benchmark audited`
 
 ## Frozen F-stage result
 
@@ -26,7 +26,7 @@ and a normalized vertex gauge admits the real symmetric block with off-diagonal 
 
 ## Symbolic braided-stage result
 
-**PROTOCOL.** The present workstream is not eligible to claim a blind R reconstruction because the preceding F-comparison stage was exposed to a source containing explicit Fibonacci R-data. No explicit standard R constants are encoded in the new experiments.
+**PROTOCOL.** The braided follow-up is not eligible to claim a blind R reconstruction because the preceding F-comparison stage was exposed to a source containing explicit Fibonacci R-data. No explicit standard R constants are encoded in the experiments.
 
 **COMPUTATIONAL-CLAIM.** Starting only from the frozen F-data and the generic multiplicity-free hexagon equation, `experiments/fibonacci_braid_groupoid.py` reduces the nontrivial R-symbol family to
 
@@ -50,15 +50,13 @@ a^2+a-1=0.
 }
 \]
 
-Thus the cyclotomic exchange phase is recovered algebraically from F+hexagon, up to the two opposite-chirality roots for the already-selected positive \(a\).
-
 **COMPUTATIONAL-CLAIM.** Exact local-history compilation verifies the Artin relations for the complete \(B_3\) and \(B_4\) representations in all Fibonacci total-charge sectors of dimensions 1/2 and 2/3 respectively.
 
 ## History-groupoid interpretation
 
 **REFORMULATION.** The correct pre-quotient history object must retain temporary strand identities in addition to parenthesization. For three identical \(\tau\) strands, the smallest permutation-enriched generator graph has 12 objects, 6 F-edges, and 6 local R-edges and forms one 12-cycle.
 
-**REFORMULATION.** Quotienting strand identities for identical anyons turns local exchange edges into loops while F remains a reassociation/chart transition. This gives the correct conceptual separation:
+**REFORMULATION.** Quotienting strand identities for identical anyons turns local exchange edges into loops while F remains a reassociation/chart transition:
 
 \[
 \boxed{
@@ -68,15 +66,11 @@ Thus the cyclotomic exchange phase is recovered algebraically from F+hexagon, up
 
 **CLASSICAL.** A flat local system can have nontrivial global holonomy on a non-simply-connected quotient; no nonzero local curvature is required.
 
-## Originality audit
+## Braided-stage red-team results
 
-**CLASSICAL.** The bare structure “parenthesization + braid/exchange morphisms + coherence” is closely related to the classical parenthesized braid groupoid/operad, i.e. fundamental groupoids of configuration spaces with parenthesized boundary data. It must not be presented as an AEG novelty.
+**CLASSICAL.** The bare structure “parenthesization + braid/exchange morphisms + coherence” is closely related to the classical parenthesized braid groupoid/operad and must not be presented as an AEG novelty.
 
-**REFORMULATION.** The remaining AEG claim must therefore concern an added operation-history intermediate representation, sparse compilation/certificate mechanism, or representation-complexity semantics on top of this classical skeleton.
-
-## Red-team results
-
-**COMPUTATIONAL-CLAIM.** The Artin/Yang--Baxter braid relation alone is strictly weaker than the hexagon equations. With frozen F-data it admits, among other solutions, the degenerate branch \(r_1=r_\tau\), which the Fibonacci hexagon ideal excludes. Therefore braid-group consistency alone cannot reconstruct a braided fusion category.
+**COMPUTATIONAL-CLAIM.** The Artin/Yang--Baxter braid relation alone is strictly weaker than the hexagon equations. With frozen F-data it admits, among other solutions, the degenerate branch \(r_1=r_\tau\), which the Fibonacci hexagon ideal excludes.
 
 **COMPUTATIONAL-CLAIM.** In a left-comb Fibonacci fusion-path basis, every braid generator decomposes into \(1\times1\) and \(2\times2\) local blocks. For a sector of dimension \(d\),
 
@@ -84,13 +78,11 @@ Thus the cyclotomic exchange phase is recovered algebraically from F+hexagon, up
 \operatorname{nnz}(\sigma_i)\le 2d.
 \]
 
-`experiments/braid_sparsity_baseline.py` verifies this through \(n=14\). For example, at \(n=14\), total charge \(\tau\) has \(d=377\), the worst generator has 665 nonzero entries, versus 142129 entries in a dense matrix.
+`experiments/braid_sparsity_baseline.py` verifies this through \(n=14\).
 
-**NEGATIVE BENCHMARK.** This linear sparsity is not an AEG-specific advantage: an optimized categorical fusion-path compiler has the same block locality.
+**NEGATIVE BENCHMARK.** This linear sparsity is not AEG-specific: an optimized categorical fusion-path compiler has the same block locality.
 
-**NEGATIVE BENCHMARK.** `experiments/braid_ir_cost_model.py` shows that replaying an explicit history block \(F\to R\to F^{-1}\) is more expensive at execution time than applying its already-verified precompiled \(2\times2\) block. With shared templates, both representations also require the same number of local block references asymptotically.
-
-**REFORMULATION.** The defensible compiler architecture is therefore two-level:
+**NEGATIVE BENCHMARK.** `experiments/braid_ir_cost_model.py` shows that replaying an explicit history block \(F\to R\to F^{-1}\) is more expensive at execution time than applying its already-verified precompiled \(2\times2\) block. The defensible compiler architecture is therefore
 
 \[
 \boxed{
@@ -102,38 +94,113 @@ Thus the cyclotomic exchange phase is recovered algebraically from F+hexagon, up
 }
 \]
 
-The possible value of AEG has moved from runtime acceleration to provenance, auditability, incremental verification, and proof-carrying compilation.
+## Levin–Wen single-plaquette result
+
+**CLASSICAL.** The physical baseline is the Levin–Wen string-net plaquette operator. For an n-gon, \(B_p^s\) is a cyclic product of n local F-symbols; no R-data are required.
+
+**COMPUTATIONAL-CLAIM.** `experiments/levin_wen_plaquette.py` constructs the Fibonacci hexagonal plaquette operator from the frozen F-stage data and exhausts all \(2^6=64\) external boundary sectors.
+
+**COMPUTATIONAL-CLAIM.** In every boundary sector,
+
+\[
+\boxed{B_p^1=I,\qquad (B_p^\tau)^2=B_p^1+B_p^\tau.}
+\]
+
+Thus loop insertion realizes the Fibonacci fusion algebra exactly at operator level.
+
+**COMPUTATIONAL-CLAIM.** With \(\phi=1+a=a^{-1}\),
+
+\[
+\boxed{
+B_p=\frac{B_p^1+\phi B_p^\tau}{1+\phi^2}
+}
+\]
+
+satisfies \(B_p^2=B_p\) entrywise in all 64 sectors.
+
+**COMPUTATIONAL-CLAIM.** The hexagonal block dimensions have distribution
+
+\[
+1^6,\;2^1,\;3^{15},\;4^{20},\;7^{15},\;11^6,\;18^1,
+\]
+
+where the exponent denotes the number of external sectors with that dimension. The all-\(\tau\) boundary is the unique dimension-18 sector and \(B_p^\tau\) has 199 nonzero entries there.
+
+## Exact all-τ n-gon scaling
+
+**COMPUTATIONAL-CLAIM.** For an all-\(\tau\) n-gon, admissible inner histories are closed walks of
+
+\[
+C=\begin{pmatrix}0&1\\1&1\end{pmatrix},
+\]
+
+so the block dimension is
+
+\[
+\boxed{d_n=\operatorname{tr}(C^n)=L_n.}
+\]
+
+**COMPUTATIONAL-CLAIM.** Nonzero matrix elements are closed walks of the pair-state transition matrix
+
+\[
+A=
+\begin{pmatrix}
+0&0&0&0\\
+0&0&1&1\\
+0&1&0&1\\
+0&1&1&1
+\end{pmatrix},
+\]
+
+hence
+
+\[
+\boxed{
+N_n=\operatorname{tr}(A^n)
+=(-1)^n+(1+\sqrt2)^n+(1-\sqrt2)^n.
+}
+\]
+
+At \(n=14\), \(d_{14}=843\), \(N_{14}=228487\), while the dense matrix has 710649 entries.
+
+**COMPUTATIONAL-CLAIM.** A cyclic local-factor representation still has only \(O(n)\) factor nodes, giving exponential structural compression relative to materializing the sparse matrix.
+
+**NEGATIVE BENCHMARK.** This compression is not AEG-specific. The standard Levin–Wen formula is already precisely such a cyclic local F-factor network, and tensor-network representations of string-net states are classical prior art.
 
 ## Current research verdict
 
-**COMPUTATIONAL-CLAIM.** No algebraic compression, asymptotic storage advantage, or execution-time advantage over an optimized categorical implementation has been demonstrated through the Fibonacci braid stage.
+**COMPUTATIONAL-CLAIM.** No algebraic compression, asymptotic storage advantage, or execution-time advantage over an optimized categorical implementation has been demonstrated through the single-plaquette stage.
 
-**REFORMULATION.** What survives is a precise explicit-history picture:
+**REFORMULATION.** The surviving AEG hypothesis has narrowed to
 
 \[
-\begin{array}{rcl}
-F&=&\text{local reassociation/chart transport},\\
-pentagon&=&\text{flatness/coherence cell},\\
-R&=&\text{local exchange transport},\\
-hexagon&=&\text{fusion--exchange compatibility cell},\\
-braid&=&\text{global path class after exchange quotient},\\
-braid representation&=&\text{holonomy of the resulting flat local system}.
-\end{array}
+\boxed{
+\text{explicit operation history as a proof/provenance IR above a categorical tensor/execution IR}.
+}
 \]
 
-**CONJECTURE.** AEG may still provide value as a proof/certificate IR in computations where many recoupling histories must be composed and audited. This remains unproved.
+**NEGATIVE BENCHMARK.** Even local incremental recompilation does not separate the two representations at one plaquette: changing one external leg changes one local history node, but also only one local tensor in the standard factor graph.
+
+**CONJECTURE.** Any genuine advantage must therefore appear in proof reuse across overlapping rewrites, dependency tracking, automatic graph compilation, or verification under local changes—not in the basic single-plaquette operator representation.
 
 ## Immediate next task
 
-**REFORMULATION.** Advance to the more discriminating Levin--Wen/string-net plaquette benchmark.
+**REFORMULATION.** Advance to an overlapping-plaquette commutation benchmark. For two adjacent plaquettes \(p,q\), compare certificates of
 
-1. Freeze the precise plaquette convention and Fibonacci input data independently of any AEG representation.
-2. Implement a direct optimized categorical baseline for a minimal nontrivial plaquette sector.
-3. Compile the same plaquette action as an explicit DAG of local fusion/reassociation histories.
-4. Compare not only numerical execution, but certificate size, repeated-subexpression sharing, incremental verification cost, and sensitivity to local changes.
-5. Record a negative result if the history DAG is simply a more verbose rendering of the direct tensor/category implementation.
+\[
+\boxed{[B_p,B_q]=0}
+\]
 
-**CLASSICAL.** The original Levin--Wen construction remains the baseline; AEG must not redefine the physical model.
+using two independent representations:
+
+1. an optimized categorical/tensor-network contraction baseline on the shared finite patch;
+2. an explicit history-DAG proof reducing the two rewrite orders through recorded local pentagon/orthogonality cells.
+
+Measure local F-node count, distinct intermediates, shared DAG structure, certificate size, exact verification operations, and invalidation footprint under a local boundary edit.
+
+**CLASSICAL.** Do not compare the history certificate only against a dense matrix; the optimized local tensor/category formulation remains the baseline.
+
+**CONJECTURE.** If the two proof forms again canonicalize to the same local contraction, the evidence will strongly favor treating the AEG contribution in fusion/string-net theory as interpretive rather than computational.
 
 ## Reconstruction gates
 
