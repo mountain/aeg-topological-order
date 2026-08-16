@@ -26,3 +26,7 @@ Source discipline:
 - do not import three-body-specific geometry (for example its `SL(2,R)/SO(2)` realization) into fusion/category problems unless it is independently derived.
 
 The goal is not to duplicate the full AEG corpus here. This repository should stay focused on topological order while making deliberate use of the richer upstream AEG archive.
+
+## Concurrency guardrail
+
+Read and follow [`CONCURRENCY.md`](CONCURRENCY.md). Default to one primary workstream and at most one genuinely independent auxiliary workstream. Treat two concurrent workstreams as a soft cap; exceeding it requires a recorded reason, file ownership, frozen fusion/gauge conventions, and a reconciliation plan. If the three sibling research repositories are already being advanced in parallel sessions, do not automatically fan out additional agents.
