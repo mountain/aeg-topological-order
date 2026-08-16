@@ -29,7 +29,7 @@ For each source record:
 - **CLASSICAL — normalization used here:** only the triangle/strict-unit statement is imported into the blind grammar; the project keeps its own explicit basis ordering.
 - **Allowed during blind reconstruction:** yes, for general categorical definitions and the pentagon formalism.
 - **Forbidden during blind reconstruction:** any pre-tabulated numerical Fibonacci F/R data or preferred Fibonacci gauge.
-- **COMPUTATIONAL-CLAIM — benchmark relevance:** the paper notes that generic pentagon solving becomes difficult and motivates sparse equation engineering; this is relevant to T5 but does not establish an AEG advantage.
+- **COMPUTATIONAL-CLAIM — benchmark relevance:** generic pentagon solving motivates sparse equation engineering; this is relevant to T5 but does not establish an AEG advantage.
 
 ### Levin–Wen 2004 — string-net program
 
@@ -38,6 +38,14 @@ For each source record:
 - **Comparison/later use:** target reference for the M6/T6 string-net compilation stage and for keeping the physical topological-order objective distinct from the current associator benchmark.
 - **Allowed during blind reconstruction:** conceptual context only.
 - **Forbidden during blind reconstruction:** no model-specific recoupling values may be used to seed the F solve.
+
+### Trebst--Troyer--Wang--Ludwig 2009 — post-freeze Fibonacci F comparison
+
+- **Source:** Simon Trebst, Matthias Troyer, Zhenghan Wang, Andreas W. W. Ludwig, *A short introduction to Fibonacci anyon models*, arXiv:0902.3275, Secs. 2.3--2.4.
+- **CLASSICAL — comparison data:** fusion-tree basis, F-moves, pentagon consistency, basis order `\{1,\tau\}`, standard trivial-F normalization, and the standard nontrivial unitary Fibonacci F block.
+- **Comparison status:** **comparison-only for explicit Fibonacci constants**; opened only after `notes/01-blind-fibonacci-pentagon.md` and the blind engine had been frozen in Git history.
+- **COMPUTATIONAL-CLAIM — comparison result:** our real symmetric unitary gauge agrees entry-for-entry after identifying `a=(sqrt(5)-1)/2=phi^{-1}` and `sqrt(a)=phi^{-1/2}`.
+- **R-isolation warning:** the same source continues to explicit R/hexagon material. The present workstream is therefore no longer eligible to claim a blind R reconstruction. Explicit R-values are intentionally not copied here.
 
 ### AEG upstream — explicit path / holonomy calibration
 
@@ -59,5 +67,6 @@ For each source record:
 
 ## Comparison gate policy
 
-- **CLASSICAL.** The derivation in `notes/01-blind-fibonacci-pentagon.md` must be frozen before opening sources that provide explicit standard Fibonacci F/R values for comparison.
-- **CLASSICAL.** Once the gate is opened, comparison notes must record basis order, vertex gauge, pivotal/unitary normalization, and any convention changes before declaring equality of matrices.
+- **CLASSICAL.** The derivation in `notes/01-blind-fibonacci-pentagon.md` was frozen before opening sources that provide explicit standard Fibonacci F values.
+- **CLASSICAL.** The F comparison records basis order, vertex gauge, and unitary/normalization conventions in `notes/03-f-comparison-gate-and-r-isolation.md`.
+- **CLASSICAL.** A fresh blind R workstream must not open sources containing explicit Fibonacci R-symbols, braid matrices, modular data, or topological spins until its own hexagon derivation is frozen.
