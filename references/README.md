@@ -32,14 +32,16 @@ For each source record:
 - **Not used as input:** any pre-tabulated numerical Fibonacci F/R values or preferred Fibonacci braid matrices.
 - **COMPUTATIONAL-CLAIM — benchmark relevance:** the paper emphasizes that hexagon equations are more localized than pentagons; this supports testing sparse/local equation organization but does not establish an AEG advantage.
 
-### Levin–Wen 2004 — string-net Hamiltonian and plaquette baseline
+### Levin–Wen 2004 — string-net Hamiltonian, plaquette baseline, and graphical certificate
 
 - **Source:** Michael A. Levin and Xiao-Gang Wen, *String-net condensation: A physical mechanism for topological phases*, arXiv:cond-mat/0404617; Phys. Rev. B 71, 045110 (2005).
-- **CLASSICAL — data now used directly:** the honeycomb/trivalent string-net Hamiltonian; vertex branching constraints; the plaquette decomposition `B_p = sum_s a_s B_p^s`; and the matrix-element formula expressing `B_p^s` as a cyclic product of local F-symbols around the plaquette.
+- **CLASSICAL — algebraic data used:** the honeycomb/trivalent string-net Hamiltonian; vertex branching constraints; the plaquette decomposition `B_p = sum_s a_s B_p^s`; and Eq. (13), expressing a hexagonal `B_p^s` matrix element as a cyclic product of six local F-symbols.
 - **CLASSICAL — normalization used:** for the smooth topological phase, the coefficient of loop type `s` is proportional to its quantum dimension, `a_s = d_s / sum_i d_i^2`.
-- **CLASSICAL — algebra used as validation target:** loop-insertion operators compose according to the fusion rules, and the quantum-dimension weighted `B_p` is a projector.
-- **COMPUTATIONAL-CLAIM — project use:** `experiments/levin_wen_plaquette.py` specializes the formula to the frozen Fibonacci F-gauge and verifies the fusion algebra/projector identities exactly in all 64 hexagonal external-label sectors.
-- **Research consequence:** the physical string-net model remains entirely classical input; AEG is tested only as an alternative representation/certificate layer.
+- **CLASSICAL — algebra used as validation target:** loop-insertion operators compose according to the fusion rules, the quantum-dimension weighted `B_p` is a projector, and neighboring plaquette operators commute.
+- **CLASSICAL — graphical proof used in the certificate audit:** Appendix C, especially Figs. 17–18 and Eq. (C1). In the fattened-honeycomb representation, `B_p^s` is loop insertion followed by coherent reduction. For adjacent plaquettes, either operator order produces the same two-loop intermediate graphical state, so the two products have identical matrix elements.
+- **CLASSICAL — coherence boundary:** Appendix C states that reduction from the fattened lattice is independent of the particular local-rule reduction order when the local rules are self-consistent; Appendix B relates that self-consistency to the F-data relations.
+- **COMPUTATIONAL-CLAIM — project use:** `experiments/levin_wen_plaquette.py` verifies the single-plaquette fusion algebra/projector identities in all 64 hexagonal external-label sectors; `experiments/adjacent_plaquette_commutator.py` verifies neighboring commutation in all 256 external-label sectors; `experiments/plaquette_commutation_certificate.py` encodes the Appendix-C common-intermediate-diagram proof as a proof DAG.
+- **Research consequence:** the constant-size history certificate is already present in the classical graphical calculus; it is therefore a negative benchmark for AEG-specific proof compression.
 
 ### Bonesteel–DiVincenzo 2012 — local F-move circuit baseline
 
@@ -99,4 +101,4 @@ For each source record:
 - **CLASSICAL.** The F comparison records basis order, vertex gauge, and unitary/normalization conventions in `notes/03-f-comparison-gate-and-r-isolation.md`.
 - **PROTOCOL.** The symbolic R/hexagon derivation in `notes/04-symbolic-braiding-history-quotient.md` contains no explicit standard R constants but is **not blind**, because its workstream descends from the source-exposed F-comparison session.
 - **PROTOCOL.** Any future claim of blind Fibonacci R reconstruction requires a genuinely independent workstream that receives only the fusion grammar and frozen F-data and does not open explicit Fibonacci R-symbols, braid matrices, modular data, or topological-spin data before its solve is frozen.
-- **CLASSICAL.** The Levin–Wen/string-net stage is not a reconstruction gate: the plaquette formula is intentionally used as the physical/categorical baseline. Any AEG claim must be a representation, compilation, or certificate claim measured against that baseline.
+- **CLASSICAL.** The Levin–Wen/string-net stage is not a reconstruction gate: the plaquette formula and graphical proof are intentionally used as the physical/categorical baseline. Any AEG claim must be an enrichment, representation, compilation, or certificate claim measured against that optimized baseline.
