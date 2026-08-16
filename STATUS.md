@@ -2,7 +2,7 @@
 
 ## Stage
 
-`T0–T8 SINGLE-PLAQUETTE STAGE CLOSED — F reconstruction, symbolic braiding, and Levin–Wen plaquette benchmark audited`
+`T0–T8 OVERLAPPING-PLAQUETTE BASELINE COMPLETE — exact commutation verified; coherence-certificate extraction next`
 
 ## Frozen F-stage result
 
@@ -167,9 +167,56 @@ At \(n=14\), \(d_{14}=843\), \(N_{14}=228487\), while the dense matrix has 71064
 
 **NEGATIVE BENCHMARK.** This compression is not AEG-specific. The standard Levin–Wen formula is already precisely such a cyclic local F-factor network, and tensor-network representations of string-net states are classical prior art.
 
+## Adjacent-plaquette commutation baseline
+
+**CLASSICAL.** Neighboring Levin–Wen plaquette operators commute. The project now uses this theorem as a proof-history benchmark rather than as a novelty target.
+
+**COMPUTATIONAL-CLAIM.** `experiments/adjacent_plaquette_commutator.py` constructs two hexagons sharing one edge, with 11 internal lattice edges, 8 fixed dangling legs, and 10 trivalent vertices. It exhausts all \(2^8=256\) dangling-label sectors in the exact coefficient ring
+
+\[
+\mathbb Q[q]/(q^4+q^2-1).
+\]
+
+**COMPUTATIONAL-CLAIM.** Every sector satisfies
+
+\[
+\boxed{B_L^\tau B_R^\tau=B_R^\tau B_L^\tau}
+\]
+
+with zero failures.
+
+**COMPUTATIONAL-CLAIM.** If \(k\) of the eight dangling legs carry \(\tau\), the global admissible block dimension is
+
+\[
+\boxed{D_k=5F_{k+1}},\qquad 0\le k\le8.
+\]
+
+The maximal all-\(\tau\) sector has
+
+\[
+D_8=170,
+\]
+
+and
+
+\[
+\operatorname{nnz}(B_L^\tau)
+=
+\operatorname{nnz}(B_R^\tau)
+=1551.
+\]
+
+After exact reduction, each ordered product has 11922 nonzero entries, and the sparse composition performs 14854 nonzero scalar multiplications before accumulation in each order.
+
+**REFORMULATION.** This is the first benchmark in which the two sides are genuinely different overlapping operation histories rather than disjoint-support operations or two spellings of a single local tensor product. The shared edge and neighboring control labels are modified/read in different orders, yet coherence identifies the compiled operators.
+
+**COMPUTATIONAL-CLAIM.** The direct instantiated baseline is therefore complete: there is now a finite, exact, nontrivial operator equality against which an extracted local proof certificate can be measured.
+
+**NEGATIVE BENCHMARK.** No AEG advantage follows from the equality itself. Levin–Wen theory already proves plaquette commutation locally from categorical consistency. The current program still verifies the instantiated operators; it has not yet shown that an explicit history certificate is smaller, more reusable, or easier to verify than a conventional graphical/tensor categorical proof.
+
 ## Current research verdict
 
-**COMPUTATIONAL-CLAIM.** No algebraic compression, asymptotic storage advantage, or execution-time advantage over an optimized categorical implementation has been demonstrated through the single-plaquette stage.
+**COMPUTATIONAL-CLAIM.** No algebraic compression, asymptotic storage advantage, or execution-time advantage over an optimized categorical implementation has been demonstrated through the single-plaquette and direct adjacent-plaquette stages.
 
 **REFORMULATION.** The surviving AEG hypothesis has narrowed to
 
@@ -179,28 +226,46 @@ At \(n=14\), \(d_{14}=843\), \(N_{14}=228487\), while the dense matrix has 71064
 }
 \]
 
-**NEGATIVE BENCHMARK.** Even local incremental recompilation does not separate the two representations at one plaquette: changing one external leg changes one local history node, but also only one local tensor in the standard factor graph.
+**REFORMULATION.** The adjacent-plaquette benchmark sharpens this into a three-layer architecture:
 
-**CONJECTURE.** Any genuine advantage must therefore appear in proof reuse across overlapping rewrites, dependency tracking, automatic graph compilation, or verification under local changes—not in the basic single-plaquette operator representation.
+\[
+\boxed{
+\begin{array}{c}
+\text{graph rewrite / operation history}\\
+\downarrow\\
+\text{coherence proof certificate}\\
+\downarrow\\
+\text{optimized categorical tensor/operator IR}.
+\end{array}}
+}
+\]
+
+The second layer is now the only untested layer with a plausible computational role.
 
 ## Immediate next task
 
-**REFORMULATION.** Advance to an overlapping-plaquette commutation benchmark. For two adjacent plaquettes \(p,q\), compare certificates of
+**REFORMULATION.** Extract a local machine-checkable coherence certificate for
 
 \[
-\boxed{[B_p,B_q]=0}
+\boxed{B_L^\tau B_R^\tau=B_R^\tau B_L^\tau}
 \]
 
-using two independent representations:
+without substituting Fibonacci numerical/algebraic constants entry by entry.
 
-1. an optimized categorical/tensor-network contraction baseline on the shared finite patch;
-2. an explicit history-DAG proof reducing the two rewrite orders through recorded local pentagon/orthogonality cells.
+The certificate generator should:
 
-Measure local F-node count, distinct intermediates, shared DAG structure, certificate size, exact verification operations, and invalidation footprint under a local boundary edit.
+1. retain the two twelve-F-factor histories before contraction;
+2. factor/cancel identical history outside the shared-edge neighborhood;
+3. isolate the minimal nontrivial overlap kernel around the two shared vertices;
+4. reduce that kernel by named pentagon and orthogonality/invertibility identities;
+5. emit a proof DAG whose nodes are local transports/coherence cells;
+6. compare it against an independently constructed optimized categorical/graphical proof after common-subexpression elimination.
 
-**CLASSICAL.** Do not compare the history certificate only against a dense matrix; the optimized local tensor/category formulation remains the baseline.
+Measure primitive F-node count, summed intermediate channels, coherence-cell applications, proof-DAG nodes/edges, trusted-lemma verification work, and invalidation footprint under a local F-data or boundary edit.
 
-**CONJECTURE.** If the two proof forms again canonicalize to the same local contraction, the evidence will strongly favor treating the AEG contribution in fusion/string-net theory as interpretive rather than computational.
+**CONJECTURE.** If explicit operation history has a computationally meaningful contribution to the topological-order program, automatic proof-object construction or dependency localization should become visible here.
+
+**STOP CONDITION.** If the extracted history certificate canonicalizes one-for-one to the standard graphical/tensor proof with no additional compression, reuse, or diagnostics, record that AEG is primarily an interpretive layer for this class of fusion/string-net computations and redirect research effort.
 
 ## Reconstruction gates
 
