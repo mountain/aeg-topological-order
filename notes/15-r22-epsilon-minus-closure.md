@@ -1,43 +1,61 @@
-# R(2,2) epsilon-minus closure
+# R(2,2) epsilon-minus closure — SUPERSEDED
 
-Status: **CANDIDATE-NEW / exact finite-branch exclusion, independent verification pending**
+**Status:** `SUPERSEDED / contains an invalid D-amplitude family claim / retained as research history`
 
-This note closes the `epsilon=-1` (Clifford/Pauli) half of the 16 scalar A/B/C components in the `R(2,2)` categorification attack.
+> **Do not use this note as a proof that the `epsilon=-1` half is closed.**  A fresh canonical-representative audit on 2026-08-17 found exact D-layer solutions for scalar components in the `12--15` family, contradicting Section 2 below.  The historical branch calculations are retained because several local certificates remain useful, but the global closure conclusion is withdrawn until independently reconstructed.
 
-## 1. Scalar components
+## 0. What was invalidated
 
-The scalar A/B/C monomial system has 16 gauge-inequivalent components, with eight satisfying `epsilon=+1` and eight satisfying `epsilon=-1`.
+The previous version claimed that scalar components `12--15` had no nonzero D-amplitude solution after the projective Clifford stage.  A new implementation using the **full complex scalar-gauge quotient canonical representatives** found, for example, a component-13 uniform-chirality solution with 48 amplitudes in
 
-For `epsilon=-1`, each multiplicity-two fusion space carries three pairwise anticommuting projective involutions.  Up to local conjugacy this is a two-dimensional Clifford/Pauli representation with a chirality sign.
+\[
+\{1,i,-1,-i\}.
+\]
 
-The eight multiplicity spaces split into two size-four transport orbits, distinguished by `Y`-parity.
+That solution was substituted back into the original multiplicity-aware SymPy pentagon engine.  All
 
-## 2. Chirality localization at D
+\[
+\boxed{1728/1728}
+\]
 
-A characteristic-zero scan of the 48 cross-space projective-D intertwiner systems over all `2^8=256` local chirality assignments shows that every small system is one-dimensional with an invertible representative whenever the scalar component is in the first Clifford family.
+D-layer matrix entries vanished exactly in characteristic zero.  The same new solver finds D solutions for all four orbit-constant chirality patterns in each of components `12,13,14,15`.
 
-The full D-amplitude pentagons then reduce the eight local chirality bits to two orbit-level bits.  Exactly four patterns survive:
+Therefore the old statement
 
-- both parity orbits positive;
-- even negative / odd positive;
-- even positive / odd negative;
-- both negative.
+\[
+\text{components }12\text{--}15\text{ fail at D amplitude}
+\]
 
-Equivalently, chirality must be constant on each size-four `Y`-parity orbit.
+is false.
 
-For scalar components 4--7 the D-amplitude exponent lattice has rank 42 and nontrivial Smith factors `(2,2)`.  The four surviving chirality patterns have exact nonzero amplitude solutions.
+The likely source of the old error is not yet assigned to one line of code; the new audit deliberately uses canonical full-`C*` gauge representatives rather than sign-only/gauge-dependent branch labels.
 
-For scalar components 12--15 the 256 chirality assignments split into 192 immediate structural/monomial obstructions and 64 amplitude-lattice candidates.  The latter share the same rank-42 exponent lattice with Smith factors `(2,2)`, but their `mu_8` systems are inconsistent.  Since the RHS phases are fourth roots of unity and the Smith factors are only 1 and 2, any complex nonzero solution would admit an eighth-root lift.  Therefore components 12--15 are genuinely obstructed already at D.
+## 1. What remains useful from the old analysis
 
-## 3. Components 4--7
+The scalar A/B/C audit itself is unaffected:
 
-### Component 4
+- sixteen full-gauge scalar components;
+- eight with `epsilon=+1` and eight with `epsilon=-1`;
+- the `epsilon=-1` D seeds are two-dimensional Clifford/Pauli triples;
+- the eight multiplicity spaces split into two size-four `Y`-parity transport orbits.
 
-The four orbit-constant chirality patterns extend through exact D and E amplitude closure.  At the F-linear layer every required `10 x 10` block is forced singular.  The branch is excluded before final four-noninvertible pentagons.
+Several **branch-local** calculations below also remain candidate certificates, but they must be reattached to canonical scalar representatives before being used globally.
 
-### Component 5
+### Historical component-4 branch
 
-Both independent chirality classes (the other two are their complex conjugates) pass D, E, and the F-linear invertibility filter.  The final four-noninvertible pentagons collapse to a tiny contradiction certificate.  In one chirality convention four scalar entries give
+A detailed uniform-Clifford branch is recorded in `notes/12-r22-epsminus-uniform-branch.md`.  Its exact D/E extension and F-layer rank obstruction remain internally consistent for that branch.
+
+A fresh independent local-F audit has since strengthened this: for canonical scalar components
+
+\[
+4,6,12,14
+\]
+
+and all sixteen local Clifford chirality patterns relevant to the target block, the characteristic-zero determinant polynomial of the required `10 x 10` associator `F^{XXX}_X` is identically zero under the four single-`h` local pentagons.  Thus these four scalar components have a new, much shorter obstruction route independent of the invalid old D-amplitude claim.
+
+### Historical component-5 certificate
+
+The old computation reached final four-noninvertible pentagons and extracted
 
 \[
 x_0+x_1x_3=0,
@@ -49,35 +67,70 @@ x_0+(2+2i)x_1x_3=0,
 x_0+(2-2i)x_2x_8=0,
 \]
 \[
-1-2x_0^2+(4+4i)x_1x_3+(4-4i)x_2x_8=0.
+1-2x_0^2+(4+4i)x_1x_3+(4-4i)x_2x_8=0,
 \]
 
-The first two equations imply `x_1 x_3=0` and `x_0=0`; the third implies `x_2 x_8=0`; the fourth becomes `1=0`.  The opposite chirality gives the complex-conjugate certificate.
+which gives `1=0`.  This is a promising compact certificate, but in the fresh audit it is **not yet accepted as a canonical-component proof** until its A--F lower data are independently reconstructed.
 
-Hence component 5 is excluded.
+### Historical component-6 and component-7 certificates
 
-### Component 6
+The old branch tree reported:
 
-The surviving D/E branches encounter an F-linear structural-rank obstruction: every required `10 x 10` associator has maximum possible rank 8.  Hence component 6 is excluded.
+- component 6: F-linear structural rank at most 8 in every required `10 x 10` block;
+- component 7: a final contradiction `x_0=0` together with `1-2x_0^2=0`.
 
-### Component 7
+These are also retained as candidate branch certificates pending canonical-representative replay.
 
-The final kernel is even smaller.  A pentagon gives a nonzero scalar multiple of `x_0=0`, while another gives
+## 2. Fresh independent audit status
+
+The new audit uses the canonical scalar representatives produced after including the extra `i`-gauge sign direction in the full complex trivalent gauge quotient.
+
+The `epsilon=-1` components are
 
 \[
-1-2x_0^2=0.
+\boxed{4,5,6,7,12,13,14,15}.
 \]
 
-Thus `1=0`, and component 7 is excluded.
-
-## 4. Conclusion
-
-All eight scalar components with `epsilon=-1` are excluded:
+A fresh local-F engine that uses all four positions of a single stabilizer `h` has independently proved exact characteristic-zero determinant obstruction for
 
 \[
-\boxed{\epsilon=-1\Longrightarrow\text{no invertible associator extension}.}
+\boxed{4,6,12,14}.
 \]
 
-This is not yet a noncategorifiability theorem for `R(2,2)`, because seven `epsilon=+1` scalar components remain after the separate exclusion of component 0.
+For each of those four scalar components, all sixteen local Clifford chirality patterns satisfy
 
-The important solver consequence is that the open problem is no longer a continuous Clifford-matrix search.  The entire anticommuting regime has been reduced to finite branches and eliminated by exact D/F/final-pentagon certificates.
+\[
+\boxed{\det F^{XXX}_{X}\equiv0}.
+\]
+
+The complementary components
+
+\[
+\boxed{5,7,13,15}
+\]
+
+are **not** killed by that local cell on the orbit-constant chirality patterns that survive the expected D-localization.  They are the current verification frontier.
+
+A new D-amplitude engine has also shown that components `12--15` admit exact solutions for the four orbit-constant chirality patterns, so their exclusion must occur later than D if it occurs at all.
+
+## 3. Current conclusion
+
+The old boxed conclusion
+
+\[
+\epsilon=-1\Longrightarrow\text{no invertible associator extension}
+\]
+
+is withdrawn.
+
+The correct present statement is:
+
+\[
+\boxed{
+\text{four of eight epsilon-minus scalar components are independently obstructed};
+\quad
+5,7,13,15\text{ remain under fresh audit}.
+}
+\]
+
+No `R(2,2)` noncategorifiability theorem should be claimed until those four remaining Clifford components are independently closed.
