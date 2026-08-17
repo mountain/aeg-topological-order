@@ -2,22 +2,22 @@
 
 ## Stage
 
-`T9 R(2,2) OPEN CATEGORIFICATION ATTACK — 9 of 16 scalar components excluded; 7 epsilon-plus components remain`
+`T9 R(2,2) OPEN CATEGORIFICATION ATTACK — epsilon-plus independently closed; epsilon-minus canonical re-audit reopened`
 
 ## Success criterion
 
-**RESEARCH DECISION.** This line is no longer trying to show that explicit AEG/history notation is merely faster than ordinary category theory.  The target is Meng--Yu's currently unresolved categorifiability problem for the rank-six self-dual fusion ring `R(2,2)`.
+**RESEARCH DECISION.** The goal is not to show that AEG/history notation is merely faster than ordinary category theory.  The target is Meng--Yu's unresolved categorifiability problem for the rank-six self-dual fusion ring `R(2,2)`.
 
 Success means either:
 
 - construct invertible associator/F-data satisfying every pentagon; or
 - derive a rigorous obstruction to categorification.
 
-Reproducing known criteria, rephrasing coherence, or reducing runtime alone is not sufficient.
+No final theorem is claimed until both scalar-sign regimes are independently closed.
 
-## Open target
+## Target and raw scale
 
-**CLASSICAL.** The based ring is
+The based ring is
 
 \[
 \{1,g,h,gh,X,Y\},\qquad gX=Y,
@@ -29,17 +29,13 @@ X^2=Y^2=1+h+2X+2Y,
 XY=g+gh+2X+2Y.
 \]
 
-`experiments/r22_scale_audit.py` verifies associativity and
+The exact scale audit gives
 
 \[
 \operatorname{FPdim}(X)=2+\sqrt6,
 \qquad
 \operatorname{FPdim}(R(2,2))=24+8\sqrt6.
 \]
-
-See `references/r22-open-problem.md`.
-
-## Raw scale and localization
 
 The strict-unit raw problem contains
 
@@ -55,9 +51,11 @@ and
 
 A global symbolic solve is rejected.
 
-The history/dependency audit splits associators into six layers:
+## History-layer localization
 
-| layer | blocks | scalar entries | role |
+Associators are organized into six dependency layers:
+
+| layer | blocks | entries | role |
 |---|---:|---:|---|
 | A | 27 | 27 | pointed |
 | B | 54 | 54 | one noninvertible |
@@ -66,22 +64,23 @@ The history/dependency audit splits associators into six layers:
 | E | 32 | 128 | three noninvertibles, invertible output |
 | F | 16 | 1312 | three noninvertibles, noninvertible output |
 
-The 32 E-block count includes output `1`; an earlier reconnaissance omission of the vacuum-output blocks was identified and corrected before the current branch exclusions were accepted.
+The corrected E count includes vacuum output `1`.
+
+Stagewise incidence further shows:
+
+\[
+D\text{ reads exactly B-layer scalar data},
+\]
+
+\[
+E\text{ reads exactly C-layer scalar data},
+\]
+
+while the F-linear layer reads B+C.  This is recorded in `notes/16-r22-stagewise-cocycle-visibility.md`.
 
 ## Scalar A/B/C quotient
 
-**COMPUTATIONAL-CLAIM.** `experiments/r22_scalar_audit.py` converts the scalar pentagons to
-
-\[
-A_{sc}\in M_{729\times153}(\mathbb Z),
-\qquad \operatorname{rank}A_{sc}=129.
-\]
-
-The effective scalar trivalent-gauge rank is 24, so there are no continuous scalar moduli:
-
-\[
-153-129-24=0.
-\]
+The 153 scalar associators satisfy a 729-row monomial pentagon system of rank 129.  Effective complex trivalent-gauge rank is 24, so there are no continuous scalar moduli.
 
 Smith normal form leaves
 
@@ -89,154 +88,164 @@ Smith normal form leaves
 \boxed{(\mathbb Z_2)^4},
 \]
 
-hence exactly 16 discrete scalar components.
+hence exactly 16 scalar components.
 
-The two stabilizer signs satisfy
+A full-`C*` gauge audit is essential: sign-only gauge has rank 23, while an additional `i`-phase gauge supplies the 24th finite sign direction.
 
-\[
-\boxed{\epsilon_X=\epsilon_Y=: \epsilon,\qquad\epsilon^2=1.}
-\]
-
-The quotient splits into eight `epsilon=+1` and eight `epsilon=-1` components.
-
-A subtle gauge point is recorded in the audit: sign-only trivalent gauge has rank 23, but full complex gauge supplies one additional sign direction through an `i`-phase gauge, restoring finite gauge rank 24 and the expected four quotient bits.
-
-## Epsilon-minus closure
-
-**CANDIDATE-NEW / COMPUTATIONAL-CLAIM.** All eight `epsilon=-1` scalar components have been excluded exactly.  See `notes/15-r22-epsilon-minus-closure.md`.
-
-The D seed data become 2D Clifford/Pauli triples.  Complete D coherence reduces eight local chirality bits to two parity-orbit chirality bits.  Components 12--15 fail the D amplitude/Smith system; components 4 and 6 fail at F-linear invertibility; components 5 and 7 reach the final four-noninvertible pentagons but admit tiny exact contradiction certificates.
-
-Therefore
+The gauge-invariant stabilizer sign satisfies
 
 \[
-\boxed{\epsilon=-1\text{ cannot extend to an invertible associator system}.}
-\]
-
-This is a branch-family exclusion, not yet a full `R(2,2)` noncategorifiability theorem.
-
-## Epsilon-plus character-sheet geometry
-
-For `epsilon=+1`, the three stabilizer involutions commute.  Every multiplicity-two history fiber decomposes into an unordered pair of characters
-
-\[
-\{\chi_1,\chi_2\}\subset\widehat{(\mathbb Z_2)^3}.
-\]
-
-The eight multiplicity spaces form two parity `K_4` history graphs.  Projective D coherence on an edge is exactly equality of the unordered restricted character multisets on the two visible stabilizer coordinates.
-
-This exposes a two-sheet local-system description instead of a general `2 x 2` matrix search.
-
-## Scalar component 0 closure
-
-**CANDIDATE-NEW / COMPUTATIONAL-CLAIM.** Scalar component `0` (an `epsilon=+1` component) is now fully excluded.  See `notes/13-r22-epsplus-character-sheets.md` and `notes/14-r22-component0-exclusion.md`.
-
-The proof is a finite partition of character-sheet types.
-
-### Repeated characters
-
-For repeated nontrivial characters, full `GL_2` D transport plus legal star-edge gauge fixing produces a constant D-pentagon contradiction `±2=0`.
-
-For the repeated trivial character, the full 48-block D system reduces on each parity `K_4` to one involutive holonomy
-
-\[
-S^2=I.
-\]
-
-Up to conjugacy there are only
-
-\[
-S=I,\quad -I,\quad H=\operatorname{diag}(1,-1),
-\]
-
-so nine global D-holonomy types.  All nine admit invertible E solutions, but keeping the complete E nullspaces symbolic, F coherence forces in every required `10 x 10` block
-
-\[
-\mathrm{row}_0=\mathrm{row}_1,
+\epsilon_X=\epsilon_Y=: \epsilon,
 \qquad
-\mathrm{col}_0=\mathrm{col}_1.
+\epsilon^2=1.
 \]
 
-Hence all repeated branches are singular.
+Thus there are eight `epsilon=+1` and eight `epsilon=-1` scalar components.
 
-### Weight-one pairs
+---
 
-All twelve Hamming-distance-one character pairs fail already at projective D coherence, even when restriction-degenerate edges are allowed full `2 x 2` mixing matrices.  Required transport determinants are identically zero.
+# Epsilon-plus: independently closed
 
-### Separated nonorientable pairs
+**CANDIDATE-NEW / EXACT.** The entire `epsilon=+1` half has now been independently excluded by a unified local-F obstruction.  See `notes/17-r22-epsilon-plus-local-f-obstruction.md` and `experiments/r22_epsplus_local_f_obstruction.py`.
 
-The projective history graph permits sheet-swap local systems, but complete D-amplitude pentagons kill every nonorientable assignment.  The exponent lattices have only Smith factors 1 and 2, so the root-of-unity failure is a genuine `C*` obstruction.
-
-### Separated orientable pairs
-
-There are 4096 finite pair/torsion branches.  Characteristic-zero Gaussian singleton equations immediately kill 4032: some required E block has at least three entries forced to zero.
-
-The remaining branches reduce to four pair-pair choices.  `((2,5),(2,5))` has full-rank homogeneous E coefficient matrix and only the zero E solution.  The two mixed `(0,7)|(2,5)` orientations were recomputed for all 32 D torsion cases in characteristic zero; each has a 2D E nullspace but sixteen required E blocks are identically zero matrices.
-
-The final `(0,7)|(0,7)` sixteen torsion cases need no E specialization: even when all 128 E entries are left algebraically independent, F coherence contains exactly 2304 support-one equations with constant coefficients `±2`.  They force 1088 F entries to zero and bound structural ranks by
+Because the three D stabilizer involutions commute, every multiplicity-two fiber decomposes into an unordered pair of characters of `(Z/2)^3`.  Exact projective D compatibility on the two parity `K_4` history graphs has exactly
 
 \[
-8\times8:\ 2,
+52\times52=2704
+\]
+
+admissible character-sheet gluing assignments per scalar component.
+
+Only two local pentagons are needed:
+
+\[
+(X,h,X,X;X),
 \qquad
-10\times10:\ 6.
+(X,X,X,h;X).
 \]
 
-Thus component 0 is excluded.
+They involve scalar A/B/C data, diagonal stabilizer actions, and the target required matrix `F^{XXX}_X`; they do **not** use cross-D amplitudes or E associators.
 
-## Current search space
+After exact weighted contraction, each target entry is `0` or `±z_alpha`.  An integer subset-DP computes the determinant polynomial of the `10 x 10` matrix directly in characteristic zero.
 
-Nine of sixteen scalar components are now excluded:
-
-- all eight `epsilon=-1` components;
-- `epsilon=+1` component 0.
-
-The unresolved scalar components are
+For every one of the eight `epsilon=+1` canonical scalar components
 
 \[
-\boxed{1,2,3,8,9,10,11},
+0,1,2,3,8,9,10,11
 \]
 
-all with `epsilon=+1`.
-
-The original approximately 1900-entry nonlinear problem has therefore become a finite sequence of seven scalar cocycle twists, each to be subjected to the same cheapest-first cascade:
+and every one of its 2704 projective gluings,
 
 \[
-\boxed{
-\text{scalar component}
-\to
-\text{D character compatibility}
-\to
-\text{D amplitude / holonomy}
-\to
-\text{E invertibility}
-\to
-\text{F linear rank}
-\to
-\text{final small kernel only if necessary}.
-}
+\boxed{\det F^{XXX}_{X}\equiv0.}
 \]
+
+The standalone replay therefore checks
+
+\[
+\boxed{8\times2704=21632}
+\]
+
+exact branch certificates.
+
+Hence
+
+\[
+\boxed{\epsilon=+1\Longrightarrow\text{no invertible associator extension}.}
+\]
+
+This result supersedes the need to use the earlier repeated/weight-one/separated D/E branch taxonomy as the primary epsilon-plus proof.
+
+---
+
+# Epsilon-minus: old closure superseded; fresh audit in progress
+
+**IMPORTANT CORRECTION.** The previous version of `notes/15-r22-epsilon-minus-closure.md` claimed that scalar components `12--15` failed at D amplitude.  A fresh canonical-representative implementation found exact counterexamples to that claim.
+
+For example, canonical component `13` with uniform Clifford chirality admits 48 D amplitudes in
+
+\[
+\{1,i,-1,-i\}.
+\]
+
+Substitution into the original multiplicity-aware SymPy pentagon engine verifies
+
+\[
+\boxed{1728/1728}
+\]
+
+D-layer matrix entries exactly equal zero.  The new solver likewise finds D solutions for all four orbit-constant chirality patterns in each of components `12,13,14,15`.
+
+Therefore the old D-family obstruction is invalid and `notes/15-r22-epsilon-minus-closure.md` is explicitly marked **SUPERSEDED**.
+
+## Fresh epsilon-minus progress
+
+The canonical `epsilon=-1` scalar components are
+
+\[
+\boxed{4,5,6,7,12,13,14,15}.
+\]
+
+A new local-F engine uses all four placements of a single stabilizer `h`.  It independently proves characteristic-zero determinant obstruction for
+
+\[
+\boxed{4,6,12,14}.
+\]
+
+For each of these four scalar components and all sixteen local Clifford chirality patterns relevant to `F^{XXX}_X`, exact Gaussian-integer subset-DP gives
+
+\[
+\boxed{\det F^{XXX}_{X}\equiv0.}
+\]
+
+The complementary scalar components
+
+\[
+\boxed{5,7,13,15}
+\]
+
+are not killed by this local cell on the four orbit-constant chirality patterns.  They require the deeper D/E/F/final-pentagon audit.
+
+Historical compact certificates for components 5 and 7 remain promising, but are not yet accepted as canonical-component proofs until their lower A--F data are independently reconstructed.
+
+## Current theorem boundary
+
+The repository may safely state:
+
+\[
+\boxed{\epsilon=+1\text{ is independently impossible}.}
+\]
+
+It may **not yet** state that `R(2,2)` is noncategorifiable.
+
+The remaining verification frontier is exactly
+
+\[
+\boxed{5,7,13,15\quad(\epsilon=-1).}
+\]
+
+---
 
 ## Immediate next task
 
-1. Freeze exact sign representatives for scalar components `1,2,3,8,9,10,11`.
-2. Recompute D seed normalizations for each scalar twist; do not assume component-0 character phases unchanged.
-3. Compile the projective D edge compatibility as a finite character-pair CSP for each component.
-4. Reject branches with singular D transports before amplitude solving.
-5. Apply Smith/root-of-unity D amplitude filters to survivors.
-6. Construct E/F systems only for finite branches that pass D.
-7. Search for compact local contradiction certificates before any Gröbner calculation.
+1. Reconstruct the complete D chirality/amplitude system for the canonical `epsilon=-1` B-visible families using the new implementation.
+2. Determine the true D survivor set over all `2^8=256` chirality assignments; do not inherit the old `256 -> 64 -> 4` numbers without replay.
+3. For components `13,15`, locate the first valid obstruction after the newly verified D solutions.
+4. For components `5,7`, independently reproduce the historical compact final-pentagon certificates from canonical lower data.
+5. Only after `5,7,13,15` are independently excluded should the combined result be promoted to an `R(2,2)` noncategorifiability theorem candidate.
 
 ## Compute discipline
 
 - Do not materialize the full 76185-equation SymPy problem.
-- Python handles combinatorial/history incidence; SymPy handles exact small linear/Smith calculations; custom sparse IR handles large monomial/linear layers; NumPy finite-field work is reconnaissance/certificate discovery only.
-- A heavy symbolic operation has a hard time limit.  A timeout changes the representation; it does not automatically increase the budget.
-- A numerical or finite-field obstruction is not promoted to a theorem until an exact characteristic-zero certificate or valid lifting argument is frozen.
+- Python handles combinatorial/history incidence; SymPy handles exact small linear/Smith calculations; custom sparse/token IR handles large monomial/linear layers.
+- Finite-field computations are reconnaissance/certificate discovery only.
+- Heavy symbolic operations have hard time limits.  A timeout changes the representation rather than increasing the budget.
+- A branch obstruction is accepted only after characteristic-zero substitution, determinant identity, valid lifting/Smith argument, or another exact certificate.
 
 ## Research labels
 
-**CLASSICAL.** The fusion ring and general coherence/categorification problem belong to existing fusion-category theory.
+**CLASSICAL.** The fusion ring and categorification problem belong to existing fusion-category theory.
 
-**REFORMULATION.** A--F layering, character-sheet history graphs, and sparse amplitude/weighted-component IRs are solver organizations of ordinary coherence data.
+**REFORMULATION.** A--F layering, character-sheet graphs, and sparse monomial/weighted-component IRs are solver organizations of ordinary coherence.
 
-**CANDIDATE-NEW.** The finite branch eliminations and compact obstruction certificates for the previously unresolved `R(2,2)` ring may constitute new mathematical content if independently verified and if the full categorifiability question is resolved.  No final theorem or originality claim is made yet.
+**CANDIDATE-NEW.** The unified epsilon-plus local determinant obstruction and the emerging finite Clifford certificates may become new mathematical content if the full `R(2,2)` question is resolved and independently verified.
