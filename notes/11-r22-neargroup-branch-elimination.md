@@ -2,7 +2,7 @@
 
 ## Status
 
-`CONDITIONAL REDUCTION — two of four order-eight extension types eliminated`
+`CONDITIONAL NO-LIFT THEOREM — all four order-eight extension types eliminated`
 
 This note sharpens the `R(2,2)` open-problem attack from `notes/10-r22-open-categorification-attack.md`.
 
@@ -36,7 +36,7 @@ hence
 \widehat G\in\{C_2^3,\ C_4\times C_2,\ D_8,\ Q_8\}.
 \]
 
-The purpose here is to eliminate the two abelian possibilities rigorously.
+All four possibilities can now be eliminated without a unitarity assumption.
 
 ---
 
@@ -59,11 +59,9 @@ the ring is not on the allowed list. Therefore
 
 This exclusion is unconditional and does **not** use unitarity.
 
-Consequently the conditional equivariantization of an `R(2,2)` category cannot have invertible group `C2^3`.
-
 ---
 
-## 2. Why `C4 x C2` needs a stronger argument
+## 2. The `C4 x C2` branch is impossible for this equivariantization
 
 **CLASSICAL.** Near-group categories of type
 
@@ -71,35 +69,27 @@ Consequently the conditional equivariantization of an `R(2,2)` category cannot h
 C_2\times C_4+8
 \]
 
-do exist. In fact Meng--Yu use precisely such a category to construct the previously unresolved ring `R'(2)` by de-equivariantization.
+do exist. Meng--Yu use such a category to construct the ring `R'(2)` by de-equivariantization. Therefore existence of the near-group category cannot itself exclude this branch.
 
-So existence of the near-group category cannot itself exclude this branch.
+The required question is whether a `C2 x C4 + 8` near-group category could possess a *different* Tannakian `Rep(C2)` whose de-equivariantization has ring `R(2,2)`.
 
-The required question is instead:
-
-> Can a `C2 x C4 + 8` near-group category possess a *different* Tannakian `Rep(C2)` whose de-equivariantization has ring `R(2,2)` rather than `R'(2)`?
-
-The answer is no, because the relevant `Rep(C2)` is unique.
-
----
-
-## 3. Unique boson in the center of every `C2 x C4 + 8` category
+### Unique boson
 
 **CLASSICAL.** Rowell--Solomon--Zhang, *On near-group centers and super-modular categories*, arXiv:2305.09108, describe the Drinfeld centers of the four inequivalent `C2 x C4 + 8` near-group categories.
 
-For every category in their Table 3, the center contains exactly one invertible simple object `a_g` for every
+For every one of their four cases, the center invertibles are indexed by
 
 \[
-g\in C_2\times C_4,
+g\in C_2\times C_4
 \]
 
-and its twist is
+and satisfy
 
 \[
 \theta_{a_g}=\langle g,g\rangle.
 \]
 
-The bicharacter in all four cases has the form
+Their bicharacter has the form
 
 \[
 \langle(x_1,y_1),(x_2,y_2)\rangle
@@ -109,13 +99,7 @@ The bicharacter in all four cases has the form
 \qquad m=\pm1.
 \]
 
-The three nontrivial order-two elements are
-
-\[
-(1,0),\qquad(0,2),\qquad(1,2).
-\]
-
-For either `m=+1` or `m=-1`,
+For the three nontrivial order-two elements,
 
 \[
 \begin{aligned}
@@ -125,144 +109,186 @@ For either `m=+1` or `m=-1`,
 \end{aligned}
 \]
 
-`experiments/r22_neargroup_branch_elimination.py` checks this finite arithmetic.
-
 Thus
 
 \[
 \boxed{a_{(0,2)}\text{ is the unique nontrivial invertible boson in }Z(\mathcal E).}
 \]
 
-A Tannakian subcategory equivalent to `Rep(C2)` has one nontrivial simple object, necessarily an invertible boson of order two. Since Rowell--Solomon--Zhang list all center invertibles, this gives
+Hence the center has a unique Tannakian subcategory equivalent to `Rep(C2)`.
+
+`experiments/r22_neargroup_branch_elimination.py` checks the finite bicharacter arithmetic.
+
+### Unique de-equivariantization
+
+**CLASSICAL.** Meng--Yu, arXiv:2608.06064, Corollary 5.8, prove that if `E` is a near-group category of type `C2 x C4 + 8`, then the rank-six category obtained by `C2` de-equivariantization has Grothendieck ring
 
 \[
-\boxed{
-Z(\mathcal E)\text{ contains a unique Tannakian }\operatorname{Rep}(C_2).
-}
+R'(2).
+\]
+
+Because the relevant `Rep(C2)` is unique, there is no second order-two Tannakian condensation capable of producing `R(2,2)`.
+
+Therefore
+
+\[
+\boxed{C_4\times C_2\text{ cannot be }G(\mathcal A^{C_2})\text{ for an }R(2,2)\text{ swap lift}.}
 \]
 
 ---
 
-## 4. Meng--Yu identify that unique de-equivariantization
+## 3. The nonabelian `D8` and `Q8` branches are also impossible
 
-**CLASSICAL.** Meng--Yu, arXiv:2608.06064, Corollary 5.8, prove:
+This step does **not** require the unitary classification of nonabelian near-group categories.
 
-> If `E` is a near-group fusion category of type `C2 x C4 + 8`, then `E` is a `C2`-equivariantization of a rank-six category `A`, and the Grothendieck ring of `A` is `R'(2)`.
+**CLASSICAL.** Victor Ostrik, with Appendix A jointly written with Dmitri Nikshych, *Pivotal fusion categories of rank 3*, arXiv:1309.4822, Theorem A.6, proves:
 
-Their preceding Lemma 5.3 constructs the required Tannakian `Rep(C2)` in the center.
+> If the near-group ring `K(G,n)` is categorifiable and the positive Frobenius--Perron dimension `d_+` of the unique noninvertible object is irrational, then `n` is divisible by `|G|` and `G` is abelian.
 
-Because Section 3 above shows that the center has only one nontrivial `Rep(C2)`, there is no second Tannakian order-two condensation which could yield another rank-six fusion ring.
-
-Therefore every `C2` de-equivariantization relevant to an equivariantization presentation of `E` has
+For every order-eight, level-eight near-group ring,
 
 \[
-\boxed{K_0(\mathcal A)=R'(2).}
+d_+^2=8+8d_+,
 \]
+
+so
+
+\[
+\boxed{d_+=4+2\sqrt6,}
+\]
+
+which is irrational.
+
+Consequently a categorifiable `G+8` near-group ring with `|G|=8` must have `G` abelian. Therefore
+
+\[
+\boxed{D_8+8\text{ and }Q_8+8\text{ are not categorifiable}.}
+\]
+
+This argument is unconditional; no `C*`, unitary, or unitarizability assumption is used.
+
+For completeness, the same Appendix also proves that in the integral case one has `n<|G|` (Lemma A.9), explaining the general nonabelian level bound quoted by Schopieray.
 
 ---
 
-## 5. Conditional exclusion theorem
+## 4. Conditional No-Lift Theorem
 
-### Proposition
+### Theorem
 
-**CANDIDATE-NEW / CONDITIONAL.** Assume a categorification `A` of `R(2,2)` admits the monoidal swap action from `notes/10-r22-open-categorification-attack.md`. Then its equivariantization
+**CANDIDATE-NEW / CONDITIONAL.** Let `A` be a fusion category categorifying `R(2,2)`. Then the based-ring involution
+
+\[
+\alpha(X)=Y,
+\qquad
+\alpha(Y)=X,
+\qquad
+\alpha|_{V_4}=\mathrm{id}
+\]
+
+cannot be realized by a monoidal `C2`-action on `A` fixing the four invertible isomorphism classes.
+
+### Proof
+
+Assume such an action exists. By the conditional near-group lift proposition of `notes/10-r22-open-categorification-attack.md`, the equivariantization
 
 \[
 \mathcal E=\mathcal A^{C_2}
 \]
 
-cannot have invertible group
+has near-group Grothendieck ring `R(Ghat,8)` where
 
 \[
-C_2^3
-\quad\text{or}\quad
-C_4\times C_2.
+1\to C_2\to\widehat G\to V_4\to1.
 \]
 
-Hence necessarily
+There are four isomorphism types for `Ghat`.
+
+1. `C2^3` is impossible by Schopieray Theorem 1.1.
+2. `C4 x C2` is impossible because its center has a unique `Rep(C2)`, whose de-equivariantization has ring `R'(2)` by Meng--Yu Corollary 5.8.
+3. `D8` is impossible by Ostrik--Nikshych Theorem A.6 since `d_+=4+2sqrt(6)` is irrational but `D8` is nonabelian.
+4. `Q8` is impossible for the same reason.
+
+All possible extension groups are excluded, contradiction.
+
+\[
+\boxed{\text{Therefore no such monoidal swap action exists.}}\qquad\square
+\]
+
+---
+
+## 5. Why this is strategically important
+
+This is the first result in the repository whose target is not reconstruction of known category data or comparison of representations. It constrains a hypothetical categorification which the 2026 literature still leaves open.
+
+The result does **not** yet decide whether `R(2,2)` is categorifiable. Instead it says something unexpectedly rigid:
 
 \[
 \boxed{
-G(\mathcal E)\in\{D_8,Q_8\}.
+\text{if }R(2,2)\text{ is categorifiable, its categorification must break an exact symmetry of its fusion ring at the monoidal level.}
 }
 \]
 
-### Proof
+Thus the original fusion grammar has an obvious `X<->Y` symmetry, but no associator class realizing `R(2,2)` may be fixed by that symmetry in the tensor-equivalence moduli problem.
 
-- `C2^3`: impossible because `R(C2^3,8)` is not categorifiable by Schopieray Theorem 1.1.
-- `C4 x C2`: suppose it occurs. Then `E` is one of the four `C2 x C4 + 8` near-group categories. The center has a unique nontrivial Tannakian `Rep(C2)` by the Rowell--Solomon--Zhang center formula above. The original action presentation `E=A^{C2}` must correspond to this unique Tannakian subcategory. But Meng--Yu Corollary 5.8 says its de-equivariantization has ring `R'(2)`, contradicting `K0(A)=R(2,2)`.
+This is precisely the kind of distinction an explicit operation-history treatment can expose:
 
 \[
-\square
+\text{grammar symmetry}\not\Rightarrow\text{coherent history symmetry}.
+\]
+
+The obstruction lives at the coherence layer.
+
+---
+
+## 6. Fixed-locus reduction for the next attack
+
+`experiments/r22_swap_lift_skeleton.py` gives a favorable finite structure for studying this obstruction:
+
+- `R(2,2)` has 48 nonzero fusion vertices, with multiplicity histogram `40 x 1` and `8 x 2`;
+- after strict-unit normalization there are 37 fusion vertices;
+- all eight multiplicity-two vertices lie in free `C2` orbits under `X<->Y`;
+- every non-pointed fusion vertex lies in a free orbit;
+- the only fixed strict-unit vertices are nine one-dimensional vertices entirely inside the pointed `V4` sector.
+
+Therefore arbitrary tensorator matrices on high-multiplicity spaces are not the irreducible obstruction. Paired bases can normalize tensorators on free orbits; the surviving fixed-locus data are pointed one-dimensional cocycle variables coupled to global associator coherence.
+
+This suggests the next mathematical target:
+
+\[
+\boxed{
+\text{classify the obstruction to lifting }\alpha
+\text{ from the pointed fixed locus through the mixed history cells}.}
 \]
 
 ---
 
-## 6. A small group-theoretic reinforcement
+## 7. What would solve the open categorification problem
 
-**COMPUTATIONAL-CLAIM.** In `C4 x C2`, there are three subgroups of order two, generated by
+The conditional no-lift theorem converts the categorification question into a much sharper fork.
 
-\[
-(0,1),\quad(2,0),\quad(2,1).
-\]
+### Route A — prove the lift is forced
 
-Only
+If one can prove from the `R(2,2)` fusion rules and fusion-category axioms that every categorification necessarily admits the swap tensor autoequivalence, then the theorem above yields an immediate contradiction:
 
 \[
-\langle(2,0)\rangle
+\boxed{R(2,2)\text{ is not categorifiable}.}
 \]
 
-has quotient `V4`; the other two quotients are cyclic `C4`. This is checked in `experiments/r22_swap_lift_skeleton.py`.
+### Route B — classify symmetry-breaking associators
 
-This is not needed once center uniqueness is established, but it confirms that even at the group-extension level there is a distinguished kernel compatible with the rank-six `V4` quotient.
+If the lift need not exist automatically, then any categorification must lie in an `alpha`-nonfixed orbit of associator classes. One can therefore search only for symmetry-breaking solutions and try to derive an invariant/obstruction describing the failure of the swap to lift.
+
+Either route is substantially narrower than solving all `84,096` raw scalar pentagon equalities.
 
 ---
 
-## 7. What remains, and what cannot yet be claimed
+## 8. Current branch table
 
-The conditional branch table is now
-
-| `G(E)` | status under the monoidal-swap hypothesis |
+| `G(A^{C2})` under a hypothetical swap lift | status |
 |---|---|
-| `C2^3` | **eliminated** — near-group ring not categorifiable |
-| `C4 x C2` | **eliminated** — unique `Rep(C2)` de-equivariantizes to `R'(2)` |
-| `D8` | open in the pseudo-unitary setting |
-| `Q8` | open in the pseudo-unitary setting |
+| `C2^3` | **eliminated** — Schopieray Theorem 1.1 |
+| `C4 x C2` | **eliminated** — unique Tannakian de-equivariantization is `R'(2)` |
+| `D8` | **eliminated** — Ostrik--Nikshych Theorem A.6 |
+| `Q8` | **eliminated** — Ostrik--Nikshych Theorem A.6 |
 
-There are two important red-team restrictions.
-
-1. **Do not use the known nonabelian *unitary* near-group classification to eliminate `D8,Q8`.** Meng--Yu only reduce an arbitrary categorification to a pseudo-unitary Galois conjugate; unitarity is an additional hypothesis.
-2. **This does not yet prove that `R(2,2)` is non-categorifiable.** A categorification might exist with no tensor autoequivalence lifting `X<->Y`.
-
-Thus the next attack has two possible ways to convert this conditional result into an unconditional theorem:
-
-\[
-\boxed{
-\begin{array}{ll}
-\textbf{Route A:}&\text{prove that every categorification of }R(2,2)\text{ must admit the swap lift};\\[2pt]
-\textbf{Route B:}&\text{show that }D_8+8\text{ and }Q_8+8\text{ cannot occur in the}\
-&\text{pseudo-unitary equivariantization forced by such a lift.}
-\end{array}}
-}
-\]
-
-Route A is more directly aligned with the AEG/history program: it asks whether the exact symmetry of the fusion-history grammar can be coherently extended across all associator cells.
-
----
-
-## 8. Next concrete computation
-
-The fixed-locus analysis in `experiments/r22_swap_lift_skeleton.py` has already shown something favorable:
-
-- every non-pointed fusion vertex is in a free `C2` orbit under `X<->Y`;
-- all eight multiplicity-two fusion vertices are free;
-- after strict-unit normalization, the only fixed fusion vertices are nine one-dimensional vertices entirely inside the pointed `V4` sector.
-
-Therefore the next solver should not introduce arbitrary tensorator matrices on every multiplicity space. It should:
-
-1. normalize tensorators on free non-pointed vertex orbits by paired bases;
-2. parameterize only the pointed fixed-locus cocycle data;
-3. propagate those parameters through mixed associator cells;
-4. detect whether global coherence forces one of the four central-extension classes, or gives an obstruction.
-
-That is now the narrowest identified route from explicit operation histories to a genuinely unresolved categorification theorem.
+The near-group branch analysis is complete. The active problem is now the **monoidal symmetry-lift obstruction itself**.
