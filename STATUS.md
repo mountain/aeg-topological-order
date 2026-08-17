@@ -2,261 +2,190 @@
 
 ## Stage
 
-`T0–T8 EXACT FIBONACCI CATEGORY BENCHMARK CLOSED — coherence-quotient barrier identified; un-enriched history line stopped`
+`T9 R(2,2) OPEN CATEGORIFICATION ATTACK — localization audit complete; finite-branch extension in progress`
 
-## Executive verdict
+## Why the exact line is reopened
 
-**COMPUTATIONAL-CLAIM.** The repository has now tested explicit operation-history representations through four increasingly demanding exact Fibonacci benchmarks:
+**RESEARCH DECISION.** The earlier exact Fibonacci/string-net program remains closed under its original success criterion: explicit operation history did not produce a new invariant or a complexity advantage over optimized categorical/graphical baselines. That negative result is preserved in `notes/08-graphical-certificate-and-coherence-barrier.md` and `notes/09-stage-closure.md`.
 
-1. fusion/F-symbol reconstruction and pentagon coherence;
-2. braiding/R-symbol reconstruction and hexagon/braid transport;
-3. Levin–Wen single-plaquette compilation;
-4. adjacent-plaquette commutation and proof-certificate extraction.
+**REFORMULATION.** The line is reopened under a different and stricter criterion: can an operation-history/localization representation solve a categorification problem whose answer is currently unknown? Mathematical equivalence to pentagon coherence is allowed; success now means a new construction or obstruction, not a speedup.
 
-**NEGATIVE BENCHMARK.** At every stage, once the baseline is an optimized categorical/graphical implementation rather than a naive dense encoding, no AEG-specific algebraic compression, asymptotic storage advantage, execution-time advantage, or proof-certificate compression has been demonstrated.
+## Open target
 
-**REFORMULATION.** AEG remains a faithful language for making operation histories explicit, but explicitness alone is not a new invariant or computational advantage in this exact fusion/string-net setting.
-
-**RESEARCH DECISION.** Stop scaling the un-enriched exact Fibonacci/category line. Any further topological-order work must add an explicit semantics that ordinary coherence deliberately forgets: resource cost, provenance/dependency, approximation defect, physical control path, or another justified enrichment.
-
----
-
-## F-stage result
-
-**COMPUTATIONAL-CLAIM.** The blind reconstruction in `experiments/fibonacci_pentagon.py` starts from the Fibonacci fusion grammar and symbolic nontrivial associator only. Pentagon coherence plus invertibility gives
+**CLASSICAL.** The target is Meng--Yu's rank-six self-dual `R(2,2)` fusion ring in the `V_4`-quadratic family:
 
 \[
-\boxed{
-g=1,\qquad d=-a,\qquad bc=a,\qquad a^2+a-1=0.
-}
+\{1,g,h,gh,X,Y\},\qquad gX=Y,
 \]
 
-Unitarity selects
-
 \[
-\boxed{a=(\sqrt5-1)/2},
-\]
-
-and a real symmetric gauge has off-diagonal entries \(\sqrt a\).
-
-**CLASSICAL.** The post-freeze comparison agrees with the standard Fibonacci F-matrix. This reconstructs known category data.
-
-**NEGATIVE BENCHMARK.** The independent direct categorical pentagon baseline has the same five symbolic variables and the same polynomial ideal. The history complex therefore gives no algebraic compression at this benchmark.
-
-**COMPUTATIONAL-CLAIM.** The five-input associahedron has 14 vertices, 21 reassociation edges, 3 square faces, and 6 pentagonal faces. Every face holonomy is identity under the frozen F solution in both total-charge sectors.
-
-**CLASSICAL.** Pure reassociation coherence is flat. A nontrivial F-move is not physical/topological curvature.
-
----
-
-## Braided-stage result
-
-**PROTOCOL.** The braided follow-up is exact but not certified blind because its lineage was exposed to a comparison source containing explicit Fibonacci R-data. No standard R constants are encoded in the experiments.
-
-**COMPUTATIONAL-CLAIM.** Frozen F-data plus the generic multiplicity-free hexagon equation gives
-
-\[
-\boxed{
-r_1=r_\tau^2,
+X^2=Y^2=1+h+2X+2Y,
 \qquad
-r_\tau^2+a r_\tau+1=0,
+XY=g+gh+2X+2Y.
+\]
+
+See `references/r22-open-problem.md`.
+
+**SUCCESS CONDITION.** Either construct invertible F-data satisfying every pentagon, or derive a rigorous obstruction to categorification. Reproducing known criteria or merely reducing runtime is not sufficient.
+
+## Exact scale audit
+
+**COMPUTATIONAL-CLAIM.** `experiments/r22_scale_audit.py` verifies the based-ring associativity and obtains
+
+\[
+\operatorname{FPdim}(X)=2+\sqrt6,
 \qquad
-a^2+a-1=0.
-}
+\operatorname{FPdim}(R(2,2))=24+8\sqrt6.
 \]
 
-Eliminating \(a\) gives
+The raw strict-unit associator problem has
 
 \[
-\boxed{
-\Phi_{10}(r_\tau)
-=r_\tau^4-r_\tau^3+r_\tau^2-r_\tau+1=0.
-}
+\boxed{273\text{ nontrivial F-blocks},\quad1881\text{ scalar entries}}
 \]
 
-**COMPUTATIONAL-CLAIM.** The compiled \(B_3\) and \(B_4\) representations satisfy the Artin relations exactly in all small Fibonacci total-charge sectors.
-
-**COMPUTATIONAL-CLAIM.** The Artin relation alone is weaker than hexagon coherence and admits a degenerate \(r_1=r_\tau\) branch excluded by the braided fusion-category equations.
-
-**CLASSICAL.** The permutation-enriched “parenthesization + exchange” skeleton is closely related to the classical parenthesized braid groupoid/operad. It is not an AEG novelty.
-
-**NEGATIVE BENCHMARK.** Fusion-path braid generators already decompose into local 1x1/2x2 blocks in the optimized categorical baseline; replaying explicit F–R–F histories is slower than applying verified precompiled blocks.
-
----
-
-## Single-plaquette string-net result
-
-**CLASSICAL.** The physical baseline is the Levin–Wen string-net Hamiltonian. For an n-gon, \(B_p^s\) is already a cyclic product of n local F-symbols.
-
-**COMPUTATIONAL-CLAIM.** `experiments/levin_wen_plaquette.py` exhausts all \(2^6=64\) external-label sectors of a Fibonacci hexagonal plaquette and verifies exactly
+and the non-unit four-input pentagons contain
 
 \[
-\boxed{
-B_p^1=I,
+\boxed{1833\text{ blocks},\quad76185\text{ scalar matrix equations}.}
+\]
+
+**RESEARCH DECISION.** A global SymPy/Gröbner solve at this level is rejected.
+
+## History-layer localization
+
+Split non-unit F-blocks into six dependency layers:
+
+| layer | blocks | scalar entries | role |
+|---|---:|---:|---|
+| A | 27 | 27 | pointed |
+| B | 54 | 54 | one noninvertible |
+| C | 72 | 72 | two noninvertibles, invertible output |
+| D | 72 | 288 | two noninvertibles, noninvertible output |
+| E | 32 | 128 | three noninvertibles, invertible output |
+| F | 16 | 1312 | three noninvertibles, noninvertible output |
+
+**COMPUTATIONAL-CLAIM.** Pentagon incidence is sufficiently triangular that B/C close after gauge-fixable scalar seeds; D begins with 24 local 2x2 stabilizer blocks; E/F have local linear singleton exposures once lower layers are fixed.
+
+## Scalar A/B/C result
+
+**COMPUTATIONAL-CLAIM.** `experiments/r22_scalar_audit.py` converts the 729 scalar pentagons to a monomial exponent matrix
+
+\[
+A_{sc}\in M_{729\times153}(\mathbb Z),
 \qquad
-(B_p^\tau)^2=B_p^1+B_p^\tau.
-}
+\operatorname{rank}A_{sc}=129.
 \]
 
-With \(\phi=1+a=a^{-1}\),
+The effective scalar trivalent-gauge rank is 24, so
+
+\[
+\boxed{153-129-24=0.}
+\]
+
+There are no continuous scalar A/B/C moduli after gauge.
+
+**COMPUTATIONAL-CLAIM.** Smith normal form leaves
+
+\[
+\boxed{(\mathbb Z_2)^4}
+\]
+
+at the component level: 16 discrete scalar branches must be extended or excluded.
+
+**COMPUTATIONAL-CLAIM.** The two gauge-invariant stabilizer signs are not independent. Two scalar pentagons give
+
+\[
+\boxed{\epsilon_X=\epsilon_Y=: \epsilon,\qquad\epsilon^2=1.}
+\]
+
+## D-layer result
+
+**COMPUTATIONAL-CLAIM.** `experiments/r22_d_layer_probe.py` verifies that the 24 first D-layer seed blocks reduce, after scalar normalization, to three involutions on each multiplicity-two fusion space:
+
+\[
+L^2=M^2=R^2=I,
+\]
+
+\[
+LM=\epsilon ML,\quad LR=\epsilon RL,\quad MR=\epsilon RM.
+\]
+
+Thus the D seed problem has finite projective-representation types rather than 288 unconstrained scalar entries:
+
+- `epsilon=+1`: commuting involutions;
+- `epsilon=-1`: 2D Clifford/Pauli triples with discrete chirality.
+
+The eight multiplicity-two spaces split into two size-four transport orbits by `Y`-parity.
+
+## F-layer sparse linear audit and first branch obstruction
+
+**ENGINEERING NOTE.** A naive complete SymPy construction of the F-layer linear system hit the predeclared 120-second stop limit. It was not allowed to continue. The dedicated sparse linear IR in `experiments/r22_f_sparse_linear.py` constructs the same layer in well under a second on the development machine.
+
+For the simplest reconnaissance branch (`A/B/C` trivial representative and compatible identity D/E transports), the F layer has
+
+\[
+1312\text{ entries},\qquad11136\text{ nonzero linear equations}.
+\]
+
+Two independent modular-rank checks give
+
+\[
+\boxed{\operatorname{rank}=1167,\qquad\operatorname{nullity}=145.}
+\]
+
+Every equation is an entry equality. Contracting them gives 145 equivalence components with sizes
+
+\[
+128\times8,\qquad16\times16,\qquad1\times32.
+\]
+
+**COMPUTATIONAL-CLAIM / BRANCH OBSTRUCTION.** In every one of the eight 10x10 F-blocks, coherence identifies rows 0 and 1 and columns 0 and 1. These correspond to the two invertible intermediate channels `1` and `h`. Hence every such associator is singular.
+
+\[
+\boxed{\text{The trivial scalar / identity D-E branch cannot categorify }R(2,2).}
+\]
+
+This is an exact branch-killing result, not a numerical-rank guess.
+
+## Current attack surface
+
+**COMPUTATIONAL-CLAIM.** The raw problem should no longer be viewed as an approximately 1900-dimensional nonlinear solve. The current structure is
 
 \[
 \boxed{
-B_p=\frac{B_p^1+\phi B_p^\tau}{1+\phi^2}
+\text{16 scalar branches}
+\to
+\text{finite D projective branches}
+\to
+\text{linear E/F intertwiners}
+\to
+\text{four-noninvertible consistency kernel}.
 }
 \]
 
-satisfies \(B_p^2=B_p\) in every sector.
+**ONGOING COMPUTATIONAL-CLAIM.** A concrete `epsilon=-1` scalar representative has been found and its 24 Pauli-type D seeds pass their local pentagons. The remaining 48 D blocks have one-dimensional local intertwiner spaces with invertible representatives. This result is still being promoted into the checked repository experiment and should not yet be treated as the final branch extension.
 
-**COMPUTATIONAL-CLAIM.** For an all-\(\tau\) n-gon,
+## Immediate next task
 
-\[
-\boxed{d_n=L_n}
-\]
+1. Freeze an exact `epsilon=-1` scalar representative from the 16-component scalar system.
+2. Enumerate the finite D chiralities and propagate the remaining 48 D blocks exactly.
+3. Solve their residual scalar-amplitude consistency as a multiplicative lattice problem.
+4. Solve E linearly.
+5. Build the F sparse-linear system for each surviving D/E branch and reject singular branches immediately.
+6. Only then compile the four-noninvertible pentagons into the final reduced polynomial kernel.
 
-and the number of nonzero matrix elements of \(B_p^\tau\) is
+## Compute guardrails
 
-\[
-\boxed{
-N_n=(-1)^n+(1+\sqrt2)^n+(1-\sqrt2)^n.
-}
-\]
+- Do not materialize the full 76185-equation SymPy system.
+- Use Python for combinatorial/history incidence, SymPy for exact low-dimensional algebra/Smith forms, and NumPy/SciPy only for reconnaissance.
+- A heavy symbolic operation gets an explicit time limit; timeout is evidence to change representation, not to increase the limit automatically.
+- Numerical solutions are discovery evidence only. Any categorification or obstruction claim must be frozen by exact verification.
 
-At \(n=14\), \(d_n=843\) and \(N_n=228487\).
+## Research labels / caveat
 
-**NEGATIVE BENCHMARK.** Although the local-factor representation is exponentially smaller than a materialized operator matrix, the standard Levin–Wen formula and classical string-net tensor-network representations already have this O(n) local structure. This is not an AEG-specific compression.
+**CLASSICAL.** The fusion ring and the general categorification problem come from the existing fusion-category literature.
 
----
+**REFORMULATION.** The A/B/C/D/E/F history layering is a solver organization of ordinary coherence data.
 
-## Adjacent-plaquette exact baseline
-
-**COMPUTATIONAL-CLAIM.** `experiments/adjacent_plaquette_commutator.py` constructs two adjacent hexagons sharing one edge, with 11 internal edges, 8 fixed dangling legs, and 10 trivalent vertices. All \(2^8=256\) dangling-label sectors are verified exactly in
-
-\[
-\mathbb Q[q]/(q^4+q^2-1).
-\]
-
-Every sector satisfies
-
-\[
-\boxed{B_L^\tau B_R^\tau=B_R^\tau B_L^\tau}.
-\]
-
-If \(k\) dangling legs carry \(\tau\), the global block dimension is
-
-\[
-\boxed{D_k=5F_{k+1}}.
-\]
-
-The maximal all-\(\tau\) sector has dimension 170; each plaquette operator has 1551 nonzero entries; each ordered product has 11922 nonzero entries after exact reduction; sparse composition performs 14854 nonzero scalar multiplications per order before accumulation.
-
-**REFORMULATION.** This is a genuinely overlapping-history benchmark: the two operator schedules are different local rewrite orders, not disjoint-support operations.
-
----
-
-## Graphical certificate result
-
-**CLASSICAL.** Levin–Wen Appendix C already gives a constant-size graphical proof of adjacent-plaquette commutation. In the fattened-lattice representation,
-
-\[
-\boxed{B_p^s=\mathcal R\circ I_p^s},
-\]
-
-where \(I_p^s\) inserts an \(s\)-loop and \(\mathcal R\) coherently reduces the fattened diagram to physical lattice states.
-
-For adjacent plaquettes \(L,R\),
-
-\[
-\boxed{
-I_L^{s_L}I_R^{s_R}X
-=
-I_R^{s_R}I_L^{s_L}X
-}
-\]
-
-as the same two-loop graphical state. Applying the same coherent reduction yields plaquette commutation.
-
-**REFORMULATION.** `experiments/plaquette_commutation_certificate.py` machine-encodes this as a constant-size history diamond: 5 explicit nodes, 4 explicit edges, zero coefficient arithmetic, with graphical semantics and coherent reduction as the trusted categorical boundary.
-
-**NEGATIVE BENCHMARK.** This certificate is a machine-readable restatement of the classical string-net graphical proof. It does not supply AEG-specific proof compression, proof reuse, or incremental-verification asymptotics.
-
-This triggers the repository stop condition for the un-enriched exact-category line.
-
----
-
-## Coherence-quotient barrier
-
-**REFORMULATION.** `notes/08-graphical-certificate-and-coherence-barrier.md` records the structural reason the benchmarks repeatedly collapse to known categorical semantics.
-
-Let \(\mathsf H(x,y)\) be explicit histories between presentations \(x,y\), and let \(\sim_{\mathrm{coh}}\) be generated by triangle/pentagon/hexagon/string-net coherence cells.
-
-For a proposed history quantity
-
-\[
-J:\mathsf H(x,y)\to S,
-\]
-
-there is a basic dichotomy.
-
-### A. Coherence-invariant history quantity
-
-If
-
-\[
-h_1\sim_{\mathrm{coh}}h_2\Rightarrow J(h_1)=J(h_2),
-\]
-
-then \(J\) factors through the categorical coherence quotient. For pure reassociation it is constant on parallel coherent histories; in the braided case the surviving nontrivial path classes are already braid/categorical data.
-
-### B. History-sensitive quantity
-
-If \(J\) distinguishes coherence-equivalent histories, it does not descend to the exact categorical/topological object. It can still be meaningful only after adding extra semantics such as computational cost, memory, provenance, error, uncertainty, physical time, or implementation constraints.
-
-Thus
-
-\[
-\boxed{
-\begin{array}{c}
-\text{coherence invariant}\Rightarrow\text{factors through category},\\
-\text{history sensitive}\Rightarrow\text{requires enrichment}.
-\end{array}}
-}
-\]
-
-**CLASSICAL.** This is not claimed as a new category-theoretic theorem; it is a strategic consequence of classical coherence for the AEG program.
-
----
-
-## Research decision and next admissible direction
-
-**NEGATIVE BENCHMARK.** Do not continue the exact Fibonacci line merely by increasing anyon count, fusion-tree size, plaquette count, or operator dimension. The current evidence predicts that optimized categorical graphical/tensor methods will absorb the same exact coherence structure.
-
-**REFORMULATION.** If this repository continues, the next experiment must first define an enrichment deliberately not killed by coherence. The cleanest candidate is a resource-enriched history groupoid:
-
-\[
-\boxed{
-(\text{coherence class},\;\text{cost/provenance/dependency data}).
-}
-\]
-
-Then the nontrivial problem is optimization over a coherence class,
-
-\[
-\boxed{
-\min_{h\in[h_0]_{\mathrm{coh}}} W(h),
-}
-\]
-
-or diagnosis of coherence defects for approximate/learned/noisy F/R data.
-
-**CONJECTURE.** Such enrichment may give explicit history a real computational semantics. It would, however, be a compiler/proof/error-geometry problem layered on top of topological order, not a new exact invariant of the Fibonacci fusion category.
-
-## Reconstruction gate
-
-**COMPUTATIONAL-CLAIM.** The F derivation remains the only certified blind reconstruction in this repository.
-
-**PROTOCOL.** The R derivation is exact but non-blind because of source exposure. A separate clean-room workstream is required before any blind-R claim.
-
-## Stop condition now active
-
-**CLASSICAL.** The un-enriched exact-category workstream is closed. Reopening it requires a recorded new question that is not already identified with standard category/string-net graphical coherence, or an explicit enrichment with measurable semantics.
+**CANDIDATE-NEW.** The specific localization chain and branch obstruction for `R(2,2)` may become new mathematical content if it survives independent verification and contributes to resolving the open categorifiability question. No originality claim is made yet.
