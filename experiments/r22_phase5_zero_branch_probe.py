@@ -1,14 +1,10 @@
-"""Phase-5 exact probe for the two surviving z0=0 branches.
+"""Phase-5 exact zero-branch probe for local contradiction discovery.
 
-The four shortest final pentagon equations imply that z0=0 splits into four
-zero patterns.  Two are already excluded by required F-block invertibility.
-This probe substitutes the two surviving patterns into all 96 final pentagons
-and recompiles the exact sparse kernel.
-
-The goal is local certificate discovery, not nonlinear solving.  For each branch
-we report unique specialized equations, term/degree profiles, torus-monomial
-contradictions, one-term equations that force additional F-component products
-to vanish, and the shortest equations with exact pentagon-entry provenance.
+Short final-pentagon equations create finite zero-pattern branches inside the
+Phase-4 quotient.  This probe substitutes a selected pattern into all 96 final
+pentagons and recompiles the exact sparse kernel, reporting torus contradictions,
+singleton zero constraints, term profiles, and provenance.  It performs no
+nonlinear solving or Groebner computation.
 """
 from __future__ import annotations
 
@@ -19,14 +15,14 @@ from fractions import Fraction
 import r22_epsminus_final_kernel as fk
 
 
-SURVIVING_Z0_BRANCHES = {
-    "ZB": (0, 2, 8),  # z0=z2=z8=0
-    "ZC": (0, 3, 1),  # z0=z3=z1=0
+ZERO_BRANCHES = {
+    "ZB": (0, 2, 8),       # excluded: torus-monomial contradiction
+    "ZC": (0, 3, 1),       # implies z4=0
+    "ZC4": (0, 3, 1, 4),  # current frontier
 }
 
 
 def specialize_zero(poly, zero_var_indices):
-    """Set selected variables to zero in a sparse nonnegative-exponent poly."""
     out = {}
     for mon, coeff in poly.items():
         if any(mon[k] for k in zero_var_indices):
@@ -74,35 +70,29 @@ def compile_specialized(cid, mask, name, zero_z):
         term_profile[nt] += 1
         total_degree_profile[deg] += 1
         fdegree_profile[fdeg] += 1
-
         if fdeg == 0:
             torus_only.append((key, prov))
             if nt == 1:
-                # A nonzero Gaussian coefficient times p^a q^b cannot vanish
-                # on the already-proved E torus p*q != 0.
                 torus_monomial_contradictions.append((key, prov))
         elif nt == 1:
             singleton_zero_constraints.append((key, prov))
 
     shortest = []
-    for key, prov in sorted(unique.items(), key=lambda kv: (len(kv[0]), fk.poly_stats(kv[0])[2], str(kv[1])))[:20]:
+    for key, prov in sorted(unique.items(), key=lambda kv: (len(kv[0]), fk.poly_stats(kv[0])[2], str(kv[1])))[:24]:
         nt, deg, fdeg = fk.poly_stats(key)
-        shortest.append(
-            {
-                "terms": nt,
-                "degree": deg,
-                "F_degree": fdeg,
-                "provenance": prov,
-                "poly": str(key),
-            }
-        )
+        shortest.append({
+            "terms": nt,
+            "degree": deg,
+            "F_degree": fdeg,
+            "provenance": prov,
+            "poly": str(key),
+        })
 
     out = {
         "branch": name,
         "zero_z": zero_z,
         "component": cid,
         "mask": mask,
-        "kernel_variables_before_specialization": len(quotient["variables"]),
         "remaining_F_components": quotient["F_components"] - len(zero_z),
         "raw_nonzero_before_specialization": raw_nonzero,
         "raw_surviving_after_specialization": raw_surviving,
@@ -115,7 +105,7 @@ def compile_specialized(cid, mask, name, zero_z):
         "singleton_zero_constraints": len(singleton_zero_constraints),
         "singleton_examples": [
             {"provenance": prov, "poly": str(key)}
-            for key, prov in singleton_zero_constraints[:12]
+            for key, prov in singleton_zero_constraints[:16]
         ],
         "shortest": shortest,
     }
@@ -131,12 +121,11 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--component", type=int, default=5)
     ap.add_argument("--mask", type=int, default=0)
-    ap.add_argument("--branch", choices=tuple(SURVIVING_Z0_BRANCHES), action="append")
+    ap.add_argument("--branch", choices=tuple(ZERO_BRANCHES), action="append")
     args = ap.parse_args()
-
-    names = args.branch or list(SURVIVING_Z0_BRANCHES)
+    names = args.branch or list(ZERO_BRANCHES)
     for name in names:
-        compile_specialized(args.component, args.mask, name, SURVIVING_Z0_BRANCHES[name])
+        compile_specialized(args.component, args.mask, name, ZERO_BRANCHES[name])
 
 
 if __name__ == "__main__":
