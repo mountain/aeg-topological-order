@@ -1,22 +1,18 @@
-"""Gauge audit for the two-dimensional epsilon=-1 E solution space.
+"""Audit the two-dimensional epsilon=-1 E solution space.
 
-After exact D closure every deep-frontier branch has E rank 126 / nullity 2.
-This script checks whether that entire E freedom is the residual scalar gauge
-left by the irreducible Clifford multiplicity fibers and the connected cross-D
-transport graph.
+The first hypothesis was that E nullity 2 came from scalar gauge on the two
+Clifford transport K4 orbits.  A clean replay falsified that hypothesis: the
+standard trivalent gauge character of every nonzero E entry is (0,0).
 
-The eight multiplicity-two spaces carry irreducible Pauli triples, so their
-commutant is scalar.  Cross-D transport has two connected K4 orbits.  Therefore
-there are two candidate residual scalar gauge parameters.  We compute their
-characters on every E entry from the standard trivalent-basis gauge formula and
-compare the resulting character decomposition with the exact two-dimensional E
-weighted solution space.
+This file now records that negative result and freezes the structure actually
+needed by Phase 4.  The exact support-two E equations split the 128 entries into
+two free weighted components.  Hence every E entry is 0 or a fixed exact
+coefficient times one of two parameters p,q.  Every required 2x2 determinant
+is checked to be a nonzero monomial in p,q.  Therefore the E-invertible locus
+is a nonempty algebraic torus obtained by excluding coordinate zero sets, but
+we do NOT identify these parameters as gauge.
 
-If the two nonzero character pieces span the E nullspace and the character
-matrix has rank two, every E solution with both pieces nonzero is gauge-
-equivalent.  Invertibility of the required E blocks is then a gauge-invariant
-property, allowing one generic exact E representative to be used in the later
-F-linear analysis.
+Consequently F coherence must be analyzed symbolically over p,q.
 """
 from __future__ import annotations
 
@@ -61,12 +57,7 @@ def mult_orbit(a, b, c):
 
 
 def entry_character(key, row, col):
-    """Residual scalar-gauge character of one E entry.
-
-    The convention is source-basis exponents minus target-basis exponents.
-    Reversing the convention negates every character and leaves all rank and
-    orbit conclusions unchanged.
-    """
+    """Naive scalar gauge character from multiplicity-two orbit scalings."""
     a, b, c, d = key
     src, tgt = bases(key)
     e, _alpha, _beta = src[col]
@@ -84,94 +75,60 @@ def entry_character(key, row, col):
     return tuple(char)
 
 
-def flatten_edata(edata):
-    v = [sp.Integer(0)] * 128
-    for key in ef.E_KEYS:
-        base = 4 * ef.E_INDEX[key]
-        Mx = edata[key]
-        v[base:base + 4] = [Mx[0, 0], Mx[0, 1], Mx[1, 0], Mx[1, 1]]
-    return v
-
-
-def vector_to_edata(v):
-    out = {}
-    for key in ef.E_KEYS:
-        base = 4 * ef.E_INDEX[key]
-        out[key] = sp.Matrix([[v[base], v[base + 1]], [v[base + 2], v[base + 3]]])
-    return out
+def monomial_signature(expr, params):
+    expr = sp.factor(sp.expand(expr))
+    poly = sp.Poly(expr, *params)
+    terms = poly.terms()
+    if len(terms) != 1:
+        return None
+    powers, coeff = terms[0]
+    return tuple(int(x) for x in powers), sp.cancel(coeff)
 
 
 def solve_branch(cid, mask):
-    result, pack = ef.solve_branch(cid, mask)
-    if pack is None or result["status"] != "E_PASS":
-        raise RuntimeError(("branch does not reach invertible E", cid, mask, result))
-    scalar, ddata, edata = pack
-    uf, _support, _total, _neq, _prov = ef.build_weighted_system(scalar, ddata)
-    roots = uf.free_roots()
-    assert len(roots) == 2, (cid, mask, roots)
+    scalar, ddata, d_root_group = ef.exact_d_data(cid, mask)
+    uf, support, _total, n_eq, _prov = ef.build_weighted_system(scalar, ddata)
+    roots, params, mats, dets = ef.parametric_blocks(uf)
+    if len(roots) != 2:
+        raise RuntimeError(("expected E nullity two", cid, mask, roots))
 
-    v = flatten_edata(edata)
-    char_entries = defaultdict(list)
+    # Negative gauge check: the orbit-scalar characters all cancel on E.
+    nonzero_chars = Counter()
     for key in ef.E_KEYS:
         base = 4 * ef.E_INDEX[key]
         for row in range(2):
             for col in range(2):
-                i = base + 2 * row + col
-                if v[i] != 0:
-                    char_entries[entry_character(key, row, col)].append(i)
+                r, _w = uf.find(base + 2 * row + col)
+                if not uf.forced[r]:
+                    nonzero_chars[entry_character(key, row, col)] += 1
+    if set(nonzero_chars) != {(0, 0)}:
+        raise RuntimeError(("unexpected nontrivial naive E gauge character", cid, mask, nonzero_chars))
 
-    chars = sorted(char_entries)
-    pieces = []
-    piece_edata = []
-    for ch in chars:
-        w = [sp.Integer(0)] * 128
-        for i in char_entries[ch]:
-            w[i] = v[i]
-        pieces.append(w)
-        piece_edata.append(vector_to_edata(w))
+    det_sigs = {}
+    for key, det in dets.items():
+        if det == 0:
+            raise RuntimeError(("E determinant identically zero", cid, mask, key))
+        sig = monomial_signature(det, params)
+        if sig is None:
+            raise RuntimeError(("E determinant is not a monomial", cid, mask, key, det))
+        powers, coeff = sig
+        if coeff == 0:
+            raise RuntimeError(("zero E determinant coefficient", cid, mask, key))
+        det_sigs[key] = (powers, coeff)
 
-    # Every character piece must separately solve the homogeneous E system.
-    for ch, wedata in zip(chars, piece_edata):
-        _checked, failures = ef.verify_e(scalar, ddata, wedata)
-        if failures:
-            raise RuntimeError(("gauge character piece does not solve E", cid, mask, ch, failures))
-
-    # The exact weighted solution has dimension two; the character pieces must
-    # therefore be exactly two independent directions.
-    if len(chars) != 2:
-        raise RuntimeError((
-            "expected exactly two nonzero E gauge characters",
-            cid, mask, chars,
-            {ch: len(indices) for ch, indices in char_entries.items()},
-        ))
-    char_matrix = sp.Matrix(chars)
-    char_rank = char_matrix.rank()
-    if char_rank != 2:
-        raise RuntimeError(("residual gauge characters not independent", cid, mask, chars, char_rank))
-
-    # Each invertible required E block must need both character pieces.  Hence
-    # the invertible locus is exactly the two-parameter torus where neither
-    # character coefficient vanishes.
-    det_profile = Counter()
-    for key in ef.E_KEYS:
-        Mfull = edata[key]
-        if sp.cancel(Mfull.det()) == 0:
-            raise RuntimeError(("reference E point unexpectedly singular", cid, mask, key))
-        for ci, pedata in enumerate(piece_edata):
-            det_profile[(ci, sp.cancel(pedata[key].det()) == 0)] += 1
-    if det_profile[(0, True)] != 32 or det_profile[(1, True)] != 32:
-        raise RuntimeError(("E determinant does not require both gauge pieces", cid, mask, det_profile))
-
+    exponent_profile = Counter(p for p, _c in det_sigs.values())
     out = {
         "component": cid,
         "mask": mask,
+        "D_root_group": d_root_group,
+        "E_equations": n_eq,
+        "E_support": dict(support),
         "E_nullity": len(roots),
-        "nonzero_gauge_characters": chars,
-        "character_matrix_rank": char_rank,
-        "piece_support_sizes": [len(x) for x in char_entries.values()],
-        "each_character_piece_solves_E": True,
-        "all_32_blocks_require_both_pieces_for_invertibility": True,
-        "status": "E_FREEDOM_IS_RESIDUAL_GAUGE",
+        "naive_orbit_gauge_character_profile": dict(nonzero_chars),
+        "naive_orbit_gauge_explains_nullity": False,
+        "determinant_monomial_exponent_profile": {str(k): v for k, v in exponent_profile.items()},
+        "all_32_determinants_nonzero_monomials": True,
+        "status": "E_TWO_PARAMETER_TORUS",
     }
     print(out, flush=True)
     return out
@@ -187,7 +144,7 @@ def main():
     for cid in components:
         for mask in masks:
             solve_branch(cid, mask)
-    print("RESULT: all requested E invertible loci are single residual-gauge orbits", flush=True)
+    print("RESULT: E nullity two is a genuine symbolic torus for Phase 4; the naive parity-orbit scalar gauge explanation is rejected", flush=True)
 
 
 if __name__ == "__main__":
