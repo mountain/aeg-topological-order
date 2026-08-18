@@ -11,9 +11,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  phase5-kernel-dev:
+  phase5-zero-gate:
     strategy:
-      max-parallel: 2
+      max-parallel: 1
       matrix:
         mask: [150, 255]
     runs-on: ubuntu-latest
@@ -25,6 +25,27 @@ jobs:
           python-version: '3.12'
       - name: Install exact dependencies
         run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Fresh compile Phase-5 kernel
+      - name: Audit F invertibility on z0-zero branches
         working-directory: experiments
-        run: python r22_epsminus_final_kernel.py --component 5 --mask ${{ matrix.mask }}
+        run: python r22_phase5_invertibility_probe.py --component 5 --mask ${{ matrix.mask }}
+      - name: Replay z0-zero branches through final pentagons
+        working-directory: experiments
+        run: python r22_phase5_zero_branch_probe.py --component 5 --mask ${{ matrix.mask }}
+
+  phase5-finite-gate:
+    strategy:
+      max-parallel: 1
+      matrix:
+        mask: [150, 255]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install exact dependencies
+        run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
+      - name: Audit all 18 finite Phase-5 strata
+        working-directory: experiments
+        run: python r22_phase5_component5_rest_audit.py --component 5 --mask ${{ matrix.mask }}
