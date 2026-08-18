@@ -7,8 +7,10 @@ Test the known Phase-2 survivor pairings
 
 without assuming that the pairing survives the later quotient construction.
 For each pair, rebuild the complete Phase-4 parametric quotient and compare every
-A--F associator entry under coefficientwise complex conjugation while keeping
-p,q and the ordered active F coordinates z_j as formal coordinates.
+non-unit A--F associator entry under coefficientwise complex conjugation while
+keeping p,q and the ordered active F coordinates z_j as formal coordinates.
+Unit associators are omitted because the final compiler inserts their canonical
+identity maps directly, independently of chirality.
 
 If every lower associator entry is conjugate in this common coordinate system,
 then every required F block is entrywise conjugate, hence its determinant and
@@ -27,7 +29,7 @@ from collections import Counter
 
 import r22_epsminus_final_kernel as fk
 import r22_phase5_monomial_lift as ml
-from r22_scale_audit import f_blocks, f_class
+from r22_scale_audit import ONE, f_blocks, f_class
 
 
 def gconj(c):
@@ -65,7 +67,11 @@ def lower_entry_audit(cid, left, right):
     total = 0
     f_total = 0
     f_mismatch = 0
+    skipped_unit = 0
     for a, b, c, d, dim in f_blocks():
+        if ONE in (a, b, c):
+            skipped_unit += dim * dim
+            continue
         key = (a, b, c, d)
         cl = f_class(key)
         if cl not in "ABCDEF":
@@ -93,6 +99,7 @@ def lower_entry_audit(cid, left, right):
                         })
     meta.update({
         "lower_entries_checked": total,
+        "unit_entries_skipped_as_canonical": skipped_unit,
         "class_counts": dict(class_counts),
         "required_F_entries_checked": f_total,
         "required_F_entry_mismatches": f_mismatch,
