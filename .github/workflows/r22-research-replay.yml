@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - agent/r22-scale-reduction-audit
+  pull_request:
+    branches:
+      - agent/levin-wen-plaquette-benchmark
   workflow_dispatch:
 
 jobs:
