@@ -20,7 +20,7 @@ For each source record:
 
 ---
 
-## Active ledger — Fibonacci F stage and braided follow-up
+## Active ledger — Fibonacci F stage, braiding, and string-net compilation
 
 ### Aboumrad 2022 — multiplicity-free F/R framework and solver baseline
 
@@ -32,12 +32,36 @@ For each source record:
 - **Not used as input:** any pre-tabulated numerical Fibonacci F/R values or preferred Fibonacci braid matrices.
 - **COMPUTATIONAL-CLAIM — benchmark relevance:** the paper emphasizes that hexagon equations are more localized than pentagons; this supports testing sparse/local equation organization but does not establish an AEG advantage.
 
-### Levin–Wen 2004 — string-net program
+### Levin–Wen 2004 — string-net Hamiltonian, plaquette baseline, and graphical certificate
 
-- **Source:** Michael A. Levin and Xiao-Gang Wen, *String-net condensation: A physical mechanism for topological phases*, arXiv:cond-mat/0404617.
-- **CLASSICAL — data used now:** none in the F/R reconstruction calculations.
-- **Comparison/later use:** target reference for the M6/T6 string-net compilation stage and for keeping the physical topological-order objective distinct from the associator/braiding benchmarks.
-- **No model-specific recoupling values** have been used to seed the F or R symbolic solves.
+- **Source:** Michael A. Levin and Xiao-Gang Wen, *String-net condensation: A physical mechanism for topological phases*, arXiv:cond-mat/0404617; Phys. Rev. B 71, 045110 (2005).
+- **CLASSICAL — algebraic data used:** the honeycomb/trivalent string-net Hamiltonian; vertex branching constraints; the plaquette decomposition `B_p = sum_s a_s B_p^s`; and Eq. (13), expressing a hexagonal `B_p^s` matrix element as a cyclic product of six local F-symbols.
+- **CLASSICAL — normalization used:** for the smooth topological phase, the coefficient of loop type `s` is proportional to its quantum dimension, `a_s = d_s / sum_i d_i^2`.
+- **CLASSICAL — algebra used as validation target:** loop-insertion operators compose according to the fusion rules, the quantum-dimension weighted `B_p` is a projector, and neighboring plaquette operators commute.
+- **CLASSICAL — graphical proof used in the certificate audit:** Appendix C, especially Figs. 17–18 and Eq. (C1). In the fattened-honeycomb representation, `B_p^s` is loop insertion followed by coherent reduction. For adjacent plaquettes, either operator order produces the same two-loop intermediate graphical state, so the two products have identical matrix elements.
+- **CLASSICAL — coherence boundary:** Appendix C states that reduction from the fattened lattice is independent of the particular local-rule reduction order when the local rules are self-consistent; Appendix B relates that self-consistency to the F-data relations.
+- **COMPUTATIONAL-CLAIM — project use:** `experiments/levin_wen_plaquette.py` verifies the single-plaquette fusion algebra/projector identities in all 64 hexagonal external-label sectors; `experiments/adjacent_plaquette_commutator.py` verifies neighboring commutation in all 256 external-label sectors; `experiments/plaquette_commutation_certificate.py` encodes the Appendix-C common-intermediate-diagram proof as a proof DAG.
+- **Research consequence:** the constant-size history certificate is already present in the classical graphical calculus; it is therefore a negative benchmark for AEG-specific proof compression.
+
+### Bonesteel–DiVincenzo 2012 — local F-move circuit baseline
+
+- **Source:** N. E. Bonesteel and D. P. DiVincenzo, *Quantum Circuits for Measuring Levin-Wen Operators*, arXiv:1206.6048; Phys. Rev. B 86, 165113 (2012).
+- **CLASSICAL — result relevant here:** the Fibonacci Levin–Wen vertex and plaquette operators can be measured/compiled using local categorical transformations, including explicit F-move circuits.
+- **CLASSICAL — complexity relevance:** the paper explicitly studies circuit/gate complexity rather than treating the plaquette as a naive dense matrix.
+- **Benchmark consequence:** an AEG history compiler must be compared with optimized local F-move/circuit formulations, not only with full matrix materialization.
+- **No new Fibonacci constants** are imported from this source for the plaquette experiment; the project uses its already-frozen F-stage gauge.
+
+### Gu–Levin–Swingle–Wen 2008 — tensor-product string-net representation
+
+- **Source:** Zheng-Cheng Gu, Michael Levin, Brian Swingle, Xiao-Gang Wen, *Tensor-product representations for string-net condensed states*, arXiv:0809.2821.
+- **CLASSICAL — result relevant here:** general string-net condensed states admit natural tensor-product-state representations built from local tensors.
+- **Originality consequence:** locality and compact tensor-network representation of string-net data are established prior art; an O(n) local factor representation of an n-gon plaquette is not by itself an AEG novelty.
+
+### Buerschaper–Aguado–Vidal 2008 — explicit string-net tensor network
+
+- **Source:** O. Buerschaper, M. Aguado, G. Vidal, *Explicit tensor network representation for the ground states of string-net models*, arXiv:0809.2393.
+- **CLASSICAL — result relevant here:** string-net ground states have explicit tensor-network representations constructed from the underlying tensor-category data.
+- **Originality consequence:** a history DAG that canonicalizes to the same local tensor network must be treated as a reformulation unless it supplies additional proof/provenance functionality with measurable value.
 
 ### Trebst--Troyer--Wang--Ludwig 2009 — post-freeze Fibonacci F comparison
 
@@ -45,7 +69,7 @@ For each source record:
 - **CLASSICAL — comparison data:** fusion-tree basis, F-moves, pentagon consistency, basis order `\{1,\tau\}`, standard trivial-F normalization, and the standard nontrivial unitary Fibonacci F block.
 - **Comparison status:** **comparison-only for explicit Fibonacci constants**; opened only after `notes/01-blind-fibonacci-pentagon.md` and the blind engine had been frozen in Git history.
 - **COMPUTATIONAL-CLAIM — F comparison result:** our real symmetric unitary gauge agrees entry-for-entry after identifying `a=(sqrt(5)-1)/2=phi^{-1}` and `sqrt(a)=phi^{-1/2}`.
-- **R-isolation warning:** the same source continues to explicit R/hexagon material. Therefore the current lineage is not eligible to claim a blind R reconstruction. Explicit standard R-values remain intentionally absent from the repository.
+- **R-isolation warning:** the same source continues to explicit R/hexagon material. Therefore the braided lineage is not eligible to claim a blind R reconstruction. Explicit standard R-values remain intentionally absent from the repository.
 
 ### Moriwaki 2022 — parenthesized braid operad originality audit
 
@@ -77,3 +101,4 @@ For each source record:
 - **CLASSICAL.** The F comparison records basis order, vertex gauge, and unitary/normalization conventions in `notes/03-f-comparison-gate-and-r-isolation.md`.
 - **PROTOCOL.** The symbolic R/hexagon derivation in `notes/04-symbolic-braiding-history-quotient.md` contains no explicit standard R constants but is **not blind**, because its workstream descends from the source-exposed F-comparison session.
 - **PROTOCOL.** Any future claim of blind Fibonacci R reconstruction requires a genuinely independent workstream that receives only the fusion grammar and frozen F-data and does not open explicit Fibonacci R-symbols, braid matrices, modular data, or topological-spin data before its solve is frozen.
+- **CLASSICAL.** The Levin–Wen/string-net stage is not a reconstruction gate: the plaquette formula and graphical proof are intentionally used as the physical/categorical baseline. Any AEG claim must be an enrichment, representation, compilation, or certificate claim measured against that optimized baseline.
