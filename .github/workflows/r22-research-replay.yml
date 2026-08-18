@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  component13-mask0-q-rank11-certificate:
+  component13-mask0-rank10-residual:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -21,6 +21,6 @@ jobs:
           python-version: '3.12'
       - name: Install exact dependencies
         run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Verify all four q-side rank-11 one-cell certificates
+      - name: Compile representative rank-10 residual kernel
         working-directory: experiments
-        run: python r22_phase5_component13_mask0_q_rank11_certificate.py
+        run: python r22_phase5_component13_mask0_residual_scan.py --a 1 --b 1 --sign +
