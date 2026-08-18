@@ -24,3 +24,6 @@ jobs:
       - name: Compile fresh final nonlinear kernel on component 5 mask 0
         working-directory: experiments
         run: python r22_epsminus_final_kernel.py --component 5 --mask 0
+      - name: Probe invertibility-forced Phase-5 localizations
+        working-directory: experiments
+        run: python r22_phase5_invertibility_probe.py --component 5 --mask 0
