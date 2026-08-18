@@ -21,6 +21,6 @@ jobs:
           python-version: '3.12'
       - name: Install exact dependencies
         run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Compile first six-variable finite Phase-5 subbranch
+      - name: Audit fourth local entry on all final finite Phase-5 branches
         working-directory: experiments
-        run: python r22_phase5_rankdrop_second.py --component 5 --mask 0 --a 2 --b 1 --root positive --sign 1
+        run: python r22_phase5_fourth_entry_audit.py --component 5 --mask 0
