@@ -20,7 +20,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Install exact dependencies
-        run: python -m pip install --disable-pip-version-check numpy sympy
+        run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
       - name: Run R22 scale audit
         working-directory: experiments
         run: python r22_scale_audit.py
@@ -37,3 +37,6 @@ jobs:
             echo "=== component ${cid} ==="
             python r22_epsminus_d_trace.py --component "${cid}" --assert-trace
           done
+      - name: Close exact D amplitudes on all 16 Phase-1 survivors
+        working-directory: experiments
+        run: python r22_epsminus_d_amplitude.py
