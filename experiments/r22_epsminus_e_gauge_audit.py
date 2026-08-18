@@ -61,10 +61,11 @@ def mult_orbit(a, b, c):
 
 
 def entry_character(key, row, col):
-    """Gauge character using source-minus-target basis exponents.
+    """Residual scalar-gauge character of one E entry.
 
-    Reversing this convention negates every character and does not affect the
-    rank/transitivity conclusion.
+    The convention is source-basis exponents minus target-basis exponents.
+    Reversing the convention negates every character and leaves all rank and
+    orbit conclusions unchanged.
     """
     a, b, c, d = key
     src, tgt = bases(key)
@@ -121,41 +122,43 @@ def solve_branch(cid, mask):
 
     chars = sorted(char_entries)
     pieces = []
+    piece_edata = []
     for ch in chars:
         w = [sp.Integer(0)] * 128
         for i in char_entries[ch]:
             w[i] = v[i]
         pieces.append(w)
+        piece_edata.append(vector_to_edata(w))
 
     # Every character piece must separately solve the homogeneous E system.
-    piece_checks = []
-    for ch, w in zip(chars, pieces):
-        wedata = vector_to_edata(w)
-        checked, failures = ef.verify_e(scalar, ddata, wedata)
-        piece_checks.append((ch, checked, failures))
+    for ch, wedata in zip(chars, piece_edata):
+        _checked, failures = ef.verify_e(scalar, ddata, wedata)
         if failures:
             raise RuntimeError(("gauge character piece does not solve E", cid, mask, ch, failures))
 
     # The exact weighted solution has dimension two; the character pieces must
     # therefore be exactly two independent directions.
     if len(chars) != 2:
-        raise RuntimeError(("expected exactly two E gauge characters", cid, mask, chars, Counter(map(entry_character, [], []))))
+        raise RuntimeError((
+            "expected exactly two nonzero E gauge characters",
+            cid, mask, chars,
+            {ch: len(indices) for ch, indices in char_entries.items()},
+        ))
     char_matrix = sp.Matrix(chars)
     char_rank = char_matrix.rank()
     if char_rank != 2:
         raise RuntimeError(("residual gauge characters not independent", cid, mask, chars, char_rank))
 
-    # Check that every invertible required E block uses both character pieces:
-    # its determinant must vanish when either piece is removed.  This makes the
-    # invertible locus exactly the (C*)^2 region of the two-dimensional space.
+    # Each invertible required E block must need both character pieces.  Hence
+    # the invertible locus is exactly the two-parameter torus where neither
+    # character coefficient vanishes.
     det_profile = Counter()
     for key in ef.E_KEYS:
         Mfull = edata[key]
         if sp.cancel(Mfull.det()) == 0:
             raise RuntimeError(("reference E point unexpectedly singular", cid, mask, key))
-        for ci, w in enumerate(pieces):
-            Mpiece = vector_to_edata(w)[key]
-            det_profile[(ci, sp.cancel(Mpiece.det()) == 0)] += 1
+        for ci, pedata in enumerate(piece_edata):
+            det_profile[(ci, sp.cancel(pedata[key].det()) == 0)] += 1
     if det_profile[(0, True)] != 32 or det_profile[(1, True)] != 32:
         raise RuntimeError(("E determinant does not require both gauge pieces", cid, mask, det_profile))
 
@@ -165,6 +168,7 @@ def solve_branch(cid, mask):
         "E_nullity": len(roots),
         "nonzero_gauge_characters": chars,
         "character_matrix_rank": char_rank,
+        "piece_support_sizes": [len(x) for x in char_entries.values()],
         "each_character_piece_solves_E": True,
         "all_32_blocks_require_both_pieces_for_invertibility": True,
         "status": "E_FREEDOM_IS_RESIDUAL_GAUGE",
