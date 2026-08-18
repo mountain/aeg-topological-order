@@ -1,0 +1,30 @@
+name: R22 research replay
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: r22-research-pr-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  phase5-kernel-dev:
+    strategy:
+      max-parallel: 2
+      matrix:
+        mask: [150, 255]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install exact dependencies
+        run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
+      - name: Fresh compile Phase-5 kernel
+        working-directory: experiments
+        run: python r22_epsminus_final_kernel.py --component 5 --mask ${{ matrix.mask }}
