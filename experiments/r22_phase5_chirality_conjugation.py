@@ -24,10 +24,8 @@ from __future__ import annotations
 
 import argparse
 from collections import Counter
-from fractions import Fraction
 
 import r22_epsminus_final_kernel as fk
-import r22_epsminus_f_parametric as fp
 import r22_phase5_monomial_lift as ml
 from r22_scale_audit import f_blocks, f_class
 
@@ -67,19 +65,20 @@ def lower_entry_audit(cid, left, right):
     total = 0
     f_total = 0
     f_mismatch = 0
-    for key, dim in f_blocks():
+    for a, b, c, d, dim in f_blocks():
+        key = (a, b, c, d)
         cl = f_class(key)
         if cl not in "ABCDEF":
             continue
         for row in range(dim):
             for col in range(dim):
-                a = ql["lower_entry"](key, row, col)
-                b = qr["lower_entry"](key, row, col)
+                lhs = ql["lower_entry"](key, row, col)
+                rhs = qr["lower_entry"](key, row, col)
                 total += 1
                 class_counts[cl] += 1
                 if cl == "F":
                     f_total += 1
-                if pconj(a) != b:
+                if pconj(lhs) != rhs:
                     if cl == "F":
                         f_mismatch += 1
                     if len(mismatches) < 24:
@@ -89,8 +88,8 @@ def lower_entry_audit(cid, left, right):
                             "key": key,
                             "row": row,
                             "col": col,
-                            "conjugate_left": pconj(a),
-                            "right": b,
+                            "conjugate_left": pconj(lhs),
+                            "right": rhs,
                         })
     meta.update({
         "lower_entries_checked": total,
