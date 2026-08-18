@@ -30,6 +30,10 @@ jobs:
       - name: Run PAL edge-relation geometry
         working-directory: experiments
         run: python r22_pal_edge_geometry.py
-      - name: Run fresh epsilon-minus D trace on canonical component 13
+      - name: Run fresh epsilon-minus D traces on all frontier components
         working-directory: experiments
-        run: python r22_epsminus_d_trace.py --component 13 --assert-trace
+        run: |
+          for cid in 5 7 13 15; do
+            echo "=== component ${cid} ==="
+            python r22_epsminus_d_trace.py --component "${cid}" --assert-trace
+          done
