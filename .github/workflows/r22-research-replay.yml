@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  phase5-coordinate-stability:
+  phase5-mask150-coordinate-stability:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -21,6 +21,6 @@ jobs:
           python-version: '3.12'
       - name: Install exact dependencies
         run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Audit F-coordinate stability across Python hash seeds
+      - name: Audit mask 150 F-coordinate stability across Python hash seeds
         working-directory: experiments
-        run: python r22_phase5_coordinate_stability.py --component 5
+        run: python r22_phase5_coordinate_stability.py --component 5 --mask 150 --seed 1 --seed 2 --seed 17
