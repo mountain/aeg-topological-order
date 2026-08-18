@@ -78,7 +78,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Install exact dependencies
-        run: python -m pip install --disable-pip-check numpy sympy z3-solver
+        run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
       - name: Verify exact 10+8 finite-stratum census
         working-directory: experiments
         run: |
