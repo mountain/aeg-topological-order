@@ -43,9 +43,6 @@ jobs:
       - name: Run complete E-layer filter on all D survivors
         working-directory: experiments
         run: python r22_epsminus_e_filter.py
-      - name: Prove E nullity is residual gauge on all 16 branches
+      - name: Audit the exact two-parameter E torus
         working-directory: experiments
         run: python r22_epsminus_e_gauge_audit.py
-      - name: Run F-linear weighted filter after E gauge gate
-        working-directory: experiments
-        run: python r22_epsminus_f_filter.py
