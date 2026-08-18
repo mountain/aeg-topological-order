@@ -1,7 +1,5 @@
 """Fresh canonical epsilon=-1 D chirality trace for R(2,2).
 
-Purpose
--------
 Rebuild the finite Clifford branch localization from the original multiplicity-
 aware pentagon engine, using the full-C* scalar canonical representatives.
 This script does not inherit the superseded D-amplitude verdict in note 15.
@@ -16,6 +14,10 @@ chirality masks it:
 4. classifies immediate one-monomial contradictions;
 5. otherwise detects exact phase conflicts in which the same amplitude
    monomial ratio is required to take two different values.
+
+Projective shapes are cached by the *local* chirality signature actually read
+by the corresponding singleton pentagons.  Thus the 256-mask replay does not
+repeat identical 4-variable nullspace calculations.
 
 The intended fresh trace is 256 -> 64 -> 4, but the script treats that as an
 assertion to be replayed rather than an input assumption.
@@ -43,23 +45,28 @@ CROSS_KEYS = sorted(DSET - SEED_KEYS)
 assert len(SEED_KEYS) == 24 and len(CROSS_KEYS) == 48
 T_INDEX = {k: i for i, k in enumerate(CROSS_KEYS)}
 TVARS = sp.symbols("t0:48", nonzero=True)
+TVAR_INDEX = {t: i for i, t in enumerate(TVARS)}
 
 EPS_INDEX = SC_INDEX[("h", "X", "h", "X")]
 EPS_MINUS = [i for i, r in enumerate(COMPONENT_REPS) if ((r >> EPS_INDEX) & 1) == 1]
 assert EPS_MINUS == [4, 5, 6, 7, 12, 13, 14, 15]
 
+SCALAR_CACHE = {}
+SHAPE_CACHE = {}
+
 
 def scalar_assignment(cid: int):
-    bits = COMPONENT_REPS[cid]
-    return {k: (-1 if ((bits >> SC_INDEX[k]) & 1) else 1) for k in SC_KEYS}
+    if cid not in SCALAR_CACHE:
+        bits = COMPONENT_REPS[cid]
+        SCALAR_CACHE[cid] = {k: (-1 if ((bits >> SC_INDEX[k]) & 1) else 1) for k in SC_KEYS}
+    return SCALAR_CACHE[cid]
 
 
 def chirality_assignment(mask: int):
     return {s: (-1 if ((mask >> SPACE_INDEX[s]) & 1) else 1) for s in SPACES}
 
 
-def seed_assignment(mask: int):
-    chir = chirality_assignment(mask)
+def seed_assignment_from_chirality(chir):
     out = {}
     for key in SEED_KEYS:
         space, pos = underlying_h_space(key)
@@ -69,6 +76,7 @@ def seed_assignment(mask: int):
 
 def build_projective_cases():
     by = defaultdict(list)
+    read_spaces = defaultdict(set)
     for p in pentagon_blocks():
         if ONE in p[:4] or not layer_spec("D", p):
             continue
@@ -79,8 +87,12 @@ def build_projective_cases():
         target = next(iter(rem))
         registry, _mats, diff = pentagon(dict(zip("abcd", p[:4])), p[4])
         by[target].append((p, registry, diff))
+        for (meta, _sym) in registry.symbols.items():
+            key, _row, _col = meta
+            if key in SEED_KEYS:
+                read_spaces[target].add(underlying_h_space(key)[0])
     assert set(by) == set(CROSS_KEYS)
-    return by
+    return by, {k: tuple(sorted(read_spaces[k])) for k in CROSS_KEYS}
 
 
 def build_full_d_cases():
@@ -93,7 +105,7 @@ def build_full_d_cases():
     return out
 
 
-PROJECTIVE_CASES = build_projective_cases()
+PROJECTIVE_CASES, PROJECTIVE_READ_SPACES = build_projective_cases()
 FULL_D_CASES = build_full_d_cases()
 
 
@@ -117,76 +129,116 @@ def registry_sub(registry, scalar, ddata, leave=None):
     return sub, unknown
 
 
+def _projective_shape(cid: int, target, chir, seeds, scalar):
+    signature = tuple(chir[s] for s in PROJECTIVE_READ_SPACES[target])
+    cache_key = (cid, target, signature)
+    if cache_key in SHAPE_CACHE:
+        return SHAPE_CACHE[cache_key]
+
+    equations = []
+    pos = {}
+    syms = set()
+    for _p, registry, diff in PROJECTIVE_CASES[target]:
+        sub, unknown = registry_sub(registry, scalar, seeds, leave=target)
+        for sym, r, c in unknown:
+            syms.add(sym)
+            pos[sym] = (r, c)
+        value = diff.applyfunc(lambda e: e.xreplace(sub))
+        equations.extend(sp.expand(e) for e in value if e != 0)
+
+    syms = sorted(syms, key=str)
+    if len(syms) != 4:
+        result = (None, ("projective_symbol_count", target, len(syms)))
+        SHAPE_CACHE[cache_key] = result
+        return result
+    A, b = sp.linear_eq_to_matrix(equations, syms)
+    if b != sp.zeros(len(equations), 1):
+        result = (None, ("projective_inhomogeneous", target))
+        SHAPE_CACHE[cache_key] = result
+        return result
+    ns = A.nullspace()
+    if len(ns) != 1:
+        result = (None, ("projective_nullity", target, len(ns)))
+        SHAPE_CACHE[cache_key] = result
+        return result
+
+    v = ns[0]
+    first = next((x for x in v if x != 0), None)
+    if first is None:
+        result = (None, ("projective_zero", target))
+        SHAPE_CACHE[cache_key] = result
+        return result
+    v = v / first
+    T = sp.zeros(2)
+    for sym, val in zip(syms, v):
+        T[pos[sym]] = sp.cancel(val)
+    if sp.cancel(T.det()) == 0:
+        result = (None, ("projective_singular", target, T))
+        SHAPE_CACHE[cache_key] = result
+        return result
+
+    result = (T, None)
+    SHAPE_CACHE[cache_key] = result
+    return result
+
+
 def projective_shapes(cid: int, mask: int):
     scalar = scalar_assignment(cid)
-    seeds = seed_assignment(mask)
+    chir = chirality_assignment(mask)
+    seeds = seed_assignment_from_chirality(chir)
     shapes = {}
     for target in CROSS_KEYS:
-        equations = []
-        pos = {}
-        syms = set()
-        for _p, registry, diff in PROJECTIVE_CASES[target]:
-            sub, unknown = registry_sub(registry, scalar, seeds, leave=target)
-            for sym, r, c in unknown:
-                syms.add(sym)
-                pos[sym] = (r, c)
-            value = diff.subs(sub)
-            equations.extend(sp.expand(e) for e in value if e != 0)
-        syms = sorted(syms, key=str)
-        if len(syms) != 4:
-            return None, ("projective_symbol_count", target, len(syms))
-        A, b = sp.linear_eq_to_matrix(equations, syms)
-        if b != sp.zeros(len(equations), 1):
-            return None, ("projective_inhomogeneous", target)
-        ns = A.nullspace()
-        if len(ns) != 1:
-            return None, ("projective_nullity", target, len(ns))
-        v = ns[0]
-        first = next((x for x in v if x != 0), None)
-        if first is None:
-            return None, ("projective_zero", target)
-        v = sp.simplify(v / first)
-        T = sp.zeros(2)
-        for sym, val in zip(syms, v):
-            T[pos[sym]] = sp.simplify(val)
-        if sp.simplify(T.det()) == 0:
-            return None, ("projective_singular", target, T)
+        T, err = _projective_shape(cid, target, chir, seeds, scalar)
+        if err is not None:
+            return None, err
         shapes[target] = T
     return shapes, None
 
 
 def term_signature(term):
     pd = term.as_powers_dict()
-    exp = [0] * 48
+    exp = {}
     coeff = term
-    for i, t in enumerate(TVARS):
-        p = pd.get(t, 0)
+    for sym, p in pd.items():
+        i = TVAR_INDEX.get(sym)
+        if i is None:
+            continue
+        if not p.is_Integer:
+            raise RuntimeError(("noninteger amplitude power", term, sym, p))
+        p = int(p)
         if p:
-            if not p.is_Integer:
-                raise RuntimeError(("noninteger amplitude power", term, t, p))
-            p = int(p)
             exp[i] = p
-            coeff /= t ** p
-    coeff = sp.simplify(coeff)
+            coeff /= sym ** p
+    coeff = sp.cancel(coeff)
     if coeff.free_symbols:
         raise RuntimeError(("unexpected free symbols", coeff.free_symbols, term))
-    return tuple(exp), coeff
+    return tuple(sorted(exp.items())), coeff
+
+
+def exponent_difference(e1, e2):
+    d = defaultdict(int)
+    for i, p in e1:
+        d[i] += p
+    for i, p in e2:
+        d[i] -= p
+    return tuple((i, p) for i, p in sorted(d.items()) if p)
 
 
 def normalize_ratio(e1, c1, e2, c2):
     # c1*m1 + c2*m2 = 0  =>  m1/m2 = -c2/c1.
-    d = tuple(a - b for a, b in zip(e1, e2))
-    ratio = sp.simplify(-c2 / c1)
-    first = next((x for x in d if x), 0)
+    d = exponent_difference(e1, e2)
+    ratio = sp.cancel(-c2 / c1)
+    first = d[0][1] if d else 0
     if first < 0:
-        d = tuple(-x for x in d)
-        ratio = sp.simplify(1 / ratio)
+        d = tuple((i, -p) for i, p in d)
+        ratio = sp.cancel(1 / ratio)
     return d, ratio
 
 
 def classify_mask(cid: int, mask: int):
     scalar = scalar_assignment(cid)
-    seeds = seed_assignment(mask)
+    chir = chirality_assignment(mask)
+    seeds = seed_assignment_from_chirality(chir)
     shapes, err = projective_shapes(cid, mask)
     if err is not None:
         return "projective", {"error": repr(err)}
@@ -200,19 +252,22 @@ def classify_mask(cid: int, mask: int):
     for p, registry, diff in FULL_D_CASES:
         sub, unknown = registry_sub(registry, scalar, ddata)
         assert not unknown
-        value = diff.subs(sub)
+        value = diff.applyfunc(lambda e: e.xreplace(sub))
         for i in range(value.rows):
             for j in range(value.cols):
                 expr = sp.expand(value[i, j])
                 if expr == 0:
                     continue
                 checked_entries += 1
-                terms = [term_signature(t) for t in sp.Add.make_args(expr)]
-                # Combine identical amplitude monomials exactly.
                 comb = defaultdict(lambda: sp.Integer(0))
-                for e, c in terms:
-                    comb[e] = sp.simplify(comb[e] + c)
-                terms = [(e, sp.simplify(c)) for e, c in comb.items() if sp.simplify(c) != 0]
+                for term in sp.Add.make_args(expr):
+                    e, c = term_signature(term)
+                    comb[e] += c
+                terms = []
+                for e, c in comb.items():
+                    c = sp.cancel(c)
+                    if c != 0:
+                        terms.append((e, c))
                 if not terms:
                     continue
                 if len(terms) == 1:
@@ -229,7 +284,14 @@ def classify_mask(cid: int, mask: int):
                     }
                 (e1, c1), (e2, c2) = terms
                 key, ratio = normalize_ratio(e1, c1, e2, c2)
-                if key in ratios and sp.simplify(ratios[key][0] - ratio) != 0:
+                if not key:
+                    # Same monomial after combination should have disappeared.
+                    return "structural", {
+                        "pentagon": p[:5], "entry": (i, j),
+                        "coefficient": str(sp.cancel(c1 + c2)),
+                        "checked_entries": checked_entries,
+                    }
+                if key in ratios and sp.cancel(ratios[key][0] - ratio) != 0:
                     prev_ratio, prev_meta = ratios[key]
                     return "phase", {
                         "pentagon": p[:5], "entry": (i, j),
@@ -253,9 +315,10 @@ def run_component(cid: int, start: int = 0, stop: int = 256):
             survivors.append(mask)
         examples.setdefault(stage, (mask, meta))
         if (mask + 1) % 32 == 0:
-            print("progress", cid, mask + 1, dict(counts), "survivors", survivors)
+            print("progress", cid, mask + 1, dict(counts), "survivors", survivors, flush=True)
     print("component", cid, "counts", dict(counts))
     print("component", cid, "survivors", survivors)
+    print("projective shape cache entries", len(SHAPE_CACHE))
     for k, v in examples.items():
         print("example", k, v)
     return counts, survivors
