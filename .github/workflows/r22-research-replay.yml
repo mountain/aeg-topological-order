@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  mask150-coordinate-stability:
+  mask255-coordinate-stability:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -21,18 +21,18 @@ jobs:
           python-version: '3.12'
       - name: Install exact dependencies
         run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Verify mask 150 F-coordinate stability
+      - name: Verify mask 255 F-coordinate stability
         working-directory: experiments
         run: |
           python - <<'PY'
           import r22_phase5_coordinate_stability as cs
-          summary = cs.audit(5, [150], [1, 2, 17])
+          summary = cs.audit(5, [255], [1, 2, 17])
           if not summary['all_stable']:
               raise AssertionError(summary)
           PY
 
-  mask150-local-relations:
-    needs: mask150-coordinate-stability
+  mask255-local-relations:
+    needs: mask255-coordinate-stability
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -44,10 +44,10 @@ jobs:
         run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
       - name: Derive five local relations from exact pentagon entries
         working-directory: experiments
-        run: python r22_phase5_component5_local_relations.py --component 5 --mask 150
+        run: python r22_phase5_component5_local_relations.py --component 5 --mask 255
 
-  mask150-zero-closure:
-    needs: mask150-local-relations
+  mask255-zero-closure:
+    needs: mask255-local-relations
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -63,13 +63,13 @@ jobs:
           python - <<'PY'
           import r22_phase5_zero_closure as zc
           branches = ['A', 'ZB', 'ZC', 'D']
-          summary = zc.audit(5, 150, branches)
+          summary = zc.audit(5, 255, branches)
           if summary['closed'] != 4 or summary['total'] != 4 or summary['survivors']:
               raise AssertionError(summary)
           PY
 
-  mask150-finite-census:
-    needs: mask150-zero-closure
+  mask255-finite-census:
+    needs: mask255-zero-closure
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -78,13 +78,13 @@ jobs:
         with:
           python-version: '3.12'
       - name: Install exact dependencies
-        run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
+        run: python -m pip install --disable-pip-check numpy sympy z3-solver
       - name: Verify exact 10+8 finite-stratum census
         working-directory: experiments
         run: |
           python - <<'PY'
           import r22_phase5_component5_rest_audit as fa
-          summary = fa.audit_mask(5, 150)
+          summary = fa.audit_mask(5, 255)
           expected = {
               (a, b, root)
               for (a, b) in ((1,1), (2,1), (1,2), (2,2))
@@ -105,8 +105,8 @@ jobs:
               raise AssertionError((summary['rank_profile'], expected_ranks))
           PY
 
-  mask150-rankdrop-certificate:
-    needs: mask150-finite-census
+  mask255-rankdrop-certificate:
+    needs: mask255-finite-census
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -118,4 +118,4 @@ jobs:
         run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
       - name: Verify all eight rank-drop local certificates
         working-directory: experiments
-        run: python r22_phase5_component5_rest_certificate.py --component 5 --mask 150
+        run: python r22_phase5_component5_rest_certificate.py --component 5 --mask 255
