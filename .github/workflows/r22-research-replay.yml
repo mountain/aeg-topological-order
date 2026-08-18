@@ -27,3 +27,6 @@ jobs:
       - name: Probe invertibility-forced Phase-5 localizations
         working-directory: experiments
         run: python r22_phase5_invertibility_probe.py --component 5 --mask 0
+      - name: Probe surviving z0-zero branches
+        working-directory: experiments
+        run: python r22_phase5_zero_branch_probe.py --component 5 --mask 0
