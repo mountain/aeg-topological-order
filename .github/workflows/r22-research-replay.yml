@@ -24,6 +24,6 @@ jobs:
       - name: Compile fresh final nonlinear kernel on component 5 mask 0
         working-directory: experiments
         run: python r22_epsminus_final_kernel.py --component 5 --mask 0
-      - name: Search monomial-relation lift for local certificates
+      - name: Reduce kernel by the five exact local relations
         working-directory: experiments
-        run: python r22_phase5_monomial_lift.py --component 5 --mask 0
+        run: python r22_phase5_local_rewrite.py --component 5 --mask 0
