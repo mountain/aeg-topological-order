@@ -1,16 +1,21 @@
-"""Exact linear closure on the positive constructive Phase-5 stratum.
+"""Exact affine closure on either Gaussian-rational Phase-5 z0 root.
 
-Start from the specialized component-5/mask-0 kernel with
+Fix
 
-    p=-(1+i)/2, q=(1-i)/2, z0=1/(2+sqrt(6)).
+    p=-(1+i)/2, q=(1-i)/2,
 
-The local certificate proves z1,z2,z3,z8 are nonzero.  For each specialized
+and choose either root of
+
+    2*z0^2+4*z0-1=0.
+
+The local certificate proves z1,z2,z3,z8 are nonzero. For every specialized
 kernel polynomial, divide only by the common monomial in those four variables.
 Whenever the residual equation is affine-linear in z1,...,z20, add it to one
 exact linear system over Q(i,sqrt(6)).
 
 This is safe localization plus ordinary Gaussian elimination, not a nonlinear
-solver.  The output gives rank, free variables and exact pivot expressions.
+solver. Running both roots independently audits whether the affine formulas are
+really one z0-parametric family rather than an artifact of the positive root.
 """
 from __future__ import annotations
 
@@ -24,7 +29,6 @@ import r22_phase5_local_rewrite as lr
 import r22_phase5_monomial_lift as ml
 
 
-# z-indices are 1..20; tuple positions are 0..19.
 PROVED_NONZERO_Z = (1, 2, 3, 8)
 
 
@@ -63,14 +67,14 @@ def affine_row(poly):
     return coeff, -const
 
 
-def compile_specialized(cid, mask):
+def compile_specialized(cid, mask, z0_value):
     _quotient, unique = ml.compile_unique(cid, mask)
     rows = []
     provs = []
     profile = Counter()
     for key, prov in unique.items():
         reduced = lr.reduce_poly(key)
-        poly = xs.specialize_reduced(reduced, xs.Z0_POS)
+        poly = xs.specialize_reduced(reduced, z0_value)
         if not poly:
             continue
         stripped = strip_common_nonzero(poly)
@@ -89,15 +93,15 @@ def compile_specialized(cid, mask):
     return rows, provs, profile
 
 
-def analyze(cid, mask):
-    rows, provs, profile = compile_specialized(cid, mask)
+def analyze(cid, mask, root_name):
+    z0_value = xs.Z0_POS if root_name == "positive" else xs.Z0_NEG
+    rows, provs, profile = compile_specialized(cid, mask, z0_value)
     aug = sp.Matrix(rows)
     A = aug[:, :20]
-    b = aug[:, 20]
     rank_a = A.rank()
     rank_aug = aug.rank()
     if rank_a != rank_aug:
-        raise RuntimeError(("linear closure inconsistent", rank_a, rank_aug))
+        raise RuntimeError(("linear closure inconsistent", root_name, rank_a, rank_aug))
 
     rref, pivots_all = aug.rref()
     pivots = tuple(p for p in pivots_all if p < 20)
@@ -120,17 +124,40 @@ def analyze(cid, mask):
             else:
                 forced_constants[p + 1] = str(expr)
 
-    # Keep provenance of the shortest localized linear cells.  The RREF itself
-    # may combine many rows, so these are orientation aids, not a certificate
-    # of minimality.
     examples = [
         {"provenance": prov, "support": support}
         for prov, support in sorted(provs, key=lambda x: (len(x[1]), str(x[0])))[:24]
     ]
 
+    # Compare the RREF output with the concise z0-parametric formulas inferred
+    # from the positive root.  These equalities are assertions, not assumptions.
+    q = xs.Q
+    t = z0_value
+    z20 = zs[19]
+    expected = {
+        6: sp.Integer(0),
+        7: sp.Integer(0),
+        9: sp.Integer(0),
+        10: sp.Integer(0),
+        13: sp.I * t - z20,
+        14: -z20,
+        15: -q * t,
+        16: (-1 + sp.I) * z20 + sp.I * q * t,
+        17: -q * t,
+        18: (-1 + sp.I) * z20 + sp.I * q * t,
+        19: z20 - sp.I * t,
+    }
+    formula_checks = {}
+    for k, rhs in expected.items():
+        ok = k in expressions and sp.simplify(expressions[k] - rhs) == 0
+        formula_checks[f"z{k}"] = bool(ok)
+    all_expected = all(formula_checks.values())
+
     out = {
         "component": cid,
         "mask": mask,
+        "root": root_name,
+        "z0": str(z0_value),
         "field": "Q(i,sqrt(6))",
         "localized_by_nonzero_z": PROVED_NONZERO_Z,
         "affine_equations": len(rows),
@@ -142,10 +169,14 @@ def analyze(cid, mask):
         "forced_zero_variables": tuple(forced_zero),
         "forced_constant_variables": forced_constants,
         "pivot_expressions": {f"z{k}": str(v) for k, v in expressions.items()},
+        "z0_parametric_formula_checks": formula_checks,
+        "all_z0_parametric_formulas_verified": all_expected,
         "short_localized_cells": examples,
     }
     print(out, flush=True)
-    print("RESULT: exact affine closure computed; nonlinear remainder may now be expressed in the free variables", flush=True)
+    if not all_expected:
+        raise RuntimeError(("negative/positive affine family differs from expected z0-parametric form", root_name, formula_checks))
+    print("RESULT: exact affine closure computed and z0-parametric formulas verified", flush=True)
     return out
 
 
@@ -153,8 +184,9 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--component", type=int, default=5)
     ap.add_argument("--mask", type=int, default=0)
+    ap.add_argument("--root", choices=("positive", "negative"), default="positive")
     args = ap.parse_args()
-    analyze(args.component, args.mask)
+    analyze(args.component, args.mask, args.root)
 
 
 if __name__ == "__main__":
