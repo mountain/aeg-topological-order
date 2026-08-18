@@ -46,3 +46,6 @@ jobs:
       - name: Audit the exact two-parameter E torus
         working-directory: experiments
         run: python r22_epsminus_e_gauge_audit.py
+      - name: Probe parametric F filter on component 5 mask 0
+        working-directory: experiments
+        run: python r22_epsminus_f_parametric.py --component 5 --mask 0
