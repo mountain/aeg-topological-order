@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  component13-mask0-kernel:
+  component13-mask0-coordinate-stability:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -21,6 +21,12 @@ jobs:
           python-version: '3.12'
       - name: Install exact dependencies
         run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Fresh compile component 13 mask 0 Phase-5 kernel
+      - name: Verify component 13 mask 0 F-coordinate stability
         working-directory: experiments
-        run: python r22_epsminus_final_kernel.py --component 13 --mask 0
+        run: |
+          python - <<'PY'
+          import r22_phase5_coordinate_stability as cs
+          summary = cs.audit(13, [0], [1, 2, 17])
+          if not summary['all_stable']:
+              raise AssertionError(summary)
+          PY
