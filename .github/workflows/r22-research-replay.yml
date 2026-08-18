@@ -1,13 +1,14 @@
 name: R22 research replay
 
 on:
-  push:
-    branches:
-      - agent/r22-scale-reduction-audit
   pull_request:
     branches:
       - agent/levin-wen-plaquette-benchmark
   workflow_dispatch:
+
+concurrency:
+  group: r22-research-pr-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   exact-smoke:
