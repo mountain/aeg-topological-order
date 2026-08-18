@@ -40,3 +40,6 @@ jobs:
       - name: Close exact D amplitudes on all 16 Phase-1 survivors
         working-directory: experiments
         run: python r22_epsminus_d_amplitude.py
+      - name: Run complete E-layer filter on all D survivors
+        working-directory: experiments
+        run: python r22_epsminus_e_filter.py
