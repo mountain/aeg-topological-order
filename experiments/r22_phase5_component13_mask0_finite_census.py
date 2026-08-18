@@ -4,9 +4,9 @@ This script is intended to run only after the local certificate has established
 
     z5^2 = 1/2,
     p^3 = -(1+i)/4,
-    q^3 =  (1+i)/4,
+    q^3 =  (1-i)/4,
     z0*z6   = -i*p^2*z5,
-    z11*z14 =  i*q^2*z5,
+    z11*z14 = -q^2*z5,
 
 and hence p,q,z0,z5,z6,z11,z14 != 0.
 
@@ -38,19 +38,10 @@ NVARS = len(KEEP_Z)
 NONZERO_SCALE_POS = (POS[0], POS[11])  # z0, z11
 
 
-def g(a=0, b=0):
-    return (Fraction(a), Fraction(b))
-
-
-def kq2(a, b):
-    """a + b*sqrt(2), with Gaussian-rational a,b."""
-    return (a, b)
-
-
 def branch_values(a, b, sign):
-    # p0^3=-(1+i)/4 and q0^3=(1+i)/4.
+    # p0^3=-(1+i)/4 and q0^3=(1-i)/4.
     p0 = ss.kg((Fraction(1, 2), Fraction(-1, 2)))
-    q0 = ss.kg((Fraction(-1, 2), Fraction(1, 2)))
+    q0 = ss.kg((Fraction(-1, 2), Fraction(-1, 2)))
     omega = (
         (((Fraction(-1, 2), Fraction(0)), ss.G0)),
         (((Fraction(0), Fraction(1, 2)), ss.G0)),
@@ -76,9 +67,9 @@ def specialize_key(key, p, q, t):
     """Specialize one canonical kernel equation to a Laurent polynomial."""
     out = {}
     minus_i = ss.kneg(ss.kg(ss.GI))
-    plus_i = ss.kg(ss.GI)
+    minus_one = ss.kr(-1)
     A = ss.kmul(minus_i, ss.kmul(ss.kpow(p, 2), t))  # z0*z6
-    B = ss.kmul(plus_i, ss.kmul(ss.kpow(q, 2), t))   # z11*z14
+    B = ss.kmul(minus_one, ss.kmul(ss.kpow(q, 2), t))  # z11*z14
 
     for mon, gc in key:
         c = ss.kg(ml.gfromkey(gc))
@@ -220,7 +211,7 @@ def main():
                 p3 = ss.kpow(p, 3)
                 q3 = ss.kpow(q, 3)
                 target_p3 = ss.kg((Fraction(-1, 4), Fraction(-1, 4)))
-                target_q3 = ss.kg((Fraction(1, 4), Fraction(1, 4)))
+                target_q3 = ss.kg((Fraction(1, 4), Fraction(-1, 4)))
                 if p3 != target_p3 or q3 != target_q3:
                     raise AssertionError((a, b, sign, ss.kstr(p3), ss.kstr(q3)))
                 if ss.ksub(ss.kmul(t, t), ss.kr(Fraction(1, 2))) != ss.K0:
