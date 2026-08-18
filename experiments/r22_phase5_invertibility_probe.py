@@ -1,14 +1,9 @@
 """Phase-5 local invertibility probe for the generic F-linear quotient.
 
-The probe first identifies common monomial factors of required F determinants.
-It then tests a concrete local branch forced by the four shortest final
-pentagon equations.  If z0=0, those binomials imply
-
-    z2*z3 = 0,    z1*z8 = 0,
-
-so only four zero-pattern branches remain.  We test each branch by exact support
-restriction of every required determinant polynomial.  A determinant is killed
-iff no monomial survives after the indicated z variables are set to zero.
+The probe identifies common monomial factors of required F determinants and
+then tests zero patterns forced by short final-pentagon equations.  A required
+determinant is killed under a zero pattern iff no determinant monomial survives
+after those F-component variables are set to zero.
 
 No nonlinear solving or Groebner computation is used.
 """
@@ -22,6 +17,19 @@ import r22_epsminus_f_parametric as fp
 
 def surviving_terms(det, zero_roots):
     return sum(1 for (mon, _rexp) in det if not any(r in zero_roots for r in mon))
+
+
+def test_pattern(active, determinants, name, pattern):
+    zero_roots = {active[zi] for zi in pattern}
+    survivors = {key: surviving_terms(det, zero_roots) for key, det in determinants.items()}
+    killed = [key for key, n in survivors.items() if n == 0]
+    return {
+        "name": name,
+        "zero_z": pattern,
+        "killed_blocks": killed,
+        "XXXX_surviving_det_terms": survivors[("X", "X", "X", "X")],
+        "min_surviving_det_terms": min(survivors.values()),
+    }
 
 
 def probe(cid, mask):
@@ -65,30 +73,21 @@ def probe(cid, mask):
 
     mandatory = sorted(by_root)
 
-    # The four exact two-term final pentagon equations printed by the Phase-5
-    # compiler imply these branches under z0=0:
-    #   z2*z3=0 and z1*z8=0.
-    zero_patterns = [
-        (0, 2, 1),
-        (0, 2, 8),
-        (0, 3, 1),
-        (0, 3, 8),
+    # Four binomial equations under z0=0 give z2*z3=0 and z1*z8=0.
+    base_patterns = [
+        ("A", (0, 2, 1)),
+        ("ZB", (0, 2, 8)),
+        ("ZC", (0, 3, 1)),
+        ("D", (0, 3, 8)),
     ]
-    branch_tests = []
-    for pattern in zero_patterns:
-        zero_roots = {active[zi] for zi in pattern}
-        survivors = {key: surviving_terms(det, zero_roots) for key, det in determinants.items()}
-        killed = [key for key, n in survivors.items() if n == 0]
-        branch_tests.append(
-            {
-                "zero_z": pattern,
-                "killed_blocks": killed,
-                "XXXX_surviving_det_terms": survivors[("X", "X", "X", "X")],
-                "min_surviving_det_terms": min(survivors.values()),
-            }
-        )
+    branch_tests = [test_pattern(active, determinants, name, pattern) for name, pattern in base_patterns]
 
-    z0_branch_excluded = all(row["killed_blocks"] for row in branch_tests)
+    # Fresh exact specialization of ZC yields the single final-pentagon equation
+    # z4=0 from (X,X,X,X;Y) entry (3,27).  Test that derived branch directly.
+    derived_tests = [
+        test_pattern(active, determinants, "ZC+z4", (0, 3, 1, 4)),
+    ]
+
     out = {
         "component": cid,
         "mask": mask,
@@ -102,17 +101,16 @@ def probe(cid, mask):
         "mandatory_nonzero_z": mandatory,
         "mandatory_by_block": {f"z{zi}": rows for zi, rows in sorted(by_root.items())},
         "z0_zero_branch_tests": branch_tests,
-        "z0_zero_branch_excluded_by_binomials_plus_invertibility": z0_branch_excluded,
+        "derived_zero_branch_tests": derived_tests,
         "block_profiles": block_rows,
     }
     print(out, flush=True)
 
-    if z0_branch_excluded:
-        print("RESULT: four binomial pentagon entries plus F invertibility force z0 != 0", flush=True)
-    elif 0 in by_root:
-        print("RESULT: F invertibility alone forces z0 != 0", flush=True)
+    zc4 = derived_tests[0]
+    if zc4["killed_blocks"]:
+        print("RESULT: ZC plus its exact singleton z4=0 violates required F invertibility", flush=True)
     else:
-        print("RESULT: current local data do not yet force z0 != 0", flush=True)
+        print("RESULT: ZC+z4 remains F-invertible at determinant-polynomial level", flush=True)
     return out
 
 
