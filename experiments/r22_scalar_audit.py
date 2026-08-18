@@ -86,39 +86,61 @@ def build_scalar_gauge(keys):
     for i, key in enumerate(keys):
         a, b, c, d = key
         e, f = paths(key)
-        for t, sign in [
-            ((a, b, e), +1),
-            ((e, c, d), +1),
+        for t, s in [
+            ((a, b, e), 1),
+            ((e, c, d), 1),
             ((b, c, f), -1),
             ((a, f, d), -1),
         ]:
             if t in gidx:
-                G[i, gidx[t]] += sign
+                G[i, gidx[t]] += s
     return triples, G
+
+
+def torsion_invariants(A):
+    S = smith_normal_form(A, domain=ZZ)
+    return [
+        abs(int(S[i, i]))
+        for i in range(min(S.shape))
+        if S[i, i] not in (0, 1, -1)
+    ]
+
+
+def epsilon_equality_witness(keys, idx, A, examples):
+    """Return an integral two-pentagon witness for epsilon_X/epsilon_Y = 1."""
+    target = sp.zeros(len(keys), 1)
+    target[idx[("h", "X", "h", "X")]] = 1
+    target[idx[("h", "Y", "h", "Y")]] = -1
+    _, piv = A.T.rref()
+    R = A[list(piv), :]
+    coeff = R.T.gauss_jordan_solve(target)[0]
+    assert all(x.q == 1 for x in coeff)
+    terms = []
+    for j, c in enumerate(coeff):
+        if c:
+            terms.append((int(c), examples[piv[j]]))
+    assert len(terms) == 2
+    return terms
 
 
 def main():
     keys, idx, A, examples = build_scalar_system()
     triples, G = build_scalar_gauge(keys)
-    print("scalar A/B/C keys", len(keys))
-    print("scalar pentagon rows", A.rows)
-    print("rank over Q", A.rank())
-    print("scalar gauge triples", len(triples), "rank", G.rank())
-
-    D = smith_normal_form(A, domain=ZZ)
-    diag = [abs(int(D[i, i])) for i in range(min(D.shape)) if D[i, i] != 0]
-    torsion = [x for x in diag if x > 1]
-    print("Smith nonunit diagonal", torsion)
-    print("torsion factors", len(torsion))
-
-    # The exponent equations are invariant under trivalent gauge: A*G=0.
     assert A * G == sp.zeros(A.rows, G.cols)
-    print("A*G = 0 verified")
 
-    epsx = idx[("h", "X", "h", "X")]
-    epsy = idx[("h", "Y", "h", "Y")]
-    print("epsilon scalar indices", epsx, epsy)
-    print("example pentagon rows", examples[:8])
+    rank = A.rank()
+    grank = G.rank()
+    tors = torsion_invariants(A)
+    print("scalar variables", len(keys))
+    print("monomial pentagons", A.rows)
+    print("equation rank", rank, "kernel dimension", len(keys) - rank)
+    print("gauge variables", len(triples), "effective gauge rank", grank)
+    print("continuous quotient dimension", len(keys) - rank - grank)
+    print("Smith torsion", tors)
+    print("epsilon equality witness", epsilon_equality_witness(keys, idx, A, examples))
+
+    assert (len(keys) - rank - grank) == 0
+    assert tors == [2, 2, 2, 2]
 
 
 if __name__ == "__main__":
