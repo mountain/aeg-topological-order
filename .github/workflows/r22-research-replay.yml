@@ -44,6 +44,6 @@ jobs:
                   assert s.kmul(q, s.kinv(q)) == s.K1
           print("RESULT: exact sparse field identities verified for all 8 rank-drop finite branches")
           PY
-      - name: Compile first rank-drop residual with exact sparse field
+      - name: Audit three-entry obstruction on all rank-drop branches
         working-directory: experiments
-        run: python r22_phase5_survivor_sparse.py --component 5 --mask 0 --a 1 --b 1 --root positive
+        run: python r22_phase5_rankdrop_certificate.py --component 5 --mask 0
