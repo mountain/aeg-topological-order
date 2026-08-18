@@ -12,6 +12,10 @@ concurrency:
 
 jobs:
   phase5-kernel-dev:
+    strategy:
+      max-parallel: 2
+      matrix:
+        mask: [150, 255]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -21,6 +25,6 @@ jobs:
           python-version: '3.12'
       - name: Install exact dependencies
         run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Audit exact Phase-5 chirality conjugation on component 5
+      - name: Fresh compile Phase-5 kernel
         working-directory: experiments
-        run: python r22_phase5_chirality_conjugation.py --component 5
+        run: python r22_epsminus_final_kernel.py --component 5 --mask ${{ matrix.mask }}
