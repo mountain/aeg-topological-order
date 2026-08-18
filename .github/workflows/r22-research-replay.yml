@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  phase5-zero-gate:
+  phase5-zero-closure:
     strategy:
       max-parallel: 1
       matrix:
@@ -25,14 +25,11 @@ jobs:
           python-version: '3.12'
       - name: Install exact dependencies
         run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Audit F invertibility on z0-zero branches
+      - name: Close z0-zero branches by exact singleton/product propagation
         working-directory: experiments
-        run: python r22_phase5_invertibility_probe.py --component 5 --mask ${{ matrix.mask }}
-      - name: Replay z0-zero branches through final pentagons
-        working-directory: experiments
-        run: python r22_phase5_zero_branch_probe.py --component 5 --mask ${{ matrix.mask }}
+        run: python r22_phase5_zero_closure.py --component 5 --mask ${{ matrix.mask }}
 
-  phase5-finite-gate:
+  phase5-rankdrop-certificate:
     strategy:
       max-parallel: 1
       matrix:
@@ -46,6 +43,6 @@ jobs:
           python-version: '3.12'
       - name: Install exact dependencies
         run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Audit all 18 finite Phase-5 strata
+      - name: Verify exact rank-drop local certificates
         working-directory: experiments
-        run: python r22_phase5_component5_rest_audit.py --component 5 --mask ${{ matrix.mask }}
+        run: python r22_phase5_component5_rest_certificate.py --component 5 --mask ${{ matrix.mask }}
