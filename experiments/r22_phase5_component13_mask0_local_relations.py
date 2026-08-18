@@ -6,9 +6,9 @@ small local model and then derives, without unsafe division,
 
     z5^2 = 1/2,
     p^3 = -(1+i)/4,
-    q^3 =  (1+i)/4,
-    z0*z6  = -i*p^2*z5,
-    z11*z14 = i*q^2*z5.
+    q^3 =  (1-i)/4,
+    z0*z6   = -i*p^2*z5,
+    z11*z14 = -q^2*z5.
 
 Consequently p,q,z0,z5,z6,z11,z14 are all nonzero.
 
@@ -16,8 +16,6 @@ No component-5 rewrite rule is imported and no Groebner/global nonlinear solve
 is used.
 """
 from __future__ import annotations
-
-from fractions import Fraction
 
 import sympy as sp
 
@@ -43,7 +41,7 @@ MODELS = {
     P1: P**2 * Z5 - sp.I * Z0 * Z6,
     P2: P * Z0 * Z6 + C * Z5,
     P3: Q * Z11 * Z14 + C * Z5,
-    P4: Q**2 * Z5 + sp.I * Z11 * Z14,
+    P4: Q**2 * Z5 + Z11 * Z14,
     P5: P * Z0 * Z6 - Q * Z11 * Z14 - C * Z5**2 + C / 2,
 }
 
@@ -88,38 +86,33 @@ def main():
     if missing:
         raise AssertionError(("missing local provenance", missing))
 
-    exact = {}
     for prov in PROVENANCE:
         expr = kernel_expr(by_prov[prov])
         assert_proportional(expr, MODELS[prov], prov)
-        exact[prov] = expr
 
-    # P5 - (P2 - P3) = C*(1/2 - z5^2).  This step uses only polynomial
-    # addition/subtraction, so z5^2=1/2 is obtained before any localization.
+    # P5 - (P2 - P3) = C*(1/2 - z5^2).  This uses only polynomial
+    # addition/subtraction, so z5^2=1/2 is obtained before localization.
     z5_residual = sp.expand(MODELS[P5] - (MODELS[P2] - MODELS[P3]))
     expected_z5 = sp.expand(C * (sp.Rational(1, 2) - Z5**2))
     if sp.expand(z5_residual - expected_z5) != 0:
         raise AssertionError(("z5 residual", z5_residual, expected_z5))
-
     z5_quadratic = 2 * Z5**2 - 1
 
-    # With z5 != 0, p*P1 together with P2 gives
-    # z5*(p^3 + i*C)=0, and q*P4 together with P3 gives
-    # z5*(q^3 - i*C)=0.
+    # Since z5^2=1/2, z5 != 0.  Then p*P1 with P2 gives
+    # z5*(p^3+i*C)=0, while P3 with P4 gives z5*(q^3-C)=0.
     p3 = sp.expand(-sp.I * C)
-    q3 = sp.expand(sp.I * C)
+    q3 = sp.expand(C)
     if p3 != -(1 + sp.I) / 4:
         raise AssertionError(("p3", p3))
-    if q3 != (1 + sp.I) / 4:
+    if q3 != (1 - sp.I) / 4:
         raise AssertionError(("q3", q3))
 
-    # Product identities follow from the exact local models.
+    # Product identities follow from P1/P4.
     z0z6 = -sp.I * P**2 * Z5
-    z11z14 = sp.I * Q**2 * Z5
+    z11z14 = -Q**2 * Z5
 
-    # The constants in p3/q3 and z5 quadratic are nonzero, hence
-    # p,q,z5 are nonzero.  P2/P3 then make the two products nonzero,
-    # proving z0,z6,z11,z14 nonzero individually.
+    # p,q,z5 are nonzero from their exact finite relations.  P2/P3 then make
+    # both products nonzero, proving z0,z6,z11,z14 nonzero individually.
     nonzero = ("p", "q", "z0", "z5", "z6", "z11", "z14")
 
     out = {
