@@ -21,6 +21,29 @@ jobs:
           python-version: '3.12'
       - name: Install exact dependencies
         run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Cheap exact scan of first surviving finite Phase-5 stratum
+      - name: Audit exact sparse coefficient field
         working-directory: experiments
-        run: python r22_phase5_survivor_scan.py --component 5 --mask 0 --a 1 --b 1 --root positive
+        run: |
+          python - <<'PY'
+          from fractions import Fraction
+          import r22_phase5_survivor_sparse as s
+
+          p3 = s.kg((Fraction(1, 4), Fraction(-1, 4)))
+          q3 = s.kg((Fraction(-1, 4), Fraction(-1, 4)))
+          for a, b in ((1, 1), (2, 1), (1, 2), (2, 2)):
+              for root in ("positive", "negative"):
+                  p, q, t = s.branch_values(a, b, root)
+                  assert s.kpow(p, 3) == p3, (a, b, root, "p3")
+                  assert s.kpow(q, 3) == q3, (a, b, root, "q3")
+                  quad = s.kadd(
+                      s.kadd(s.kmul(s.kr(2), s.kmul(t, t)), s.kmul(s.kr(4), t)),
+                      s.kr(-1),
+                  )
+                  assert s.kiszero(quad), (a, b, root, "z0 quadratic")
+                  assert s.kmul(p, s.kinv(p)) == s.K1
+                  assert s.kmul(q, s.kinv(q)) == s.K1
+          print("RESULT: exact sparse field identities verified for all 8 rank-drop finite branches")
+          PY
+      - name: Compile first rank-drop residual with exact sparse field
+        working-directory: experiments
+        run: python r22_phase5_survivor_sparse.py --component 5 --mask 0 --a 1 --b 1 --root positive
