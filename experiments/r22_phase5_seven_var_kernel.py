@@ -1,6 +1,10 @@
-"""Project the constructive Phase-5 branch to its seven-variable Laurent kernel.
+"""Project the constructive Phase-5 branch to a seven-variable Laurent kernel.
 
-On the positive exact stratum, the affine closure gives
+For the Gaussian-rational cube roots
+
+    p=-(1+i)/2, q=(1-i)/2,
+
+choose either root of 2*z0^2+4*z0-1=0.  The exact affine closure gives
 
   z6=z7=z9=z10=0,
   z15=z17=-q*z0,
@@ -24,7 +28,7 @@ No Groebner basis or nonlinear solve is attempted.
 from __future__ import annotations
 
 import argparse
-from collections import Counter, defaultdict, deque
+from collections import Counter, deque
 
 import sympy as sp
 
@@ -35,41 +39,42 @@ import r22_phase5_monomial_lift as ml
 
 u, v, a, b, c, d, h = sp.symbols("u v a b c d h")
 VARS = (u, v, a, b, c, d, h)
-T = xs.Z0_POS
-K = -T / 2
-C = -xs.Q * T
-
-SUB = {
-    1: u,
-    2: v,
-    3: K / v,
-    4: a,
-    5: b,
-    6: sp.Integer(0),
-    7: sp.Integer(0),
-    8: K / u,
-    9: sp.Integer(0),
-    10: sp.Integer(0),
-    11: c,
-    12: d,
-    13: sp.I * T - h,
-    14: -h,
-    15: C,
-    16: (-1 + sp.I) * h + sp.I * xs.Q * T,
-    17: C,
-    18: (-1 + sp.I) * h + sp.I * xs.Q * T,
-    19: h - sp.I * T,
-    20: h,
-}
 
 
-def poly_expr(poly):
+def build_sub(T):
+    K = -T / 2
+    C = -xs.Q * T
+    return {
+        1: u,
+        2: v,
+        3: K / v,
+        4: a,
+        5: b,
+        6: sp.Integer(0),
+        7: sp.Integer(0),
+        8: K / u,
+        9: sp.Integer(0),
+        10: sp.Integer(0),
+        11: c,
+        12: d,
+        13: sp.I * T - h,
+        14: -h,
+        15: C,
+        16: (-1 + sp.I) * h + sp.I * xs.Q * T,
+        17: C,
+        18: (-1 + sp.I) * h + sp.I * xs.Q * T,
+        19: h - sp.I * T,
+        20: h,
+    }
+
+
+def poly_expr(poly, sub):
     expr = sp.Integer(0)
     for mon, coeff in poly.items():
         term = coeff
         for j, e in enumerate(mon, start=1):
             if e:
-                term *= SUB[j] ** e
+                term *= sub[j] ** e
         expr += term
     return sp.expand(expr)
 
@@ -79,7 +84,6 @@ def canonical(expr):
     if expr == 0:
         return None
     num, den = sp.fraction(expr)
-    # All variable denominators arise only from the proved nonzero u,v.
     bad = den.free_symbols - {u, v}
     if bad:
         raise RuntimeError(("unexpected residual denominator", den, bad))
@@ -120,7 +124,9 @@ def incidence_components(keys):
     return comps
 
 
-def analyze(cid, mask):
+def analyze(cid, mask, root_name):
+    T = xs.Z0_POS if root_name == "positive" else xs.Z0_NEG
+    sub = build_sub(T)
     _quotient, unique = ml.compile_unique(cid, mask)
     residual = {}
     vanished = []
@@ -136,7 +142,7 @@ def analyze(cid, mask):
         spoly = xs.specialize_reduced(reduced, T)
         if not spoly:
             vanished.append(prov); continue
-        expr = poly_expr(spoly)
+        expr = poly_expr(spoly, sub)
         ck = canonical(expr)
         if ck is None:
             vanished.append(prov); continue
@@ -166,6 +172,8 @@ def analyze(cid, mask):
     out = {
         "component": cid,
         "mask": mask,
+        "root": root_name,
+        "z0": str(T),
         "field": "Q(i,sqrt(6))",
         "variables": tuple(x.name for x in VARS),
         "nonzero_variables": ("u", "v"),
@@ -186,9 +194,11 @@ def analyze(cid, mask):
     }
     print(out, flush=True)
     if contradictions:
-        print("RESULT: seven-variable projection contains a constant contradiction", contradictions[0][1], flush=True)
+        print("RESULT:", root_name, "seven-variable projection contains a constant contradiction", contradictions[0][1], flush=True)
+    elif any(VARS[j] in (u, v) and len(key) == 1 for key, _prov, j in univariate):
+        print("RESULT:", root_name, "projection forces a proved-nonzero scaling variable to vanish", flush=True)
     else:
-        print("RESULT: seven-variable exact Laurent kernel compiled; continue constructive reduction", flush=True)
+        print("RESULT:", root_name, "seven-variable exact Laurent kernel survives", flush=True)
     return out
 
 
@@ -196,8 +206,9 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--component", type=int, default=5)
     ap.add_argument("--mask", type=int, default=0)
+    ap.add_argument("--root", choices=("positive", "negative"), default="positive")
     args = ap.parse_args()
-    analyze(args.component, args.mask)
+    analyze(args.component, args.mask, args.root)
 
 
 if __name__ == "__main__":
