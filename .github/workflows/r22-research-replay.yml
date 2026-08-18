@@ -21,6 +21,6 @@ jobs:
           python-version: '3.12'
       - name: Install exact dependencies
         run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Audit simultaneous cube-root grading symmetry
+      - name: Explicitly audit remaining simultaneous cube-root pairs
         working-directory: experiments
-        run: python r22_phase5_mu3_symmetry.py --component 5 --mask 0
+        run: python r22_phase5_all_cube_pairs.py --component 5 --mask 0 --b 1 --b 2
