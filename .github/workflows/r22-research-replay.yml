@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  component13-mask150-local-relations:
+  component13-mask150-finite-census:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -21,6 +21,6 @@ jobs:
           python-version: '3.12'
       - name: Install exact dependencies
         run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Derive component 13 mask 150 local relations
+      - name: Census all 18 component 13 mask 150 finite strata
         working-directory: experiments
-        run: python r22_phase5_component13_mask150_local_relations.py
+        run: python r22_phase5_component13_mask150_finite_census.py
