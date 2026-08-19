@@ -18,12 +18,14 @@ Therefore
 \boxed{\text{scalar component 13 is completely non-categorifiable at Phase 5}.}
 \]
 
-This note is the component-level synthesis. The mask-level proof audits are:
+The mask-level proof audits are:
 
 - `notes/32-r22-component13-mask0-phase5-closure.md`;
 - `notes/33-r22-component13-mask105-phase5-closure.md`;
 - `notes/34-r22-component13-mask150-phase5-closure.md`;
 - `notes/35-r22-component13-mask255-phase5-closure.md`.
+
+The final mask-255 eight-branch rank-10 replay is GitHub Actions run `32222771962`, which reports `closed=8,total=8` under one fixed three-cell certificate family.
 
 ## 1. Common Phase-5 scale
 
