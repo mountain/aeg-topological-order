@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  component7-mask150-local-relations:
+  component7-mask255-kernel:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -21,6 +21,6 @@ jobs:
           python-version: '3.12'
       - name: Install exact dependencies
         run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Verify component 7 mask 150 two-cell source certificate
+      - name: Fresh compile component 7 mask 255 Phase-5 kernel
         working-directory: experiments
-        run: python r22_phase5_component7_mask150_local_relations.py
+        run: python r22_epsminus_final_kernel.py --component 7 --mask 255
