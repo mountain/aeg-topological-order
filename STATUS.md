@@ -44,122 +44,49 @@ All four component-5 chirality survivors are rigorously excluded:
 
 See `notes/31-r22-component5-phase5-closure.md` and its mask-level notes.
 
-Therefore
-
-\[
-\boxed{\text{scalar component 5 is completely obstructed at Phase 5}.}
-\]
-
 ## Phase 5 — scalar component 13 CLOSED
 
-All four component-13 chirality survivors have now been independently replayed and exactly excluded:
+All four component-13 chirality survivors are independently replayed and exactly excluded:
 
 \[
 \boxed{0,105,150,255\quad\text{all CLOSED}.}
 \]
 
-### Mask 0
+Mask-level audits are `notes/32...` through `notes/35...`; the component synthesis is `notes/36-r22-component13-phase5-closure.md`.
 
-Fresh 219-cubic kernel; independent finite-scale relations; all 18 finite branches excluded by exact local certificates. See `notes/32-r22-component13-mask0-phase5-closure.md`.
-
-### Mask 105
+The final mask-255 replay establishes
 
 \[
-z_0^2=\frac12,
+z_3^2=\frac12,
 \qquad
-p^3=q^3=\frac{1-i}{4},
-\]
-
-\[
-z_3z_{10}=-ip^2z_0,
+p^3=\frac{1-i}{4},
 \qquad
-z_6z_9=-q^2z_0.
+q^3=\frac{-1+i}{4},
 \]
 
-Exact branch split
-
 \[
-18=2_{\rm affine}+4_{\rm p\text{-}rank11}+4_{\rm q\text{-}rank11}+8_{\rm rank10},
-\]
-
-with all 18 excluded. See `notes/33-r22-component13-mask105-phase5-closure.md`.
-
-### Mask 150
-
-\[
-z_6^2=\frac12,
+z_0z_4=i q^2z_3,
 \qquad
-p^3=q^3=\frac{-1+i}{4},
+z_{17}z_{18}=-i p^2z_3,
 \]
+
+followed by the exact finite census
 
 \[
-z_0z_9=-p^2z_6,
-\qquad
-z_1z_7=q^2z_6.
+18=2_{\rm affine}+4_{\rm p\text{-}rank11}+4_{\rm q\text{-}rank11}+8_{\rm rank10}.
 \]
 
-Again
-
-\[
-18=2_{\rm affine}+4_{\rm p\text{-}rank11}+4_{\rm q\text{-}rank11}+8_{\rm rank10},
-\]
-
-and all 18 are excluded. The eight rank-10 strata are closed by the same three `g` cells in the `r=z19,s=z20` core. See `notes/34-r22-component13-mask150-phase5-closure.md`.
-
-### Mask 255
-
-Fresh replay establishes
-
-\[
-\boxed{z_3^2=\frac12},
-\qquad
-\boxed{p^3=\frac{1-i}{4}},
-\qquad
-\boxed{q^3=\frac{-1+i}{4}},
-\]
-
-\[
-\boxed{z_0z_4=i q^2z_3},
-\qquad
-\boxed{z_{17}z_{18}=-i p^2z_3}.
-\]
-
-Its independent finite census is
-
-\[
-\boxed{18=2_{\rm affine}+4_{\rm p\text{-}rank11}+4_{\rm q\text{-}rank11}+8_{\rm rank10}}.
-\]
-
-Closures:
-
-- 2 branches by affine inconsistency;
-- 4 p-side rank-11 branches by the fixed pure-constant cell `(XXXX;X)_(5,2)`;
-- 4 q-side rank-11 branches by the fixed pure-constant cell `(XXXX;Y)_(0,1)`;
-- 8 rank-10 branches by fixed `g` cells `(XXXX;g)_(0,3)`, `(0,2)`, `(0,1)` in the `r=z19,s=z20` core.
-
-For every rank-10 branch the first two cells give
-
-\[
-A(s^2-r^2)=0,\qquad A\ne0.
-\]
-
-Thus `r=±s`. The two exact slices yield `s^2=i/8` and `s^2=1/8`; the fixed third cell is nonzero on both slice points in all eight branches.
-
-GitHub Actions run `32222771962` reports `closed=8,total=8`.
-
-Full proof audit: `notes/35-r22-component13-mask255-phase5-closure.md`.
+The p-side rank-11 family is closed by `(XXXX;X)_(5,2)`, the q-side family by `(XXXX;Y)_(0,1)`, and all eight rank-10 branches by fixed `g` cells `(0,3)`, `(0,2)`, `(0,1)` in the `r=z19,s=z20` core. GitHub Actions run `32222771962` reports `closed=8,total=8`.
 
 Therefore
 
 \[
-\boxed{\text{scalar component 13 is completely obstructed at Phase 5}.}
+\boxed{\text{scalar components 5 and 13 are completely obstructed at Phase 5}.}
 \]
-
-Component-level synthesis: `notes/36-r22-component13-phase5-closure.md`.
 
 ## Open frontier — Phase 5
 
-The remaining epsilon-minus work is now exactly
+The remaining epsilon-minus work is exactly
 
 \[
 \boxed{\text{components }7,15\text{, each with masks }0,105,150,255.}
