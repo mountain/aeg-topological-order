@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  theorem-gate-second-sheet-phase5-component5-mask0-rank10:
+  theorem-gate-second-sheet-phase5-component5-remaining-local-relations:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -21,6 +21,11 @@ jobs:
           python-version: '3.12'
       - name: Install exact dependencies
         run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Verify all eight component 5 mask 0 class-1 rank-10 certificates
+      - name: Fresh derive class-1 local relations for masks 105,150,255
         working-directory: experiments
-        run: python r22_phase5_component5_torsion_rank10_certificate.py --component 5
+        run: |
+          set -euo pipefail
+          for mask in 105 150 255; do
+            echo "=== component 5 / mask ${mask} / D class 1 ==="
+            python r22_phase5_component5_torsion_local_relations.py --component 5 --mask "${mask}"
+          done
