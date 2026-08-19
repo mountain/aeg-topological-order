@@ -2,7 +2,7 @@
 
 ## Current stage
 
-`T9 R(2,2) OPEN CATEGORIFICATION ATTACK — PHASES 1–4 CLOSED / COMPONENT 5 PHASE 5 CLOSED / COMPONENT 13 MASKS 0,105,150 CLOSED / MASK 255 OPEN`
+`T9 R(2,2) OPEN CATEGORIFICATION ATTACK — PHASES 1–4 CLOSED / COMPONENTS 5,13 PHASE 5 CLOSED / COMPONENTS 7,15 OPEN`
 
 Canonical checkpoints:
 
@@ -10,7 +10,9 @@ Canonical checkpoints:
 - component 5 Phase 5: `notes/31-r22-component5-phase5-closure.md`;
 - component 13 / mask 0: `notes/32-r22-component13-mask0-phase5-closure.md`;
 - component 13 / mask 105: `notes/33-r22-component13-mask105-phase5-closure.md`;
-- component 13 / mask 150: `notes/34-r22-component13-mask150-phase5-closure.md`.
+- component 13 / mask 150: `notes/34-r22-component13-mask150-phase5-closure.md`;
+- component 13 / mask 255: `notes/35-r22-component13-mask255-phase5-closure.md`;
+- component 13 Phase 5 synthesis: `notes/36-r22-component13-phase5-closure.md`.
 
 ## Theorem boundary
 
@@ -48,15 +50,19 @@ Therefore
 \boxed{\text{scalar component 5 is completely obstructed at Phase 5}.}
 \]
 
-## Phase 5 — scalar component 13
+## Phase 5 — scalar component 13 CLOSED
 
-### Mask 0 — CLOSED / EXACT
+All four component-13 chirality survivors have now been independently replayed and exactly excluded:
 
-Fresh replay gives a 219-cubic kernel, proves `z5^2=1/2` and its own cubic/product relations, collapses to 18 finite branches, and excludes all 18 by exact local certificates.  See `notes/32-r22-component13-mask0-phase5-closure.md`.
+\[
+\boxed{0,105,150,255\quad\text{all CLOSED}.}
+\]
 
-### Mask 105 — CLOSED / EXACT
+### Mask 0
 
-Independent replay gives
+Fresh 219-cubic kernel; independent finite-scale relations; all 18 finite branches excluded by exact local certificates. See `notes/32-r22-component13-mask0-phase5-closure.md`.
+
+### Mask 105
 
 \[
 z_0^2=\frac12,
@@ -70,96 +76,112 @@ z_3z_{10}=-ip^2z_0,
 z_6z_9=-q^2z_0.
 \]
 
-Its exact branch split is
+Exact branch split
 
 \[
 18=2_{\rm affine}+4_{\rm p\text{-}rank11}+4_{\rm q\text{-}rank11}+8_{\rm rank10},
 \]
 
-and all 18 are excluded.  See `notes/33-r22-component13-mask105-phase5-closure.md`.
+with all 18 excluded. See `notes/33-r22-component13-mask105-phase5-closure.md`.
 
-### Mask 150 — CLOSED / EXACT
-
-A third fully fresh replay has now closed mask 150.  Coordinate reproducibility was checked under `PYTHONHASHSEED=1,2,17` before named-coordinate certificates were accepted.
-
-The exact local relations are
+### Mask 150
 
 \[
-\boxed{z_6^2=\frac12},
+z_6^2=\frac12,
 \qquad
-\boxed{p^3=q^3=\frac{-1+i}{4}},
+p^3=q^3=\frac{-1+i}{4},
 \]
 
 \[
-\boxed{z_0z_9=-p^2z_6},
+z_0z_9=-p^2z_6,
 \qquad
-\boxed{z_1z_7=q^2z_6},
+z_1z_7=q^2z_6.
 \]
 
-hence
+Again
 
 \[
-p,q,z_0,z_1,z_6,z_7,z_9\ne0.
+18=2_{\rm affine}+4_{\rm p\text{-}rank11}+4_{\rm q\text{-}rank11}+8_{\rm rank10},
 \]
 
-The 18 exact finite branches split as
+and all 18 are excluded. The eight rank-10 strata are closed by the same three `g` cells in the `r=z19,s=z20` core. See `notes/34-r22-component13-mask150-phase5-closure.md`.
+
+### Mask 255
+
+Fresh replay establishes
+
+\[
+\boxed{z_3^2=\frac12},
+\qquad
+\boxed{p^3=\frac{1-i}{4}},
+\qquad
+\boxed{q^3=\frac{-1+i}{4}},
+\]
+
+\[
+\boxed{z_0z_4=i q^2z_3},
+\qquad
+\boxed{z_{17}z_{18}=-i p^2z_3}.
+\]
+
+Its independent finite census is
 
 \[
 \boxed{18=2_{\rm affine}+4_{\rm p\text{-}rank11}+4_{\rm q\text{-}rank11}+8_{\rm rank10}}.
 \]
 
-Their closures are:
+Closures:
 
 - 2 branches by affine inconsistency;
-- 4 p-side rank-11 branches by the fixed pure-constant cell `(XXXX;Y)_(1,0)`;
-- 4 q-side rank-11 branches by the fixed pure-constant cell `(XXXX;X)_(2,5)`;
-- 8 rank-10 branches by the same three fixed `g` cells `(XXXX;g)_(0,3)`, `(0,2)`, `(0,0)`.  With `r=z19,s=z20`, the first two normalize to
+- 4 p-side rank-11 branches by the fixed pure-constant cell `(XXXX;X)_(5,2)`;
+- 4 q-side rank-11 branches by the fixed pure-constant cell `(XXXX;Y)_(0,1)`;
+- 8 rank-10 branches by fixed `g` cells `(XXXX;g)_(0,3)`, `(0,2)`, `(0,1)` in the `r=z19,s=z20` core.
+
+For every rank-10 branch the first two cells give
 
 \[
-1+4rs-4s^2=0,
-\qquad
-1+4rs-4r^2=0.
+A(s^2-r^2)=0,\qquad A\ne0.
 \]
 
-Thus `r^2=s^2`.  The `r=s` slice gives `1=0`; the `r=-s` slice gives `s^2=1/8`, after which the fixed third cell is nonzero on every one of the eight branches.
+Thus `r=±s`. The two exact slices yield `s^2=i/8` and `s^2=1/8`; the fixed third cell is nonzero on both slice points in all eight branches.
 
-GitHub Actions run `32219850511` reports `closed=8,total=8` for the rank-10 certificate.
+GitHub Actions run `32222771962` reports `closed=8,total=8`.
 
-Full proof audit: `notes/34-r22-component13-mask150-phase5-closure.md`.
+Full proof audit: `notes/35-r22-component13-mask255-phase5-closure.md`.
 
-Therefore the current component-13 status is
+Therefore
 
 \[
-\boxed{0,105,150\ \text{CLOSED};\qquad255\ \text{OPEN}.}
+\boxed{\text{scalar component 13 is completely obstructed at Phase 5}.}
 \]
 
-Component 13 as a whole is **not yet closed**.
+Component-level synthesis: `notes/36-r22-component13-phase5-closure.md`.
 
 ## Open frontier — Phase 5
 
-The remaining epsilon-minus work is
+The remaining epsilon-minus work is now exactly
 
 \[
-\boxed{\text{component 13 mask }255;\quad\text{components }7,15\text{ all four masks}.}
+\boxed{\text{components }7,15\text{, each with masks }0,105,150,255.}
 \]
 
 Priority order:
 
-1. component `13`, mask `255`;
-2. component `7`;
-3. component `15`;
+1. component `7`, mask `0`;
+2. complete component `7` one mask at a time;
+3. component `15` one mask at a time;
 4. after all scalar branches resolve, perform a fresh global replay and write the theorem-level synthesis.
 
 The immediate next gate is
 
 \[
-\boxed{\text{component 13 / chirality mask 255: fresh Phase-5 kernel fingerprint}.}
+\boxed{\text{component 7 / chirality mask 0: fresh Phase-5 kernel fingerprint}.}
 \]
 
-No mask-0/105/150 coordinate relation, finite-stratum split, or local certificate may be imported into mask 255 without fresh exact replay.
+Component `7` is the first deep scalar type whose Phase-4 F quotient has `17` free components plus `4` coherence-forced-zero components. No component-5/13 coordinate relation, finite-stratum split, or local certificate may be imported without fresh exact replay.
 
-No Gröbner computation is authorized before each new nonlinear kernel is compiled, deduplicated, degree-profiled, and audited for small exact local certificates.  A timeout or symbolic blow-up is a representation problem, not evidence of mathematical obstruction.
+No Gröbner computation is authorized before each new nonlinear kernel is compiled, deduplicated, degree-profiled, and audited for small exact local certificates. A timeout or symbolic blow-up is a representation problem, not evidence of mathematical obstruction.
 
 ## SCM boundary
 
-`main` records accepted, reproducible research state.  Exploratory work remains on `agent/*` branches.  New Phase-5 conclusions must be backed by fresh exact replay and explicit archive notes before promotion.
+`main` records accepted, reproducible research state. Exploratory work remains on `agent/*` branches. New Phase-5 conclusions must be backed by fresh exact replay and explicit archive notes before promotion.
