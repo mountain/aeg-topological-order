@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  theorem-gate-second-d-sheet-phase4-component13:
+  theorem-gate-second-d-sheet-phase4-component15:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -21,6 +21,6 @@ jobs:
           python-version: '3.12'
       - name: Install exact dependencies
         run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Fresh replay component 13 second D sheet through parametric Phase 4
+      - name: Fresh replay component 15 second D sheet through parametric Phase 4
         working-directory: experiments
-        run: python r22_epsminus_f_torsion_census.py --component 13
+        run: python r22_epsminus_f_torsion_census.py --component 15
