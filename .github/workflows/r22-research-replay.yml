@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  theorem-gate-deep-phase2-d-amplitude:
+  theorem-gate-deep-phase3-e:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -21,6 +21,26 @@ jobs:
           python-version: '3.12'
       - name: Install exact dependencies
         run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Fresh replay all 16 deep D-amplitude closures
+      - name: Fresh replay all 16 invertible E closures
         working-directory: experiments
-        run: python r22_epsminus_d_amplitude.py
+        run: |
+          python - <<'PY'
+          import r22_epsminus_d_amplitude as da
+          import r22_epsminus_e_filter as ef
+
+          passed = []
+          for cid in da.FRONTIER_COMPONENTS:
+              for mask in da.SURVIVOR_MASKS:
+                  result, _data = ef.solve_branch(cid, mask)
+                  if result['status'] != 'E_PASS':
+                      raise AssertionError(result)
+                  if result['E_rank'] != 126 or result['E_nullity'] != 2:
+                      raise AssertionError(('unexpected E dimensions', result))
+                  if not result.get('all_32_det_polynomials_nonzero'):
+                      raise AssertionError(('missing determinant certificate', result))
+                  passed.append((cid, mask))
+          if len(passed) != 16:
+              raise AssertionError(passed)
+          print({'passed': passed, 'total': len(passed)})
+          print('RESULT: all 16 deep branches pass the exact invertible E gate')
+          PY
