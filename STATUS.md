@@ -2,113 +2,135 @@
 
 ## Current stage
 
-`T9 R(2,2) OPEN CATEGORIFICATION ATTACK — PHASES 1–4 CLOSED / COMPONENTS 5,13 PHASE 5 CLOSED / COMPONENTS 7,15 OPEN`
+`T9 R(2,2) OPEN CATEGORIFICATION ATTACK — PHASES 1–4 CLOSED / COMPONENTS 5,7,13 PHASE 5 CLOSED / COMPONENT 15 OPEN`
 
 Canonical checkpoints:
 
 - Phase 1–4: `notes/23-r22-phases1-4-closure.md`;
 - component 5 Phase 5: `notes/31-r22-component5-phase5-closure.md`;
-- component 13 / mask 0: `notes/32-r22-component13-mask0-phase5-closure.md`;
-- component 13 / mask 105: `notes/33-r22-component13-mask105-phase5-closure.md`;
-- component 13 / mask 150: `notes/34-r22-component13-mask150-phase5-closure.md`;
-- component 13 / mask 255: `notes/35-r22-component13-mask255-phase5-closure.md`;
-- component 13 Phase 5 synthesis: `notes/36-r22-component13-phase5-closure.md`.
+- component 13 Phase 5: `notes/36-r22-component13-phase5-closure.md`;
+- component 7 masks 0/105/150/255: `notes/37...` through `notes/40...`;
+- component 7 Phase 5 synthesis: `notes/41-r22-component7-phase5-closure.md`.
 
 ## Theorem boundary
 
-The target is the categorifiability of the Meng–Yu rank-six self-dual fusion ring `R(2,2)`. A global theorem still requires either an explicit invertible associator satisfying every pentagon or rigorous obstruction of every remaining scalar branch.
+The target is the categorifiability of the Meng–Yu rank-six self-dual fusion ring `R(2,2)`. The epsilon-plus half is independently excluded.
 
-The epsilon-plus half is independently excluded by `notes/17-r22-epsilon-plus-local-f-obstruction.md`.
-
-For epsilon-minus, the deep scalar components after the early exact reductions are
+For epsilon-minus, the deep scalar components after early exact reductions are
 
 \[
 \boxed{5,7,13,15}.
 \]
 
-For every deep scalar component, Phase 1 leaves exactly the four chirality masks
+Phase 1 leaves exactly the chirality masks
 
 \[
-\boxed{0,105,150,255}.
+\boxed{0,105,150,255}
 \]
 
-Phases 2–4 are canonically closed and show no obstruction: all 16 deep branches admit D witnesses, the E layer has a genuine two-parameter invertible torus `p*q != 0`, and the F-linear quotient retains an invertible locus.
+for every deep scalar component. Phases 2–4 are canonically closed and show no obstruction.
 
-## Phase 5 — scalar component 5 CLOSED
+Scalar components `5` and `13` are completely obstructed at Phase 5 by the previously archived exact certificates.
 
-All four component-5 chirality survivors are rigorously excluded:
+## Phase 5 — scalar component 7 CLOSED
+
+Component `7` is a `17 active + 4 coherence-forced-zero` Phase-4 type. Every surviving chirality mask was independently fresh-compiled, coordinate-audited, and source-validated.
+
+For masks
 
 \[
-\boxed{0,105,150,255\quad\text{all CLOSED}.}
+\boxed{0,105,150,255},
 \]
 
-See `notes/31-r22-component5-phase5-closure.md` and its mask-level notes.
+the fresh Phase-5 kernels all have:
 
-## Phase 5 — scalar component 13 CLOSED
+- 17 active weighted F components;
+- 19 kernel variables;
+- 38,080 raw nonzero final entries;
+- 147 unique kernel polynomials;
+- total-degree profile `1` linear, `2` quadratic, `144` cubic relations;
+- no generic constant contradiction.
 
-All four component-13 chirality survivors are independently replayed and exactly excluded:
+For each mask, named F coordinates were independently audited under `PYTHONHASHSEED=1,2,17` before accepting the following source certificate.
+
+The same two fixed final-pentagon provenances independently give
 
 \[
-\boxed{0,105,150,255\quad\text{all CLOSED}.}
+(XXXXX)_{(0,0)}:\quad z_0=0,
 \]
 
-Mask-level audits are `notes/32...` through `notes/35...`; the component synthesis is `notes/36-r22-component13-phase5-closure.md`.
-
-The final mask-255 replay establishes
+and
 
 \[
-z_3^2=\frac12,
-\qquad
-p^3=\frac{1-i}{4},
-\qquad
-q^3=\frac{-1+i}{4},
+(XXXX;1)_{(0,0)}:\quad z_0^2-\frac12=0.
 \]
-
-\[
-z_0z_4=i q^2z_3,
-\qquad
-z_{17}z_{18}=-i p^2z_3,
-\]
-
-followed by the exact finite census
-
-\[
-18=2_{\rm affine}+4_{\rm p\text{-}rank11}+4_{\rm q\text{-}rank11}+8_{\rm rank10}.
-\]
-
-The p-side rank-11 family is closed by `(XXXX;X)_(5,2)`, the q-side family by `(XXXX;Y)_(0,1)`, and all eight rank-10 branches by fixed `g` cells `(0,3)`, `(0,2)`, `(0,1)` in the `r=z19,s=z20` core. GitHub Actions run `32222771962` reports `closed=8,total=8`.
 
 Therefore
 
 \[
-\boxed{\text{scalar components 5 and 13 are completely obstructed at Phase 5}.}
+\boxed{-\frac12=0}.
 \]
+
+The mask-level source runs are:
+
+- mask 0: `32230627427`;
+- mask 105: `32231671110`;
+- mask 150: `32232746046`;
+- mask 255: `32233649046`.
+
+A final component-level executable replays all four masks serially:
+
+```text
+experiments/r22_phase5_component7_all_masks_two_cell_certificate.py
+```
+
+GitHub Actions run `32233916428` reports
+
+```text
+mask 0    closed=True
+mask 105  closed=True
+mask 150  closed=True
+mask 255  closed=True
+SUMMARY closed=4,total=4
+```
+
+with the same two fixed cells and contradiction `-1/2` in every mask.
+
+Therefore
+
+\[
+\boxed{\text{scalar component 7 is completely obstructed at Phase 5}.}
+\]
+
+Full synthesis: `notes/41-r22-component7-phase5-closure.md`.
 
 ## Open frontier — Phase 5
 
-The remaining epsilon-minus work is exactly
+The only remaining deep epsilon-minus scalar component is
 
 \[
-\boxed{\text{components }7,15\text{, each with masks }0,105,150,255.}
+\boxed{15},
 \]
+
+with masks
+
+\[
+\boxed{0,105,150,255}
+\]
+
+still open.
 
 Priority order:
 
-1. component `7`, mask `0`;
-2. complete component `7` one mask at a time;
-3. component `15` one mask at a time;
-4. after all scalar branches resolve, perform a fresh global replay and write the theorem-level synthesis.
+1. component `15`, mask `0` fresh Phase-5 kernel;
+2. complete masks `105,150,255` one at a time;
+3. perform a fresh global replay;
+4. write the theorem-level synthesis for `R(2,2)`.
 
-The immediate next gate is
+Component `15` is also a `17+4` Phase-4 type. The component-7 two-cell obstruction is therefore a strong hypothesis, but must not be imported without fresh exact replay.
 
-\[
-\boxed{\text{component 7 / chirality mask 0: fresh Phase-5 kernel fingerprint}.}
-\]
-
-Component `7` is the first deep scalar type whose Phase-4 F quotient has `17` free components plus `4` coherence-forced-zero components. No component-5/13 coordinate relation, finite-stratum split, or local certificate may be imported without fresh exact replay.
-
-No Gröbner computation is authorized before each new nonlinear kernel is compiled, deduplicated, degree-profiled, and audited for small exact local certificates. A timeout or symbolic blow-up is a representation problem, not evidence of mathematical obstruction.
+No Gröbner computation is authorized before small exact local structure is exhausted. The 10-minute per-job guardrail remains in force.
 
 ## SCM boundary
 
-`main` records accepted, reproducible research state. Exploratory work remains on `agent/*` branches. New Phase-5 conclusions must be backed by fresh exact replay and explicit archive notes before promotion.
+`main` records accepted, reproducible research state. Exploratory work remains on `agent/*` branches. New conclusions require fresh exact replay and archive notes before promotion.
