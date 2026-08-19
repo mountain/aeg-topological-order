@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  mask255-coordinate-stability:
+  component13-mask255-rank10-certificate:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -21,101 +21,6 @@ jobs:
           python-version: '3.12'
       - name: Install exact dependencies
         run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Verify mask 255 F-coordinate stability
+      - name: Verify all eight mask 255 rank-10 three-cell certificates
         working-directory: experiments
-        run: |
-          python - <<'PY'
-          import r22_phase5_coordinate_stability as cs
-          summary = cs.audit(5, [255], [1, 2, 17])
-          if not summary['all_stable']:
-              raise AssertionError(summary)
-          PY
-
-  mask255-local-relations:
-    needs: mask255-coordinate-stability
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Install exact dependencies
-        run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Derive five local relations from exact pentagon entries
-        working-directory: experiments
-        run: python r22_phase5_component5_local_relations.py --component 5 --mask 255
-
-  mask255-zero-closure:
-    needs: mask255-local-relations
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Install exact dependencies
-        run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Exclude z0=0 branches sequentially
-        working-directory: experiments
-        run: |
-          python - <<'PY'
-          import r22_phase5_zero_closure as zc
-          branches = ['A', 'ZB', 'ZC', 'D']
-          summary = zc.audit(5, 255, branches)
-          if summary['closed'] != 4 or summary['total'] != 4 or summary['survivors']:
-              raise AssertionError(summary)
-          PY
-
-  mask255-finite-census:
-    needs: mask255-zero-closure
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Install exact dependencies
-        run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Verify exact 10+8 finite-stratum census
-        working-directory: experiments
-        run: |
-          python - <<'PY'
-          import r22_phase5_component5_rest_audit as fa
-          summary = fa.audit_mask(5, 255)
-          expected = {
-              (a, b, root)
-              for (a, b) in ((1,1), (2,1), (1,2), (2,2))
-              for root in ('positive', 'negative')
-          }
-          survivors = {(r['a'], r['b'], r['root']) for r in summary['survivors']}
-          expected_ranks = {
-              '(11, 9, (6, 7, 9, 10))': 10,
-              '(10, 10, ())': 8,
-          }
-          if summary['total'] != 18:
-              raise AssertionError(summary)
-          if summary['closed_by_affine_or_7_targets'] != 10:
-              raise AssertionError(summary)
-          if survivors != expected:
-              raise AssertionError((survivors, expected))
-          if summary['rank_profile'] != expected_ranks:
-              raise AssertionError((summary['rank_profile'], expected_ranks))
-          PY
-
-  mask255-rankdrop-certificate:
-    needs: mask255-finite-census
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Install exact dependencies
-        run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Verify all eight rank-drop local certificates
-        working-directory: experiments
-        run: python r22_phase5_component5_rest_certificate.py --component 5 --mask 255
+        run: python r22_phase5_component13_mask255_rank10_certificate.py
