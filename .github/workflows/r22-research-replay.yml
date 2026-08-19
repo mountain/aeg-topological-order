@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  component7-mask255-local-relations:
+  component7-all-masks-two-cell-certificate:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -21,6 +21,6 @@ jobs:
           python-version: '3.12'
       - name: Install exact dependencies
         run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Verify component 7 mask 255 two-cell source certificate
+      - name: Replay all four component 7 masks serially
         working-directory: experiments
-        run: python r22_phase5_component7_mask255_local_relations.py
+        run: python r22_phase5_component7_all_masks_two_cell_certificate.py
