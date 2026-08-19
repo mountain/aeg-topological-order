@@ -2,19 +2,21 @@
 
 This gate consumes the five-cell source relations established by
 r22_phase5_component5_torsion_local_relations.py and the independent raw
-z0=0 closure.  It therefore works on the legitimate localization z0 != 0.
+z0=0 closures.  It therefore works only after the legitimate localization
+z0 != 0 has been proved for the requested mask.
 
-For mask 0 the fresh class-1 relations are
+The relation table below is the direct output of the fresh source-cell replay
+on D class 1; no historical class-0 constants are imported.  In every mask the
+fifth cell gives
 
-    z2*z3 = -i*p^2*z0,
-    z1*z8 = -i*q^2*z0,
-    p^3 = (-1+i)/4,
-    q^3 = (-1-i)/4,
-    2*z0^2 + 4*z0 - 1 = 0.
+    2*z0^2 + 4*z0 - 1 = 0,
+
+while the p/q cube phases and the two product phases form the exact table
+recorded in ``relation``.
 
 The generic component-5 finite-stratum machinery is reused only as an algebraic
-engine.  The historical class-0 relation constants are not imported.  All 18
-branches and all target-cell remainders are recomputed from the class-1 kernel.
+engine.  All 18 branches and all target-cell remainders are recomputed from the
+class-1 kernel.
 """
 from __future__ import annotations
 
@@ -28,17 +30,44 @@ import r22_phase5_torsion_sheet as ts
 
 
 def relation(mask: int):
-    if mask != 0:
-        raise ValueError(("only mask 0 is source-validated at this gate", mask))
-    return {
-        "P3": (Fraction(-1, 4), Fraction(1, 4)),
-        "Q3": (Fraction(-1, 4), Fraction(-1, 4)),
-        "Z23": fa.NEG_I,
-        "Z18": fa.NEG_I,
-        # Exact cube roots; multiplying by OMEGA^a/b enumerates all roots.
-        "P0": (1 + sp.I) / 2,
-        "Q0": (1 - sp.I) / 2,
+    # Exact source-validated class-1 table.
+    table = {
+        0: {
+            "P3": (Fraction(-1, 4), Fraction(1, 4)),
+            "Q3": (Fraction(-1, 4), Fraction(-1, 4)),
+            "Z23": fa.NEG_I,
+            "Z18": fa.NEG_I,
+            "P0": (1 + sp.I) / 2,
+            "Q0": (1 - sp.I) / 2,
+        },
+        105: {
+            "P3": (Fraction(-1, 4), Fraction(-1, 4)),
+            "Q3": (Fraction(-1, 4), Fraction(-1, 4)),
+            "Z23": fa.I,
+            "Z18": fa.NEG_I,
+            "P0": (1 - sp.I) / 2,
+            "Q0": (1 - sp.I) / 2,
+        },
+        150: {
+            "P3": (Fraction(-1, 4), Fraction(1, 4)),
+            "Q3": (Fraction(-1, 4), Fraction(1, 4)),
+            "Z23": fa.NEG_I,
+            "Z18": fa.I,
+            "P0": (1 + sp.I) / 2,
+            "Q0": (1 + sp.I) / 2,
+        },
+        255: {
+            "P3": (Fraction(-1, 4), Fraction(-1, 4)),
+            "Q3": (Fraction(-1, 4), Fraction(1, 4)),
+            "Z23": fa.I,
+            "Z18": fa.I,
+            "P0": (1 - sp.I) / 2,
+            "Q0": (1 + sp.I) / 2,
+        },
     }
+    if mask not in table:
+        raise ValueError(("mask has no source-validated class-1 relation table", mask))
+    return table[mask]
 
 
 def audit(cid: int, mask: int):
