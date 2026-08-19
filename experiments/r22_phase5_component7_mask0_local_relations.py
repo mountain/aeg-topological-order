@@ -1,13 +1,13 @@
-"""Exact local source certificate for component 7 / chirality mask 0.
+"""Exact two-cell source certificate for component 7 / chirality mask 0.
 
-Run only after the coordinate-stability gate.  Recompile the fresh Phase-5
+Run only after the coordinate-stability gate. Recompile the fresh Phase-5
 kernel and verify two fixed final-pentagon provenances:
 
     (XXXXX)_(0,0)    -> z0 = 0
-    (XXXX;1)_(0,0)   -> z4^2 - 1/2 = 0
+    (XXXX;1)_(0,0)   -> z0^2 - 1/2 = 0
 
-The second relation proves z4 != 0.  No component-5/13 relation is imported,
-and no nonlinear solve is performed.
+Together they give the exact contradiction -1/2 = 0. No component-5/13
+relation is imported and no nonlinear solve is performed.
 """
 from __future__ import annotations
 
@@ -24,7 +24,6 @@ PROVENANCE = (P1, P2)
 P, Q = sp.symbols("p q")
 ZS = sp.symbols("z0:17")
 Z0 = ZS[0]
-Z4 = ZS[4]
 VARS = (P, Q) + ZS
 
 
@@ -63,8 +62,13 @@ def main():
 
     if monic(e1) != monic(Z0):
         raise AssertionError(("P1 is not proportional to z0", e1))
-    if monic(e2) != monic(Z4**2 - sp.Rational(1, 2)):
-        raise AssertionError(("P2 is not proportional to z4^2-1/2", e2))
+    if monic(e2) != monic(Z0**2 - sp.Rational(1, 2)):
+        raise AssertionError(("P2 is not proportional to z0^2-1/2", e2))
+
+    # P1=0 forces z0=0; substituting into P2 leaves the exact nonzero constant.
+    contradiction = sp.expand((Z0**2 - sp.Rational(1, 2)).subs(Z0, 0))
+    if contradiction != -sp.Rational(1, 2):
+        raise AssertionError(("unexpected contradiction", contradiction))
 
     out = {
         "component": CID,
@@ -72,13 +76,14 @@ def main():
         "unique_kernel_polynomials": len(unique),
         "P1": str(e1),
         "P2": str(e2),
-        "derived": ("z0=0", "z4^2=1/2", "z4!=0"),
+        "derived": ("z0=0", "z0^2=1/2", "-1/2=0"),
+        "contradiction": str(contradiction),
         "validated_provenance": PROVENANCE,
+        "closed": True,
     }
     print(out, flush=True)
     print(
-        "RESULT: component 7 / mask 0 local source relations verified exactly; "
-        "z0 is forced zero and z4 is a nonzero quadratic scale",
+        "RESULT: component 7 / mask 0 is excluded by two fixed final-pentagon cells",
         flush=True,
     )
 
