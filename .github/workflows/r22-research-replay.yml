@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  theorem-gate-second-sheet-phase5-component5-mask105-offdiag-scan:
+  theorem-gate-second-sheet-phase5-component5-mask105-sparse-residual:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -21,6 +21,6 @@ jobs:
           python-version: '3.12'
       - name: Install exact dependencies
         run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Scan source cells after exact off-diagonal sign specialization
+      - name: Compile one exact class-1 sign-specialized residual
         working-directory: experiments
-        run: python r22_phase5_component5_torsion_offdiag_scan.py --component 5 --mask 105
+        run: python r22_phase5_component5_torsion_sparse_residual.py --component 5 --mask 105 --a 2 --b 1 --root positive --sign 1
