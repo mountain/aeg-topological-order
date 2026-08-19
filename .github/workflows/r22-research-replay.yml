@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  component13-mask105-p-rank11-residual:
+  component13-mask105-p-rank11-certificate:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -21,6 +21,6 @@ jobs:
           python-version: '3.12'
       - name: Install exact dependencies
         run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Compile representative p-side rank-11 residual kernel
+      - name: Verify all four mask 105 p-side rank-11 one-cell certificates
         working-directory: experiments
-        run: python r22_phase5_component13_mask105_residual_scan.py --a 1 --b 0 --sign +
+        run: python r22_phase5_component13_mask105_p_rank11_certificate.py
