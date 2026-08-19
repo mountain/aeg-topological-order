@@ -10,33 +10,23 @@ for each surviving (scalar component, chirality) branch.  Existence of one
 witness is not enough for a non-categorifiability theorem: inequivalent
 amplitude solutions could in principle lead to additional E/F branches.
 
-This script audits the *entire* homogeneous amplitude solution group.  For a
-fixed inhomogeneous solution t, the ratio u=t'/t of two solutions satisfies
+For a fixed inhomogeneous solution t, the ratio u=t'/t of two solutions obeys
+all homogeneous character equations defined by the integer exponent matrix A.
+Thus the homogeneous solution group has character lattice
 
-    prod_j u_j**A[r,j] = 1
+    Z^48 / rowspan(A).
 
-for the integer exponent matrix A of all 168 binomial D constraints.  Hence the
-homogeneous solution group is the diagonal algebraic group with character
-lattice Z^48 / rowspan(A).
+A manifest connected residual gauge torus comes from scalar basis changes on
+the eight multiplicity-two fusion spaces.  This script constructs its 48 x 8
+endpoint-incidence matrix B directly from the source/target fusion paths and
+checks A*B=0.
 
-There is also a manifest residual trivalent gauge torus: multiply the basis of
-each of the eight 2D fusion spaces V_{MN}^P by a scalar.  Scalar conjugation
-leaves every Pauli seed matrix unchanged.  A cross-D F block maps between one
-multiplicity-two source fusion space and one multiplicity-two target fusion
-space, so its amplitude changes by the endpoint scalar ratio.  The resulting
-48 x 8 incidence matrix B is constructed directly from the fusion paths, not
-hard-coded.
-
-The theorem-completeness criterion is:
-
-1. A*B = 0, so the residual gauge orbit lies in the homogeneous D solution;
-2. Smith(A) has no nontrivial torsion, so that solution group is connected;
-3. dim ker(A) = rank(B).
-
-Then the connected residual-gauge image is a closed subtorus of the connected
-homogeneous solution group with the same dimension, hence they are equal.
-Therefore every nonzero D-amplitude solution is gauge-equivalent to the exact
-witness already used by the downstream E/F/Phase-5 analysis.
+The first theorem-audit run discovered that the connected dimensions match but
+Smith(A) contains two factors 2.  Therefore the purpose of this version is to
+diagnose that discrete torsion *across all 16 deep branches* rather than abort
+on the first one.  A later audit must determine whether the resulting Z2^2 is
+removed by disconnected residual gauge/Pauli normalizer transformations or is
+a genuine fourfold D-amplitude branch split.
 """
 from __future__ import annotations
 
@@ -52,15 +42,7 @@ from r22_scale_audit import N, OBJECTS
 
 
 def multiplicity_two_endpoints(key):
-    """Return (source_space, target_space) for one 2x2 cross-D F block.
-
-    For F^{abc}_d the source basis is
-        V_ab^e tensor V_ec^d,
-    while the target basis is
-        V_bc^f tensor V_af^d.
-    A cross-D block has exactly one multiplicity-two trivalent factor on each
-    side.  We extract those factors directly from fusion multiplicities.
-    """
+    """Return (source_space, target_space) for one 2x2 cross-D F block."""
     a, b, c, d = key
     source = []
     target = []
@@ -95,19 +77,15 @@ def multiplicity_two_endpoints(key):
 
 
 def residual_gauge_matrix():
-    """48 x 8 endpoint-incidence map for scalar basis gauges on 2D spaces."""
     B = sp.zeros(len(tr.CROSS_KEYS), len(tr.SPACES))
     edges = []
     for key in tr.CROSS_KEYS:
         i = tr.T_INDEX[key]
         source, target = multiplicity_two_endpoints(key)
-        # Convention is immaterial up to replacing all endpoint parameters by
-        # inverses; this is source/target as read from the F-symbol basis.
         B[i, tr.SPACE_INDEX[source]] += 1
         B[i, tr.SPACE_INDEX[target]] -= 1
         edges.append((source, target))
 
-    # The underlying transport graph should be exactly two connected K4s.
     adjacency = {s: set() for s in tr.SPACES}
     for u, v in edges:
         adjacency[u].add(v)
@@ -142,6 +120,28 @@ def exponent_rows(ratios):
     return tuple(rows)
 
 
+def gf2_rank(rows):
+    packed = []
+    for row in rows:
+        bits = 0
+        for j, x in enumerate(row):
+            if x & 1:
+                bits |= 1 << j
+        if bits:
+            packed.append(bits)
+    rank = 0
+    for col in range(len(tr.CROSS_KEYS)):
+        pivot = next((i for i in range(rank, len(packed)) if (packed[i] >> col) & 1), None)
+        if pivot is None:
+            continue
+        packed[rank], packed[pivot] = packed[pivot], packed[rank]
+        for i in range(len(packed)):
+            if i != rank and ((packed[i] >> col) & 1):
+                packed[i] ^= packed[rank]
+        rank += 1
+    return rank
+
+
 def smith_profile(rows):
     A = sp.Matrix(rows)
     S = smith_normal_form(A, domain=ZZ)
@@ -162,16 +162,15 @@ def main():
         "cross_D_amplitudes": len(tr.CROSS_KEYS),
         "multiplicity_two_spaces": len(tr.SPACES),
         "transport_component_sizes": component_sizes,
-        "residual_gauge_rank": gauge_rank,
-        "residual_gauge_kernel_dimension": len(tr.SPACES) - gauge_rank,
+        "connected_residual_gauge_rank": gauge_rank,
+        "connected_residual_gauge_kernel_dimension": len(tr.SPACES) - gauge_rank,
     }, flush=True)
-
     if component_sizes != [4, 4] or gauge_rank != 6:
         raise AssertionError(("unexpected residual gauge graph", components, gauge_rank))
 
     profile_cache = {}
     matrix_variants = defaultdict(list)
-    complete = []
+    branches = []
 
     for cid in da.FRONTIER_COMPONENTS:
         for mask in da.SURVIVOR_MASKS:
@@ -181,53 +180,70 @@ def main():
 
             if rows not in profile_cache:
                 A, diag, torsion = smith_profile(rows)
-                gauge_residual = A * B
-                gauge_in_kernel = gauge_residual == sp.zeros(A.rows, B.cols)
-                rank = len(diag)
-                free_dimension = len(tr.CROSS_KEYS) - rank
                 profile_cache[rows] = {
                     "A": A,
-                    "rank": rank,
+                    "rank": len(diag),
+                    "mod2_rank": gf2_rank(rows),
                     "smith_nonzero": diag,
                     "torsion": torsion,
-                    "free_dimension": free_dimension,
-                    "gauge_in_kernel": gauge_in_kernel,
+                    "free_dimension": len(tr.CROSS_KEYS) - len(diag),
+                    "gauge_in_kernel": A * B == sp.zeros(A.rows, B.cols),
                 }
 
             p = profile_cache[rows]
+            connected_exhaustive = (
+                p["gauge_in_kernel"]
+                and p["free_dimension"] == gauge_rank
+            )
+            disconnected_classes = 1
+            for d in p["torsion"]:
+                disconnected_classes *= d
             row = {
                 "component": cid,
                 "mask": mask,
                 "ratio_constraints": len(ratios),
                 "amplitude_variables": len(tr.CROSS_KEYS),
-                "exponent_rank": p["rank"],
-                "homogeneous_dimension": p["free_dimension"],
+                "exponent_rank_Q": p["rank"],
+                "exponent_rank_F2": p["mod2_rank"],
+                "homogeneous_connected_dimension": p["free_dimension"],
                 "smith_torsion": p["torsion"],
-                "residual_gauge_rank": gauge_rank,
-                "gauge_in_kernel": p["gauge_in_kernel"],
-                "complete_mod_gauge": (
-                    p["gauge_in_kernel"]
-                    and not p["torsion"]
-                    and p["free_dimension"] == gauge_rank
-                ),
+                "homogeneous_connected_components": disconnected_classes,
+                "connected_residual_gauge_rank": gauge_rank,
+                "connected_gauge_in_kernel": p["gauge_in_kernel"],
+                "connected_part_exhausted_by_gauge": connected_exhaustive,
+                "full_mod_gauge_completeness_pending": disconnected_classes != 1,
             }
             print(row, flush=True)
-            if not row["complete_mod_gauge"]:
-                raise AssertionError(("D-amplitude mod-gauge completeness failed", row, p["smith_nonzero"]))
-            complete.append((cid, mask))
+            if not connected_exhaustive:
+                raise AssertionError(("connected D-amplitude quotient still has moduli", row))
+            branches.append(row)
+
+    variants = []
+    for rows, ids in matrix_variants.items():
+        p = profile_cache[rows]
+        variants.append({
+            "branches": ids,
+            "rank_Q": p["rank"],
+            "rank_F2": p["mod2_rank"],
+            "smith_torsion": p["torsion"],
+            "smith_nonzero": p["smith_nonzero"],
+        })
 
     print({
         "distinct_exponent_matrix_variants": len(matrix_variants),
         "variant_branch_counts": sorted(len(v) for v in matrix_variants.values()),
-        "complete_branches": complete,
-        "total": len(complete),
+        "variants": variants,
+        "total_branches": len(branches),
     }, flush=True)
-    if len(complete) != 16:
-        raise AssertionError(complete)
+    if len(branches) != 16:
+        raise AssertionError(len(branches))
+
+    torsion_profiles = {tuple(b["smith_torsion"]) for b in branches}
+    if torsion_profiles != {(2, 2)}:
+        raise AssertionError(("unexpected/nonuniform D torsion profile", torsion_profiles))
 
     print(
-        "RESULT: every nonzero D-amplitude solution on every deep chirality survivor "
-        "is gauge-equivalent to the exact witness used downstream",
+        "RESULT: connected D-amplitude freedom is exactly residual gauge, but a uniform Z2 x Z2 discrete quotient remains to be audited",
         flush=True,
     )
 
