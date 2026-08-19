@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  component15-mask150-coordinate-stability:
+  component15-mask150-two-cell-certificate:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -21,12 +21,10 @@ jobs:
           python-version: '3.12'
       - name: Install exact dependencies
         run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Verify component 15 mask 150 F-coordinate stability
+      - name: Verify coordinate-free component 15 mask 150 two-cell certificate
         working-directory: experiments
         run: |
-          python - <<'PY'
-          import r22_phase5_coordinate_stability as cs
-          summary = cs.audit(15, [150], [1, 2, 17])
-          if not summary['all_stable']:
-              raise AssertionError(summary)
-          PY
+          python r22_phase5_two_cell_certificate.py --component 15 --mask 150
+          for seed in 1 2 17; do
+            PYTHONHASHSEED=$seed python r22_phase5_two_cell_certificate.py --component 15 --mask 150
+          done
