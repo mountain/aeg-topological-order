@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  theorem-gate-second-sheet-phase5-component5-remaining-local-relations:
+  theorem-gate-second-sheet-phase5-component5-remaining-zero-closures:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -21,11 +21,11 @@ jobs:
           python-version: '3.12'
       - name: Install exact dependencies
         run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Fresh derive class-1 local relations for masks 105,150,255
+      - name: Exclude z0=0 for class-1 masks 105,150,255 before localization
         working-directory: experiments
         run: |
           set -euo pipefail
           for mask in 105 150 255; do
-            echo "=== component 5 / mask ${mask} / D class 1 ==="
-            python r22_phase5_component5_torsion_local_relations.py --component 5 --mask "${mask}"
+            echo "=== component 5 / mask ${mask} / D class 1 / z0=0 ==="
+            python r22_phase5_component5_torsion_zero_closure.py --component 5 --mask "${mask}"
           done
