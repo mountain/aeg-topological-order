@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  component15-mask105-coordinate-stability:
+  component15-mask105-local-relations:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -21,12 +21,6 @@ jobs:
           python-version: '3.12'
       - name: Install exact dependencies
         run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Verify component 15 mask 105 F-coordinate stability
+      - name: Verify component 15 mask 105 two-cell source certificate
         working-directory: experiments
-        run: |
-          python - <<'PY'
-          import r22_phase5_coordinate_stability as cs
-          summary = cs.audit(15, [105], [1, 2, 17])
-          if not summary['all_stable']:
-              raise AssertionError(summary)
-          PY
+        run: python r22_phase5_component15_mask105_local_relations.py
