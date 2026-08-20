@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  theorem-gate-second-sheet-phase5-component5-mask255-rank10-certificate:
+  theorem-gate-second-sheet-component5-freeze:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -21,6 +21,9 @@ jobs:
           python-version: '3.12'
       - name: Install exact dependencies
         run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Verify fixed local source certificates on all eight mask-255 rank-10 strata
+      - name: Recheck terminal rank-10 source certificates for component 5 masks 150 and 255
         working-directory: experiments
-        run: python r22_phase5_component5_torsion_mask255_rank10_certificate.py
+        run: |
+          set -euo pipefail
+          python r22_phase5_component5_torsion_mask150_rank10_certificate.py
+          python r22_phase5_component5_torsion_mask255_rank10_certificate.py
