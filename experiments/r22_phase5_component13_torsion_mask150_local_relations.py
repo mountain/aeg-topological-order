@@ -62,7 +62,7 @@ def main():
     A = (1 - sp.I) / 4
 
     expected = {
-        P1: p**2 * s + sp.I * up * vp,
+        P1: p**2 * s + up * vp,
         P2: p * up * vp + A * s,
         P3: q * uq * vq + A * s,
         P4: q**2 * s - uq * vq,
@@ -77,8 +77,8 @@ def main():
     if sp.expand(scale_combo - scale_target) != 0:
         raise AssertionError(("scale combination mismatch", scale_combo, scale_target))
 
-    p_combo = sp.factor(p * expr[P1] - sp.I * expr[P2])
-    p_target = sp.factor(s * (p**3 - (1 + sp.I)/4))
+    p_combo = sp.factor(p * expr[P1] - expr[P2])
+    p_target = sp.factor(s * (p**3 - (1 - sp.I)/4))
     if sp.expand(p_combo - p_target) != 0:
         raise AssertionError(("p cube combination mismatch", p_combo, p_target))
 
@@ -93,9 +93,9 @@ def main():
         "D_amplitude_class": 1,
         "scale": "z6",
         "scale_equation": "z6^2=1/2",
-        "p3": "(1+i)/4",
+        "p3": "(1-i)/4",
         "q3": "(-1+i)/4",
-        "p_product": "z0*z9=i*p^2*z6",
+        "p_product": "z0*z9=-p^2*z6",
         "q_product": "z1*z7=q^2*z6",
         "source_cells": PROVS,
         "prelocalization_scale_combination": "P5-P2+P3=(1-i)*(1-2*z6^2)/8",
