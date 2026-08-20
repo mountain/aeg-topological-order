@@ -2,114 +2,75 @@
 
 ## Current stage
 
-`T9 R(2,2) THEOREM-CLOSURE AUDIT — LOCAL/GAUGE BRANCH COMPLETENESS CLOSED / GLOBAL CASE LEDGER NEXT`
+`T9 R(2,2) THEOREM-CLOSURE AUDIT — FINITE CASE LEDGER CLOSED / FINAL CANONICAL SERIAL REPLAY NEXT`
 
 The theorem-completeness work remains on draft PR `#12`, branch `agent/r22-theorem-closure`. No theorem promotion or merge is authorized yet.
 
 ## Closed theorem gates
 
-1. **Scalar A/B/C quotient.** Exactly 16 components modulo the full complex gauge torus:
+1. **Scalar quotient:** exactly 16 A/B/C components modulo the full complex gauge torus.
+2. **Immediate local obstructions:** all 8 epsilon-plus scalar components and shallow epsilon-minus components `4,6,12,14` are independently excluded.
+3. **Pauli seed normal form:** original seed-only D pentagons are exactly `24 singleton + 24 pair`; across deep components `5,7,13,15`, all `96/96` singleton relations are `U^2=I` and all `96/96` pair relations are anticommutators. Hence every invertible seed triple is independently `GL_2(C)`-conjugate to `(X,Z,+/-Y)`. Actions run `32394416585`; archive `notes/56-r22-pauli-seed-normal-form-completeness.md`.
+4. **Deep chirality census:** on each deep scalar component, the now-projectively-exhaustive `2^8=256` seed assignments reduce exactly to masks `0,105,150,255` with profile `192 structural + 60 phase + 4 survivors`.
+5. **D-amplitude quotient:** exactly two gauge-inequivalent physical D-amplitude classes per deep chirality survivor. Thus the physical deep frontier is `4 x 4 x 2 = 32` branches.
+6. **Phases 1–4:** all 32 physical deep branches have exact D witnesses and pass through Phase 4.
+7. **Phase 5, D class 0:** accepted canonical chain closes all 16 branches.
+8. **Phase 5, D class 1:** theorem audit closes all 16 branches. Full archive `notes/55-r22-second-d-sheet-phase5-closure.md`; final branch `component 13 / mask 255 / class 1` closes 18/18 finite strata in Actions run `32393826437`.
+9. **Executable global case ledger:** the complete finite quotient tree is exact, exhaustive, and non-overlapping. Actions run `32394807045` verifies
    \[
-   \epsilon_+: 0,1,2,3,8,9,10,11,
-   \qquad
-   \epsilon_-: 4,5,6,7,12,13,14,15.
+   8\ \epsilon_+\text{ terminal leaves}
+   +4\ \epsilon_-\text{ shallow terminal leaves}
+   +32\ \epsilon_-\text{ deep physical terminal leaves}
+   =44\text{ top-level terminal leaves}.
    \]
-   Archive: `notes/44-r22-scalar-component-inventory-audit.md`.
-
-2. **Immediate local obstructions.** All eight epsilon-plus components and the four shallow epsilon-minus components `4,6,12,14` are excluded by independent executable local-F obstructions. Archive: `notes/43-r22-shallow-epsminus-local-f-closure.md` plus the epsilon-plus verifier.
-
-3. **Pauli seed normal-form completeness.** For every deep scalar component `5,7,13,15`, the original seed-only D pentagons are exactly `24 singleton + 24 pair`. Across all four deep scalar components:
+   Every deep leaf is exactly one triple
    \[
-   96/96:\ U^2=I,
-   \qquad
-   96/96:\ \text{pairwise anticommutation}.
+   (\text{scalar},\text{chirality mask},\text{D class})
+   \in
+   \{5,7,13,15\}\times\{0,105,150,255\}\times\{0,1\},
    \]
-   Every invertible seed triple on each two-dimensional multiplicity space is therefore independently `GL_2(C)`-conjugate to
-   \[
-   \boxed{(X,Z,+Y)\text{ or }(X,Z,-Y)}.
-   \]
-   Hence the `2^8=256` chirality census is projectively exhaustive, not a restricted Pauli ansatz. Verifier: `experiments/r22_epsminus_seed_pauli_normal_form_audit.py`; Actions run `32394416585`; archive: `notes/56-r22-pauli-seed-normal-form-completeness.md`.
-
-4. **Deep chirality census.** For each of `5,7,13,15`, all 256 chirality assignments are replayed exactly and reduce to the four masks
-   \[
-   \boxed{0,105,150,255},
-   \]
-   with profile `192 structural + 60 phase + 4 survivors`.
-
-5. **D-amplitude quotient.** Every deep chirality survivor has exactly two gauge-inequivalent physical D-amplitude classes. The homogeneous cross-D group is
-   \[
-   H_D\cong(\mathbf C^*)^6\times\mu_2\times\mu_2,
-   \]
-   the connected six-dimensional part is endpoint gauge, disconnected scalar gauge removes one `Z2`, and the allowed Pauli projective normalizer does not remove the final one. Thus the exact deep physical frontier has
-   \[
-   4\times4\times2=32
-   \]
-   branches.
-
-6. **Phases 1–4.** Both D-amplitude classes have exact D witnesses and all 32 physical deep branches pass Phases 1–4.
-
-7. **Phase 5, class 0.** The accepted canonical chain closes all 16 class-0 deep branches.
-
-8. **Phase 5, class 1.** The theorem audit closes all 16 newly exposed second-sheet branches:
-   \[
-   \boxed{5:4/4,\quad7:4/4,\quad13:4/4,\quad15:4/4}.
-   \]
-   Complete archive: `notes/55-r22-second-d-sheet-phase5-closure.md`.
-
-The final previously open branch `component 13 / mask 255 / class 1` is `CLOSED / EXACT` by Actions run `32393826437`, with exact finite ledger
-\[
-18=2_{\rm affine}+4_{\rm p-rank11}+4_{\rm q-rank11}+8_{\rm rank10}=18_{\rm closed}.
-\]
-Archive: `notes/54-r22-second-d-sheet-component13-mask255-phase5-closure.md`.
+   and every leaf is attached to a frozen terminal certificate. Verifier `experiments/r22_theorem_case_ledger.py`; archive `notes/57-r22-global-theorem-case-ledger.md`.
 
 ## Current theorem boundary
 
-All presently identified **local algebra, projective-normal-form, gauge-component, chirality, D-amplitude, and terminal Phase-5 branches are closed**. In particular, the previous two theorem-completeness gaps — the second physical D sheet and the Pauli seed ansatz — have both been removed by fresh exact replay.
+The theorem audit has now closed all known **local algebra, projective-normal-form, gauge-component, chirality, D-amplitude, branch-completeness, and terminal-case bookkeeping gaps**.
 
-This still does not by itself promote the global theorem. The remaining work is now proof assembly rather than a new local search.
+In particular:
 
-## Open frontier — executable global case ledger
+- the historical sign-only scalar-gauge issue is repaired by the full-complex scalar quotient;
+- the previously missing second physical D-amplitude sheet is fully propagated and terminally obstructed;
+- the historical Pauli seed choice is proved to be a complete `GL_2(C)` normal form, not an ansatz;
+- the resulting global finite case tree contains exactly 44 terminal leaves with no omissions or duplicate physical quotient classes.
 
-The next gate is to freeze one machine-checkable finite case tree:
+This is the point at which the research changes character: no additional branch search is currently justified. The remaining theorem gate is a fresh canonical replay of the already-frozen proof tree.
 
+## Open frontier — final canonical serial replay
+
+The final replay must begin from fresh checkout/state and reconstruct the theorem in serial sub-gates, each within the 10-minute Actions limit:
+
+1. **Replay A — scalar/local frontier**
+   - full-complex scalar component inventory;
+   - epsilon-plus exhaustive local-F obstruction;
+   - shallow epsilon-minus local-F obstruction.
+
+2. **Replay B — deep projective/gauge frontier**
+   - Pauli seed normal-form completeness;
+   - all four deep `256 -> 4` chirality traces;
+   - cross-D amplitude Smith/gauge audit proving exactly two physical D classes.
+
+3. **Replay C — downstream existence frontier**
+   - both D classes exact at D;
+   - E and F/Phase-4 replay for every retained branch.
+
+4. **Replay D — terminal frontier**
+   - class-0 Phase-5 certificates;
+   - class-1 Phase-5 certificates;
+   - require terminal branch IDs/counts to agree with the executable 44-leaf ledger.
+
+Only after all replay sub-gates succeed on the same frozen theorem branch should the repository write the theorem-level synthesis and decide whether to promote
 \[
-16\text{ scalar components}
-\to
-\begin{cases}
-8\ \epsilon_+\text{ local-F leaves},\\
-4\ \epsilon_-\text{ shallow local-F leaves},\\
-4\ \epsilon_-\text{ deep components}.
-\end{cases}
+\boxed{R(2,2)\text{ is non-categorifiable}.}
 \]
-
-For each deep component the ledger must record the exhaustive route
-
-\[
-256\text{ seed chirality assignments}
-\to4\text{ masks}
-\to2\text{ physical D classes}
-\to8\text{ terminal leaves per scalar component},
-\]
-
-so that the deep part contains exactly
-
-\[
-4\times4\times2=32
-\]
-
-unique terminal leaves, with no omissions or duplicate quotient classes.
-
-The ledger gate must also attach every leaf to an archived/executable terminal certificate. Only after this finite tree is frozen should the repository run the final canonical serial replay from a fresh state.
-
-## Remaining sequence
-
-1. close and archive the executable global case ledger;
-2. run the final canonical theorem replay as serial sub-gates under the 10-minute/job guardrail;
-3. write the theorem-level synthesis;
-4. only then decide whether to promote
-   \[
-   \boxed{R(2,2)\text{ is non-categorifiable}.}
-   \]
 
 ## Verification discipline
 
@@ -120,4 +81,5 @@ The ledger gate must also attach every leaf to an archived/executable terminal c
 - no global Gröbner solve;
 - no floating-point nonlinear solve or continuation;
 - 10-minute maximum per Actions research job;
+- split replay stages rather than increasing timeouts;
 - named `z_j` coordinates are implementation charts, not invariant theorem evidence.
