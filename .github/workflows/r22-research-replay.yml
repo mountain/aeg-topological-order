@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  replay-a1-scalar-inventory:
+  replay-b1-pauli-seed-normal-form:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -21,12 +21,12 @@ jobs:
           python-version: '3.12'
       - name: Install exact dependencies
         run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Replay full-complex scalar quotient
+      - name: Replay Pauli seed normal-form completeness
         working-directory: experiments
-        run: python r22_scalar_component_inventory.py
+        run: python r22_epsminus_seed_pauli_normal_form_audit.py
 
-  replay-a2-epsplus-local-f:
-    needs: replay-a1-scalar-inventory
+  replay-b2-deep-chirality-traces:
+    needs: replay-b1-pauli-seed-normal-form
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -36,12 +36,16 @@ jobs:
           python-version: '3.12'
       - name: Install exact dependencies
         run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Replay epsilon-plus exhaustive local-F obstruction
+      - name: Replay all four deep 256-to-4 chirality traces
         working-directory: experiments
-        run: python r22_epsplus_local_f_obstruction.py
+        run: |
+          python r22_epsminus_d_trace.py --component 5 --assert-trace
+          python r22_epsminus_d_trace.py --component 7 --assert-trace
+          python r22_epsminus_d_trace.py --component 13 --assert-trace
+          python r22_epsminus_d_trace.py --component 15 --assert-trace
 
-  replay-a3-shallow-epsminus-local-f:
-    needs: replay-a2-epsplus-local-f
+  replay-b3-physical-d-quotient:
+    needs: replay-b2-deep-chirality-traces
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -51,6 +55,9 @@ jobs:
           python-version: '3.12'
       - name: Install exact dependencies
         run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Replay shallow epsilon-minus local-F obstruction
+      - name: Replay cross-D Smith and connected gauge profile
         working-directory: experiments
-        run: python r22_epsminus_shallow_local_f_obstruction.py
+        run: python r22_epsminus_d_amplitude_gauge_audit.py
+      - name: Replay corrected full physical D-class quotient
+        working-directory: experiments
+        run: python r22_epsminus_d_physical_class_audit.py
