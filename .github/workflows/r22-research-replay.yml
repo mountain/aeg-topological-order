@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  theorem-gate-second-sheet-phase5-component5-mask150-finite-census:
+  theorem-gate-second-sheet-phase5-component5-mask150-rank10-certificate:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -21,6 +21,6 @@ jobs:
           python-version: '3.12'
       - name: Install exact dependencies
         run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Audit all 18 class-1 finite strata for component 5 mask 150
+      - name: Verify one fixed source certificate on all eight mask-150 rank-10 strata
         working-directory: experiments
-        run: python r22_phase5_component5_torsion_finite_audit.py --component 5 --mask 150
+        run: python r22_phase5_component5_torsion_mask150_rank10_certificate.py
