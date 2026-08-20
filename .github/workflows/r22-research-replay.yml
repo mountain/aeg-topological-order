@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  theorem-gate-pauli-seed-normal-form-relations:
+  theorem-gate-global-case-ledger:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -21,6 +21,6 @@ jobs:
           python-version: '3.12'
       - name: Install exact dependencies
         run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Audit seed-only D pentagons for exact Clifford normal-form relations
+      - name: Verify exhaustive non-overlapping theorem case tree
         working-directory: experiments
-        run: python r22_epsminus_seed_pauli_normal_form_audit.py
+        run: python r22_theorem_case_ledger.py
