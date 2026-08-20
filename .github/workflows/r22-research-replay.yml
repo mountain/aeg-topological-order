@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  theorem-gate-second-sheet-phase5-component13-mask255-residual-probe:
+  theorem-gate-second-sheet-phase5-component13-mask255-terminal-certificate:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -21,6 +21,6 @@ jobs:
           python-version: '3.12'
       - name: Install exact dependencies
         run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Probe representative class-1 terminal source cells for component 13 mask 255
+      - name: Verify all terminal class-1 finite branches for component 13 mask 255
         working-directory: experiments
-        run: python r22_phase5_component13_torsion_mask255_residual_probe.py
+        run: python r22_phase5_component13_torsion_mask255_terminal_certificate.py
