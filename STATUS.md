@@ -2,9 +2,9 @@
 
 ## Current stage
 
-`T9 R(2,2) THEOREM-CLOSURE AUDIT — PHASES 1–4 CLOSED / COMPONENTS 5,7,13,15 PHASE 5 CLOSED / GLOBAL REPLAY PENDING`
+`T9 R(2,2) THEOREM-CLOSURE AUDIT — FULL SCALAR INVENTORY CLOSED / TWO PHYSICAL D-AMPLITUDE SHEETS ESTABLISHED / SECOND SHEET 12 OF 16 PHASE-5 BRANCHES CLOSED`
 
-Canonical checkpoints:
+Canonical checkpoints on the accepted/class-0 chain:
 
 - Phase 1–4: `notes/23-r22-phases1-4-closure.md`;
 - component 5 Phase 5: `notes/31-r22-component5-phase5-closure.md`;
@@ -12,125 +12,168 @@ Canonical checkpoints:
 - component 7 Phase 5: `notes/41-r22-component7-phase5-closure.md`;
 - component 15 Phase 5: `notes/42-r22-component15-phase5-closure.md`.
 
+Theorem-audit checkpoints:
+
+- shallow epsilon-minus executable closure: `notes/43-r22-shallow-epsminus-local-f-closure.md`;
+- full complex-gauge scalar inventory: `notes/44-r22-scalar-component-inventory-audit.md`;
+- D-amplitude mod-gauge frontier: `notes/45-r22-d-amplitude-mod-gauge-frontier.md`;
+- second-sheet Phase-3 closure: `notes/46-r22-second-d-sheet-e-layer-closure.md`;
+- second-sheet Phase-4 closure: `notes/47-r22-second-d-sheet-phase4-closure.md`;
+- second-sheet components 7/15 Phase-5 closure: `notes/48-r22-second-d-sheet-17plus4-phase5-closure.md`;
+- second-sheet component 5 mask-0 closure: `notes/49-r22-second-d-sheet-component5-mask0-phase5-closure.md`;
+- second-sheet complete component-5 closure: `notes/50-r22-second-d-sheet-component5-phase5-closure.md`.
+
 ## Theorem boundary
 
-The target is the categorifiability of the Meng–Yu rank-six self-dual fusion ring `R(2,2)`. The epsilon-plus half is independently excluded.
+The target is categorifiability of the Meng–Yu rank-six self-dual fusion ring `R(2,2)`.
 
-For epsilon-minus, the deep scalar components after the accepted early exact reductions are
+The full scalar A/B/C inventory has been re-audited modulo the **full complex gauge torus**. There are exactly 16 scalar components, split as
+
+\[
+\epsilon_+:\quad 0,1,2,3,8,9,10,11,
+\]
+
+\[
+\epsilon_-:\quad 4,5,6,7,12,13,14,15.
+\]
+
+The epsilon-plus half is independently excluded by the exhaustive local-F determinant census. The shallow epsilon-minus components
+
+\[
+4,6,12,14
+\]
+
+have independent executable local-F obstruction certificates.
+
+The deep epsilon-minus components are
 
 \[
 \boxed{5,7,13,15}.
 \]
 
-Phase 1 leaves exactly the chirality masks
+Phase 1 exhausts 256 chirality masks to exactly
 
 \[
 \boxed{0,105,150,255}
 \]
 
-for every deep scalar component. Phases 2–4 are canonically closed and show no obstruction.
+for each deep scalar component.
 
-All four deep scalar components are now obstructed at Phase 5 on the research record:
+## Critical theorem-audit correction — two physical D-amplitude sheets
 
-\[
-\boxed{5,7,13,15\;\text{CLOSED / EXACT}.}
-\]
+The theorem audit found that the historical Phase-2 D-amplitude engine selected one exact witness but did not prove uniqueness modulo residual gauge.
 
-This opens the theorem-closure audit. The global `R(2,2)` non-categorifiability statement is **not yet promoted** until the accepted branch-exhaustion chain and all component closures are replayed together from fresh state and checked for exhaustiveness.
-
-## Phase 5 — scalar component 15 CLOSED
-
-Component `15` is a `17 active + 4 coherence-forced-zero` Phase-4 type. Every surviving chirality mask was independently fresh-compiled and source-validated.
-
-For masks
+The exact homogeneous cross-D amplitude group is
 
 \[
-\boxed{0,105,150,255},
+H_D\cong(\mathbf C^*)^6\times\mu_2\times\mu_2.
 \]
 
-the fresh Phase-5 kernels all have:
+The connected six-dimensional part is pure residual gauge. The disconnected scalar residual gauge removes one of the two `Z2` factors, while the Pauli normalizer contributes no additional discrete identification. Therefore one genuine physical `Z2` remains:
 
-- 17 active weighted F components;
-- 19 kernel variables;
-- 38,080 raw nonzero final entries;
-- 147 unique kernel polynomials;
-- total-degree profile `1` linear, `2` quadratic, `144` cubic relations;
-- no generic constant contradiction.
+\[
+\boxed{\text{two gauge-inequivalent D-amplitude classes per deep chirality branch}.}
+\]
 
-The canonical verifier
+The deep theorem frontier is consequently
+
+\[
+4\text{ scalar components}\times4\text{ chirality masks}\times2\text{ D classes}=32
+\]
+
+rather than the previously assumed 16 branches.
+
+Both classes have exact D witnesses and replay all original D pentagons. All 32 branches pass Phases 1–4.
+
+## Second D-amplitude sheet — current Phase-5 ledger
+
+For D-amplitude class `1`:
+
+\[
+\boxed{5:4/4\ \text{CLOSED}},
+\]
+
+\[
+\boxed{7:4/4\ \text{CLOSED}},
+\]
+
+\[
+\boxed{15:4/4\ \text{CLOSED}}.
+\]
+
+Thus
+
+\[
+\boxed{12/16}
+\]
+
+second-sheet Phase-5 branches are `CLOSED / EXACT`.
+
+The only remaining second-sheet branches are
+
+\[
+\boxed{
+13/0,\quad13/105,\quad13/150,\quad13/255.
+}
+\]
+
+### Component 5 class-1 closure
+
+Every component-5 class-1 mask has:
+
+- 21 active weighted F components;
+- 23 nonlinear variables;
+- 50,880 raw nonzero final entries;
+- 219 unique cubic relations;
+- exact finite reduction to 18 `(p,q,z0)` strata;
+- the universal affine split
+  \[
+  \boxed{18=10_{\rm rank11}+8_{\rm rank10}};
+  \]
+- a two-variable rank-drop core in `x=z19`, `y=z20`;
+- complete few-cell source certificates for all eight rank-drop strata.
+
+Masks `105` and `150` are particularly uniform: the same fixed source family
 
 ```text
-experiments/r22_phase5_two_cell_certificate.py
+(XXXX;g)_(0,2)
+(XXXX;g)_(0,3)
+(XXXXX)_(2,23)
 ```
 
-avoids hard-coded F-coordinate names. In each fresh kernel it locates the same two fixed final-pentagon provenances
-
-```text
-(XXXXX)_(0,0)
-(XXXX;1)_(0,0)
-```
-
-and discovers the active scale coordinate `s` from the first relation. The two cells give
-
-\[
-\boxed{s=0},
-\]
-
-and
-
-\[
-\boxed{s^2-\frac12=0},
-\]
-
-hence
-
-\[
-\boxed{-\frac12=0}.
-\]
-
-Fresh four-mask serial replay `32256425671` reports:
-
-```text
-mask 0    scale=z6  contradiction=-1/2  closed=True
-mask 105  scale=z2  contradiction=-1/2  closed=True
-mask 150  scale=z5  contradiction=-1/2  closed=True
-mask 255  scale=z8  contradiction=-1/2  closed=True
-```
-
-Therefore
-
-\[
-\boxed{\text{scalar component 15 is completely obstructed at Phase 5}.}
-\]
-
-Full synthesis: `notes/42-r22-component15-phase5-closure.md`.
+closes every one of their rank-10 branches. Mask `255` closes four branches by an exact resultant `-48*y^4` and four by a sign split. Full synthesis: `notes/50-r22-second-d-sheet-component5-phase5-closure.md`.
 
 ## Verification-method correction
 
-The component-15 mask-150 audit exposed a limitation in the historical named-coordinate stability probe: the F-component partition and target pentagon polynomial were reconstructed in separate quotient builds, so implementation-dependent weighted-union-find representatives could rename the same active coordinate between builds.
+A historical named-coordinate stability probe could relabel weighted-F quotient coordinates between independent constructions. Named `z_j` identities are therefore not theorem evidence by themselves.
 
-This is a coordinate-label issue, not a new mathematical branch. The theorem interface is therefore changed from “this source cell is a fixed `z_j`” to the provenance-based statement “the first fixed source cell defines `s`, and the second is `s^2-1/2`.”
+Where possible, theorem-level certificates are now stated by final-pentagon **source provenance** and algebraic relation. Components `7` and `15` use a coordinate-free two-cell verifier that dynamically discovers the active scale coordinate from the first source cell.
 
-The component-15 closure already uses this coordinate-free verifier. Component `7` should be replayed through the same verifier during the theorem-closure audit so that the final theorem does not depend on the older named-coordinate reproducibility argument.
+The component-5 second-sheet proof likewise source-validates every decisive local cell after a fresh quotient construction.
 
 ## Open frontier — theorem closure
 
-No deep epsilon-minus scalar component remains locally open.
-
-Priority order:
-
-1. fresh coordinate-free replay of component `7`, masks `0,105,150,255`;
-2. fresh replay of the accepted component `5` and `13` Phase-5 closures;
-3. fresh replay of the epsilon-plus obstruction and canonical Phase-1–4 branch-exhaustion chain;
-4. audit case exhaustiveness from the original `R(2,2)` coherence problem to all terminal obstructions;
-5. write the theorem-level synthesis and only then decide whether to promote
+The highest-priority research node is now
 
 \[
-\boxed{R(2,2)\text{ is non-categorifiable}.}
+\boxed{\text{scalar component 13 / D-amplitude class 1 / masks }0,105,150,255.}
 \]
 
-No Gröbner computation is authorized before small exact local structure is exhausted. The 10-minute per-job guardrail remains in force.
+Component `13` is a 21-active-F Phase-4 type like component `5`, but no component-5 finite-scale coordinate, relation, or certificate is authorized as an assumption. Each mask must be fresh source-replayed.
+
+After component `13` class `1` is closed or otherwise resolved, the remaining theorem work is:
+
+1. audit seed-scalar normalization into the exact Pauli/projective normal form;
+2. freeze the exhaustive 16-scalar -> chirality -> two-D-sheet -> terminal-obstruction case ledger;
+3. perform the final canonical serial replay from fresh state;
+4. write the theorem-level synthesis;
+5. only then decide whether to promote
+   \[
+   \boxed{R(2,2)\text{ is non-categorifiable}.}
+   \]
+
+No global Gröbner computation, floating-point nonlinear search, or timeout increase is authorized before small exact local structure is exhausted. The 10-minute per-job guardrail remains in force.
 
 ## SCM boundary
 
-`main` records accepted, reproducible research state. Exploratory and theorem-closure work remains on `agent/*` branches. New conclusions require fresh exact replay and archive notes before promotion.
+`main` records accepted, reproducible research state. The theorem-completeness work remains on draft PR `#12`, branch `agent/r22-theorem-closure`, until the global case ledger and final replay are complete.
