@@ -2,7 +2,7 @@
 
 ## Current stage
 
-`T9 R(2,2) THEOREM-CLOSURE AUDIT — FULL SCALAR INVENTORY CLOSED / TWO PHYSICAL D-AMPLITUDE SHEETS ESTABLISHED / SECOND SHEET 12 OF 16 PHASE-5 BRANCHES CLOSED`
+`T9 R(2,2) THEOREM-CLOSURE AUDIT — FULL SCALAR INVENTORY CLOSED / TWO PHYSICAL D-AMPLITUDE SHEETS ESTABLISHED / SECOND SHEET 13 OF 16 PHASE-5 BRANCHES CLOSED`
 
 Canonical checkpoints on the accepted/class-0 chain:
 
@@ -21,7 +21,8 @@ Theorem-audit checkpoints:
 - second-sheet Phase-4 closure: `notes/47-r22-second-d-sheet-phase4-closure.md`;
 - second-sheet components 7/15 Phase-5 closure: `notes/48-r22-second-d-sheet-17plus4-phase5-closure.md`;
 - second-sheet component 5 mask-0 closure: `notes/49-r22-second-d-sheet-component5-mask0-phase5-closure.md`;
-- second-sheet complete component-5 closure: `notes/50-r22-second-d-sheet-component5-phase5-closure.md`.
+- second-sheet complete component-5 closure: `notes/50-r22-second-d-sheet-component5-phase5-closure.md`;
+- second-sheet component 13 mask-0 closure: `notes/51-r22-second-d-sheet-component13-mask0-phase5-closure.md`.
 
 ## Theorem boundary
 
@@ -98,13 +99,17 @@ For D-amplitude class `1`:
 \]
 
 \[
+\boxed{13:1/4\ \text{CLOSED}},
+\]
+
+\[
 \boxed{15:4/4\ \text{CLOSED}}.
 \]
 
 Thus
 
 \[
-\boxed{12/16}
+\boxed{13/16}
 \]
 
 second-sheet Phase-5 branches are `CLOSED / EXACT`.
@@ -112,10 +117,42 @@ second-sheet Phase-5 branches are `CLOSED / EXACT`.
 The only remaining second-sheet branches are
 
 \[
-\boxed{
-13/0,\quad13/105,\quad13/150,\quad13/255.
-}
+\boxed{13/105,\quad13/150,\quad13/255.}
 \]
+
+### Component 13 / mask 0 class-1 closure
+
+The fresh class-1 kernel has 21 active F components, 23 nonlinear variables,
+50,880 raw nonzero final entries and 219 exact cubic relations. Five fixed source
+cells give, before unsafe localization,
+
+\[
+\boxed{z_5^2=\frac12},\qquad
+\boxed{p^3=\frac{1+i}{4}},\qquad
+\boxed{q^3=\frac{1-i}{4}},
+\]
+
+\[
+\boxed{z_0z_6=i p^2z_5},\qquad
+\boxed{z_{12}z_{16}=-q^2z_5}.
+\]
+
+The 18 exact finite branches split as
+
+\[
+\boxed{18=2_{\rm affine}+4_{\rm p-rank11}+4_{\rm q-rank11}+8_{\rm rank10}}.
+\]
+
+The p-side four are excluded by `(XXXX;Y)_(1,0) -> c*z0`; the q-side four by
+`(XXXXX)_(5,2) -> c*z12`.  The rank-10 core is `(r,s)=(z18,z19)` and the same
+three fixed g-cells `(0,0),(0,2),(0,3)` give
+
+\[
+G_2-G_3=A(r^2-s^2),\quad A\ne0,
+\]
+
+followed by a sign split, `G0 -> H*s^2` with `H != 0`, and a nonzero constant
+in `G2`.  Full synthesis: `notes/51-r22-second-d-sheet-component13-mask0-phase5-closure.md`.
 
 ### Component 5 class-1 closure
 
@@ -149,17 +186,17 @@ A historical named-coordinate stability probe could relabel weighted-F quotient 
 
 Where possible, theorem-level certificates are now stated by final-pentagon **source provenance** and algebraic relation. Components `7` and `15` use a coordinate-free two-cell verifier that dynamically discovers the active scale coordinate from the first source cell.
 
-The component-5 second-sheet proof likewise source-validates every decisive local cell after a fresh quotient construction.
+The component-5 and component-13 second-sheet proofs likewise source-validate every decisive local cell after a fresh quotient construction.
 
 ## Open frontier — theorem closure
 
 The highest-priority research node is now
 
 \[
-\boxed{\text{scalar component 13 / D-amplitude class 1 / masks }0,105,150,255.}
+\boxed{\text{scalar component 13 / D-amplitude class 1 / masks }105,150,255.}
 \]
 
-Component `13` is a 21-active-F Phase-4 type like component `5`, but no component-5 finite-scale coordinate, relation, or certificate is authorized as an assumption. Each mask must be fresh source-replayed.
+Mask `0` is closed independently. The remaining masks must still be fresh source-replayed; no named-coordinate or finite-scale relation from the historical D sheet is authorized as an assumption.
 
 After component `13` class `1` is closed or otherwise resolved, the remaining theorem work is:
 
