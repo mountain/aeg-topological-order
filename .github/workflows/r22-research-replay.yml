@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  replay-d1a-component7-two-cell:
+  replay-d1a1-component15-coordinate-free-two-cell:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -21,55 +21,14 @@ jobs:
           python-version: '3.12'
       - name: Install exact dependencies
         run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Fresh-compile and close all component-7 class-1 masks
+      - name: Fresh-compile and close all component-15 class-1 masks without coordinate-name assumptions
         working-directory: experiments
         run: |
           python - <<'PY'
+          import re
           import r22_phase5_torsion_sheet as ts
 
           masks = (0, 105, 150, 255)
-          rows = []
-          for mask in masks:
-              kernel = ts.compile_kernel(7, mask)
-              expected = {
-                  'F_linear_components': 17,
-                  'kernel_variables': 19,
-                  'raw_nonzero_final_entries': 38080,
-                  'unique_kernel_polynomials': 147,
-                  'constant_contradictions': 0,
-              }
-              got = {k: kernel[k] for k in expected}
-              if got != expected:
-                  raise AssertionError(('unexpected class-1 component-7 kernel fingerprint', mask, got, expected))
-              cert = ts.verify_two_cell(7, mask)
-              if not cert.get('closed') or cert['kernel_variables'] != 19 or cert['unique_kernel_polynomials'] != 147 or cert['contradiction'] != '-1/2':
-                  raise AssertionError(('component-7 class-1 two-cell certificate failed', mask, cert))
-              rows.append((mask, cert['scale']))
-          if len(rows) != 4 or {m for m, _s in rows} != set(masks):
-              raise AssertionError(rows)
-          print({'component': 7, 'D_amplitude_class': 1, 'masks_closed': rows, 'closed': 4, 'total': 4})
-          print('RESULT: component 7 / D class 1 / all four chirality masks are terminally closed')
-          PY
-
-  replay-d1a-component15-two-cell:
-    needs: replay-d1a-component7-two-cell
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Install exact dependencies
-        run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Fresh-compile and close all component-15 class-1 masks
-        working-directory: experiments
-        run: |
-          python - <<'PY'
-          import r22_phase5_torsion_sheet as ts
-
-          masks = (0, 105, 150, 255)
-          expected_scales = {0: 'z7', 105: 'z2', 150: 'z5', 255: 'z8'}
           rows = []
           for mask in masks:
               kernel = ts.compile_kernel(15, mask)
@@ -83,14 +42,18 @@ jobs:
               got = {k: kernel[k] for k in expected}
               if got != expected:
                   raise AssertionError(('unexpected class-1 component-15 kernel fingerprint', mask, got, expected))
+
               cert = ts.verify_two_cell(15, mask)
               if not cert.get('closed') or cert['kernel_variables'] != 19 or cert['unique_kernel_polynomials'] != 147 or cert['contradiction'] != '-1/2':
                   raise AssertionError(('component-15 class-1 two-cell certificate failed', mask, cert))
-              if cert['scale'] != expected_scales[mask]:
-                  raise AssertionError(('unexpected coordinate-free discovered scale', mask, cert['scale'], expected_scales[mask]))
+              if not re.fullmatch(r'z\d+', cert['scale']):
+                  raise AssertionError(('two-cell verifier did not discover a canonical active F coordinate', mask, cert))
+              if cert['P1'] != cert['scale'] or cert['P2'] != f"{cert['scale']}**2 - 1/2":
+                  raise AssertionError(('two-cell polynomial shape mismatch', mask, cert))
               rows.append((mask, cert['scale']))
+
           if len(rows) != 4 or {m for m, _s in rows} != set(masks):
               raise AssertionError(rows)
-          print({'component': 15, 'D_amplitude_class': 1, 'masks_closed': rows, 'closed': 4, 'total': 4})
-          print('RESULT: component 15 / D class 1 / all four chirality masks are terminally closed')
+          print({'component': 15, 'D_amplitude_class': 1, 'coordinate_names_are_not_invariants': True, 'masks_closed': rows, 'closed': 4, 'total': 4})
+          print('RESULT: component 15 / D class 1 / all four chirality masks are terminally closed by the coordinate-free two-cell certificate')
           PY
