@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  replay-d1c1-mask105-local-relations:
+  replay-d1c2-mask150-local:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -21,12 +21,11 @@ jobs:
           python-version: '3.12'
       - name: Install exact dependencies
         run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Fresh source-validate the five-cell class-1 local model
+      - name: Fresh source-validate component 13 mask 150 class-1 local model
         working-directory: experiments
-        run: python r22_phase5_component13_torsion_mask105_local_relations.py
+        run: python r22_phase5_component13_torsion_mask150_local_relations.py
 
-  replay-d1c1-mask105-finite-census:
-    needs: replay-d1c1-mask105-local-relations
+  replay-d1c3-mask255-local:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -36,61 +35,152 @@ jobs:
           python-version: '3.12'
       - name: Install exact dependencies
         run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Rebuild all 18 finite branches and assert the exact 2+4+4+8 stratification
+      - name: Fresh source-validate component 13 mask 255 class-1 local model
         working-directory: experiments
+        run: python r22_phase5_component13_torsion_mask255_local_relations.py
+
+  replay-d1c2-mask150-terminal:
+    needs: replay-d1c2-mask150-local
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install exact dependencies
+        run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
+      - name: Rebuild and close all 18 component-13 mask-150 class-1 finite strata
+        working-directory: experiments
+        run: python r22_phase5_component13_torsion_mask150_terminal_certificate.py
+
+  replay-d1c3-mask255-terminal:
+    needs: replay-d1c3-mask255-local
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install exact dependencies
+        run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
+      - name: Rebuild and close all 18 component-13 mask-255 class-1 finite strata
+        working-directory: experiments
+        run: python r22_phase5_component13_torsion_mask255_terminal_certificate.py
+
+  replay-global-44-leaf-ledger:
+    needs:
+      - replay-d1c2-mask150-terminal
+      - replay-d1c3-mask255-terminal
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install exact dependencies
+        run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
+      - name: Reconcile the complete 44-leaf theorem ledger
+        working-directory: experiments
+        run: python r22_theorem_case_ledger.py
+
+  replay-theorem-scope-readiness:
+    needs: replay-global-44-leaf-ledger
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Audit theorem-synthesis scope without promoting the theorem
         run: |
           python - <<'PY'
-          import r22_phase5_component13_torsion_mask105_finite_census as fc
-          import r22_phase5_monomial_lift as ml
-          import r22_phase5_torsion_sheet as ts
+          from pathlib import Path
 
-          with ts.second_sheet_provider():
-              _quotient, unique = ml.compile_unique(fc.CID, fc.MASK)
-          rows = [fc.branch_census(unique,a,b,sign) for b in range(3) for a in range(3) for sign in (1,-1)]
-          if len(rows) != 18:
-              raise AssertionError(('finite branch count',len(rows)))
-          by_id = {(r['a'],r['b'],r['sign']):r for r in rows}
-          signs = ('+','-')
+          status = Path('STATUS.md').read_text()
+          seed = Path('notes/56-r22-pauli-seed-normal-form-completeness.md').read_text()
+          ledger = Path('notes/57-r22-global-theorem-case-ledger.md').read_text()
+          second = Path('notes/55-r22-second-d-sheet-phase5-closure.md').read_text()
 
-          for sign in signs:
-              r = by_id[(0,0,sign)]
-              if r['consistent']:
-                  raise AssertionError(('expected affine inconsistency',r))
+          required_status = (
+              'exactly 16 A/B/C components modulo the full complex gauge torus',
+              'Pauli seed normal form',
+              'exactly two gauge-inequivalent physical D-amplitude classes',
+              'all 32 physical deep branches',
+              '44\\text{ top-level terminal leaves}',
+              'Only after all replay sub-gates succeed',
+              'No theorem promotion or merge is authorized yet',
+          )
+          missing = [x for x in required_status if x not in status]
+          if missing:
+              raise AssertionError(('STATUS theorem-boundary mismatch', missing))
 
-          for a in (1,2):
-              for sign in signs:
-                  r = by_id[(a,0,sign)]
-                  if not (r['consistent'] and r['rank']==11 and r['free_dimension']==7 and r['forced_zero_z']==(7,8)):
-                      raise AssertionError(('bad p-rank11 branch',r))
+          required_seed = ('48 seed-only D pentagons', '96', 'GL_2(C)', '2^8=256')
+          if any(x not in seed for x in required_seed):
+              raise AssertionError('Pauli normal-form archive lost a theorem-scope invariant')
 
-          for b in (1,2):
-              for sign in signs:
-                  r = by_id[(0,b,sign)]
-                  if not (r['consistent'] and r['rank']==11 and r['free_dimension']==7 and r['forced_zero_z']==(11,18)):
-                      raise AssertionError(('bad q-rank11 branch',r))
+          required_ledger = ('32', '44', '0,105,150,255', 'D class')
+          if any(x not in ledger for x in required_ledger):
+              raise AssertionError('global ledger archive lost a theorem-scope invariant')
 
-          for a in (1,2):
-              for b in (1,2):
-                  for sign in signs:
-                      r = by_id[(a,b,sign)]
-                      if not (r['consistent'] and r['rank']==10 and r['free_dimension']==8 and r['forced_zero_z']==()):
-                          raise AssertionError(('bad rank10 branch',r))
+          if 'CLOSED / EXACT' not in second or '16 / 16' not in second.replace('16/16', '16 / 16'):
+              raise AssertionError('second-D-sheet synthesis archive is not closed 16/16')
 
-          print({'component':13,'mask':105,'D_amplitude_class':1,'finite_total':18,'affine_inconsistent':2,'p_rank11':4,'q_rank11':4,'rank10':8})
-          print('RESULT: component 13 / mask 105 / D class 1 finite stratification is exactly 18=2+4+4+8')
+          print({
+              'scope_ready': True,
+              'theorem_promoted': False,
+              'claim_boundary': 'implemented Meng-Yu R(2,2) fusion-category coherence/categorification equations',
+              'next_artifact': 'theorem-level synthesis note',
+          })
+          print('RESULT: replayed proof tree is scope-ready for theorem synthesis; this gate does NOT promote the theorem')
           PY
 
-  replay-d1c1-mask105-terminal:
-    needs: replay-d1c1-mask105-finite-census
+  replay-final-consistency:
+    needs: replay-theorem-scope-readiness
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
-      - name: Install exact dependencies
-        run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Close all 2+4+4+8 finite branches with fixed source cells
-        working-directory: experiments
-        run: python r22_phase5_component13_torsion_mask105_terminal_certificate.py
+          fetch-depth: 0
+      - name: Verify canonical replay ancestry
+        run: |
+          set -euo pipefail
+          for sha in \
+            d3dc59a7bafb7055a8324c55ce6fa638e15f6997 \
+            db2612717126ed51234687e670efb8f4f5768dce \
+            cc07c4e3c16b222d3ab02cd796d96c295629a657 \
+            c62c2a8147bc808ce49000b2b0bcd0b82271d03a \
+            4991d33823a4be462e47f64b893b35c7c61ad012 \
+            69c5084c3ecad45b9ad9bfc99ed388626f0c0d2d \
+            13825380c0d0648ab05b1e268512e4425620101d \
+            6f0d619510ad8eec1ff0c1c94b300aff81ee3e02
+          do
+            git cat-file -e "${sha}^{commit}"
+            git merge-base --is-ancestor "$sha" HEAD
+          done
+          echo 'RESULT: canonical replay A/B/C/D ancestry is present in one proof branch'
+      - name: Verify terminal artifact manifest and non-promotion boundary
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          required = [
+              'experiments/r22_theorem_case_ledger.py',
+              'notes/55-r22-second-d-sheet-phase5-closure.md',
+              'notes/56-r22-pauli-seed-normal-form-completeness.md',
+              'notes/57-r22-global-theorem-case-ledger.md',
+              'experiments/r22_phase5_component13_torsion_mask0_terminal_certificate.py',
+              'experiments/r22_phase5_component13_torsion_mask105_terminal_certificate.py',
+              'experiments/r22_phase5_component13_torsion_mask150_terminal_certificate.py',
+              'experiments/r22_phase5_component13_torsion_mask255_terminal_certificate.py',
+          ]
+          missing = [p for p in required if not Path(p).is_file()]
+          if missing:
+              raise AssertionError(('missing theorem artifacts', missing))
+          status = Path('STATUS.md').read_text()
+          if 'No theorem promotion or merge is authorized yet' not in status:
+              raise AssertionError('non-promotion boundary disappeared before theorem synthesis')
+          print({'required_artifacts': len(required), 'missing': 0, 'non_promotion_boundary': True})
+          print('RESULT: final replay artifacts and ancestry are internally consistent; theorem synthesis is the next explicit write step')
+          PY
