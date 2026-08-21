@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  replay-d0b1-mask105-local-relations:
+  replay-d0b2-mask150-local-relations:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -21,43 +21,12 @@ jobs:
           python-version: '3.12'
       - name: Install exact dependencies
         run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Re-derive the five mask-105 local relations from source cells
+      - name: Re-derive all five mask-150 local relations from fixed source cells
         working-directory: experiments
-        run: |
-          python - <<'PY'
-          import sympy as sp
-          import r22_phase5_component5_local_relations as lv
-          import r22_phase5_monomial_lift as ml
+        run: python r22_phase5_component5_local_relations.py --component 5 --mask 150
 
-          cid, mask = 5, 105
-          p3 = (1+sp.I)/4
-          q3 = -(1+sp.I)/4
-          alpha = -sp.I
-          beta = -sp.I
-          _quotient, unique = ml.compile_unique(cid, mask)
-          by_prov = {prov: key for key, prov in unique.items()}
-          missing = [prov for prov in lv.PROVENANCE if prov not in by_prov]
-          if missing:
-              raise AssertionError(("missing local provenance", missing))
-          e1 = lv.project_expr(by_prov[lv.P1])
-          e2 = lv.project_expr(by_prov[lv.P2])
-          e3 = lv.project_expr(by_prov[lv.P3])
-          e4 = lv.project_expr(by_prov[lv.P4])
-          e5 = lv.project_expr(by_prov[lv.P5])
-          lv.assert_proportional(e1, lv.Z2*lv.Z3-alpha*lv.P**2*lv.T, "P1")
-          lv.assert_proportional(e2, lv.P*lv.Z2*lv.Z3-alpha*p3*lv.T, "P2")
-          lv.assert_proportional(e3, lv.Q*lv.Z1*lv.Z8-beta*q3*lv.T, "P3")
-          lv.assert_proportional(e4, lv.Z1*lv.Z8-beta*lv.Q**2*lv.T, "P4")
-          r5 = sp.factor(lv.reduce_p5(e5, alpha, beta, p3, q3))
-          target = 2*lv.T**2 + 4*lv.T - 1
-          if sp.Poly(r5, lv.T, extension=[sp.I]).monic() != sp.Poly(target, lv.T, extension=[sp.I]).monic():
-              raise AssertionError(("P5 did not yield z0 quadratic", r5))
-          print({"component": cid, "mask": mask, "p3": str(p3), "q3": str(q3), "z2z3_phase": str(alpha), "z1z8_phase": str(beta), "p5_reduced": str(r5), "validated": True})
-          print("RESULT: component 5 / mask 105 five local relations re-derived from fixed source cells")
-          PY
-
-  replay-d0b1-mask105-zero-closure:
-    needs: replay-d0b1-mask105-local-relations
+  replay-d0b2-mask150-zero-closure:
+    needs: replay-d0b2-mask150-local-relations
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -67,19 +36,19 @@ jobs:
           python-version: '3.12'
       - name: Install exact dependencies
         run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Exclude all z0-zero product branches raw-before-canonical
+      - name: Exclude all z0-zero raw branches before canonicalization
         working-directory: experiments
         run: |
           python - <<'PY'
           import r22_phase5_zero_closure as zc
-          summary = zc.audit(5, 105, ['A', 'ZB', 'ZC', 'D'])
+          summary = zc.audit(5, 150, ['A', 'ZB', 'ZC', 'D'])
           if summary['closed'] != 4 or summary['total'] != 4 or summary['survivors']:
               raise AssertionError(summary)
-          print("RESULT: component 5 / mask 105 z0=0 frontier is exhaustively closed")
+          print("RESULT: component 5 / mask 150 z0=0 frontier is exhaustively closed")
           PY
 
-  replay-d0b1-mask105-finite-census:
-    needs: replay-d0b1-mask105-zero-closure
+  replay-d0b2-mask150-finite-census:
+    needs: replay-d0b2-mask150-zero-closure
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -89,42 +58,39 @@ jobs:
           python-version: '3.12'
       - name: Install exact dependencies
         run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Rebuild all 18 finite branches and assert the exact 10+8 split
+      - name: Rebuild all 18 branches and assert the exact 10+8 split
         working-directory: experiments
         run: |
           python - <<'PY'
-          from collections import Counter
-          import r22_phase5_mask105_finite_audit as fa
+          import r22_phase5_component5_rest_audit as fa
 
-          unique, reduced, by_prov = fa.compile_once(5, 105)
-          rows = []
-          profile = Counter()
-          for b in range(3):
-              for a in range(3):
-                  for root in ('positive', 'negative'):
-                      row = fa.run_case(unique, reduced, by_prov, a, b, root)
-                      rows.append(row)
-                      aff = row['affine']
-                      if aff.get('consistent'):
-                          profile[(aff['rank'], aff['free_dimension'], tuple(aff['forced_zero']))] += 1
-                      else:
-                          profile[('inconsistent',)] += 1
+          summary = fa.audit_mask(5, 150)
           expected = {
               (a, b, root)
               for (a, b) in ((1,1), (2,1), (1,2), (2,2))
               for root in ('positive', 'negative')
           }
-          survivors = {(r['a'], r['b'], r['root']) for r in rows if not r['closed']}
-          closed = sum(bool(r['closed']) for r in rows)
-          expected_profile = {(11, 9, (6, 7, 9, 10)): 10, (10, 10, ()): 8}
-          if len(rows) != 18 or closed != 10 or survivors != expected or dict(profile) != expected_profile:
-              raise AssertionError({"total": len(rows), "closed": closed, "survivors": sorted(survivors), "profile": dict(profile), "expected_survivors": sorted(expected), "expected_profile": expected_profile})
-          print({"component": 5, "mask": 105, "total": 18, "closed_at_finite_gate": 10, "rankdrop_survivors": sorted(survivors), "rank_profile": dict(profile)})
-          print("RESULT: component 5 / mask 105 finite census is exactly 18=10+8")
+          survivors = {(r['a'], r['b'], r['root']) for r in summary['survivors']}
+          expected_profile = {
+              '(11, 9, (6, 7, 9, 10))': 10,
+              '(10, 10, ())': 8,
+          }
+          if (
+              summary['total'] != 18
+              or summary['closed_by_affine_or_7_targets'] != 10
+              or survivors != expected
+              or summary['rank_profile'] != expected_profile
+          ):
+              raise AssertionError({
+                  'summary': summary,
+                  'expected_survivors': sorted(expected),
+                  'expected_profile': expected_profile,
+              })
+          print("RESULT: component 5 / mask 150 finite census is exactly 18=10+8")
           PY
 
-  replay-d0b1-mask105-rankdrop-certificates:
-    needs: replay-d0b1-mask105-finite-census
+  replay-d0b2-mask150-rankdrop-certificates:
+    needs: replay-d0b2-mask150-finite-census
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -134,6 +100,6 @@ jobs:
           python-version: '3.12'
       - name: Install exact dependencies
         run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Close all eight rank-10 branches with the accepted <=3-cell certificates
+      - name: Close all eight rank-10 branches by the accepted local certificates
         working-directory: experiments
-        run: python r22_phase5_mask105_rankdrop_certificate.py --component 5 --mask 105
+        run: python r22_phase5_component5_rest_certificate.py --component 5 --mask 150
