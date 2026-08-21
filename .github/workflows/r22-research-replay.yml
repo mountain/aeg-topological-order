@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  replay-d0b0-mask0-local-relations:
+  replay-d0b1-mask105-local-relations:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -21,7 +21,7 @@ jobs:
           python-version: '3.12'
       - name: Install exact dependencies
         run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Re-derive the five mask-0 local relations from source cells
+      - name: Re-derive the five mask-105 local relations from source cells
         working-directory: experiments
         run: |
           python - <<'PY'
@@ -29,10 +29,10 @@ jobs:
           import r22_phase5_component5_local_relations as lv
           import r22_phase5_monomial_lift as ml
 
-          cid, mask = 5, 0
-          p3 = (1-sp.I)/4
+          cid, mask = 5, 105
+          p3 = (1+sp.I)/4
           q3 = -(1+sp.I)/4
-          alpha = sp.I
+          alpha = -sp.I
           beta = -sp.I
           _quotient, unique = ml.compile_unique(cid, mask)
           by_prov = {prov: key for key, prov in unique.items()}
@@ -53,11 +53,11 @@ jobs:
           if sp.Poly(r5, lv.T, extension=[sp.I]).monic() != sp.Poly(target, lv.T, extension=[sp.I]).monic():
               raise AssertionError(("P5 did not yield z0 quadratic", r5))
           print({"component": cid, "mask": mask, "p3": str(p3), "q3": str(q3), "z2z3_phase": str(alpha), "z1z8_phase": str(beta), "p5_reduced": str(r5), "validated": True})
-          print("RESULT: component 5 / mask 0 five local relations re-derived from fixed source cells")
+          print("RESULT: component 5 / mask 105 five local relations re-derived from fixed source cells")
           PY
 
-  replay-d0b0-mask0-zero-closure:
-    needs: replay-d0b0-mask0-local-relations
+  replay-d0b1-mask105-zero-closure:
+    needs: replay-d0b1-mask105-local-relations
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -72,14 +72,14 @@ jobs:
         run: |
           python - <<'PY'
           import r22_phase5_zero_closure as zc
-          summary = zc.audit(5, 0, ['A', 'ZB', 'ZC', 'D'])
+          summary = zc.audit(5, 105, ['A', 'ZB', 'ZC', 'D'])
           if summary['closed'] != 4 or summary['total'] != 4 or summary['survivors']:
               raise AssertionError(summary)
-          print("RESULT: component 5 / mask 0 z0=0 frontier is exhaustively closed")
+          print("RESULT: component 5 / mask 105 z0=0 frontier is exhaustively closed")
           PY
 
-  replay-d0b0-mask0-finite-census:
-    needs: replay-d0b0-mask0-zero-closure
+  replay-d0b1-mask105-finite-census:
+    needs: replay-d0b1-mask105-zero-closure
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -93,15 +93,22 @@ jobs:
         working-directory: experiments
         run: |
           python - <<'PY'
-          import r22_phase5_all_cube_pairs as ac
-          import r22_phase5_ratio_classes as rc
+          from collections import Counter
+          import r22_phase5_mask105_finite_audit as fa
 
-          unique, reduced, by_prov = rc.compile_reduced_once(5, 0)
+          unique, reduced, by_prov = fa.compile_once(5, 105)
           rows = []
+          profile = Counter()
           for b in range(3):
               for a in range(3):
                   for root in ('positive', 'negative'):
-                      rows.append(ac.run_pair(unique, reduced, by_prov, a, b, root))
+                      row = fa.run_case(unique, reduced, by_prov, a, b, root)
+                      rows.append(row)
+                      aff = row['affine']
+                      if aff.get('consistent'):
+                          profile[(aff['rank'], aff['free_dimension'], tuple(aff['forced_zero']))] += 1
+                      else:
+                          profile[('inconsistent',)] += 1
           expected = {
               (a, b, root)
               for (a, b) in ((1,1), (2,1), (1,2), (2,2))
@@ -109,14 +116,15 @@ jobs:
           }
           survivors = {(r['a'], r['b'], r['root']) for r in rows if not r['closed']}
           closed = sum(bool(r['closed']) for r in rows)
-          if len(rows) != 18 or closed != 10 or survivors != expected:
-              raise AssertionError({"total": len(rows), "closed": closed, "survivors": sorted(survivors), "expected": sorted(expected)})
-          print({"component": 5, "mask": 0, "total": 18, "closed_at_finite_gate": 10, "rankdrop_survivors": sorted(survivors)})
-          print("RESULT: component 5 / mask 0 finite census is exactly 18=10+8")
+          expected_profile = {(11, 9, (6, 7, 9, 10)): 10, (10, 10, ()): 8}
+          if len(rows) != 18 or closed != 10 or survivors != expected or dict(profile) != expected_profile:
+              raise AssertionError({"total": len(rows), "closed": closed, "survivors": sorted(survivors), "profile": dict(profile), "expected_survivors": sorted(expected), "expected_profile": expected_profile})
+          print({"component": 5, "mask": 105, "total": 18, "closed_at_finite_gate": 10, "rankdrop_survivors": sorted(survivors), "rank_profile": dict(profile)})
+          print("RESULT: component 5 / mask 105 finite census is exactly 18=10+8")
           PY
 
-  replay-d0b0-mask0-three-cell-rankdrop:
-    needs: replay-d0b0-mask0-finite-census
+  replay-d0b1-mask105-rankdrop-certificates:
+    needs: replay-d0b1-mask105-finite-census
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -126,65 +134,6 @@ jobs:
           python-version: '3.12'
       - name: Install exact dependencies
         run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Replay the three-cell certificate and assert the exact four residual cube/root branches
+      - name: Close all eight rank-10 branches with the accepted <=3-cell certificates
         working-directory: experiments
-        run: |
-          python - <<'PY'
-          import r22_phase5_local_rewrite as lr
-          import r22_phase5_monomial_lift as ml
-          import r22_phase5_rankdrop_certificate as cert
-
-          _quotient, unique = ml.compile_unique(5, 0)
-          reduced = {key: lr.reduce_poly(key) for key in unique}
-          by_prov = {prov: key for key, prov in unique.items()}
-          missing = [p for p in cert.TARGETS if p not in by_prov]
-          if missing:
-              raise AssertionError(("missing target provenance", missing))
-          rows = []
-          for a, b in cert.SURVIVOR_PAIRS:
-              for root in ('positive', 'negative'):
-                  rows.append(cert.branch_certificate(unique, reduced, by_prov, a, b, root))
-          expected = {(a, b, root) for (a, b) in ((2,1), (1,2)) for root in ('positive', 'negative')}
-          survivors = {(r['cube_pair'][0], r['cube_pair'][1], r['root']) for r in rows if not r.get('closed')}
-          closed = sum(bool(r.get('closed')) for r in rows)
-          if len(rows) != 8 or closed != 4 or survivors != expected:
-              raise AssertionError({"total": len(rows), "closed": closed, "survivors": sorted(survivors), "expected": sorted(expected)})
-          print({"component": 5, "mask": 0, "rankdrop_total": 8, "closed_by_three_cells": 4, "residual_cube_root_branches": sorted(survivors)})
-          print("RESULT: the three-cell gate leaves exactly the four expected cube/root branches")
-          PY
-
-  replay-d0b0-mask0-fourth-entry:
-    needs: replay-d0b0-mask0-three-cell-rankdrop
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Install exact dependencies
-        run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Close all eight final sign subbranches with the fourth source cell
-        working-directory: experiments
-        run: |
-          python - <<'PY'
-          import r22_phase5_fourth_entry_audit as final
-          import r22_phase5_local_rewrite as lr
-          import r22_phase5_monomial_lift as ml
-
-          _quotient, unique = ml.compile_unique(5, 0)
-          reduced = {key: lr.reduce_poly(key) for key in unique}
-          by_prov = {prov: key for key, prov in unique.items()}
-          if final.TARGET not in by_prov:
-              raise AssertionError(("missing target", final.TARGET))
-          rows = []
-          for a, b in final.PAIRS:
-              for root in ('positive', 'negative'):
-                  for sign in (1, -1):
-                      rows.append(final.run_branch(unique, reduced, by_prov, a, b, root, sign))
-          survivors = [r for r in rows if not r['closed']]
-          if len(rows) != 8 or survivors:
-              raise AssertionError({"total": len(rows), "survivors": survivors})
-          print({"component": 5, "mask": 0, "final_sign_subbranches": 8, "closed": 8})
-          print("RESULT: component 5 / mask 0 is terminally closed at Phase 5")
-          PY
+        run: python r22_phase5_mask105_rankdrop_certificate.py --component 5 --mask 105
