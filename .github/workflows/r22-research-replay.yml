@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  replay-d1c0-mask0-local-relations:
+  replay-d1c1-mask105-local-relations:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -23,10 +23,10 @@ jobs:
         run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
       - name: Fresh source-validate the five-cell class-1 local model
         working-directory: experiments
-        run: python r22_phase5_component13_torsion_mask0_local_relations.py
+        run: python r22_phase5_component13_torsion_mask105_local_relations.py
 
-  replay-d1c0-mask0-finite-census:
-    needs: replay-d1c0-mask0-local-relations
+  replay-d1c1-mask105-finite-census:
+    needs: replay-d1c1-mask105-local-relations
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -40,7 +40,7 @@ jobs:
         working-directory: experiments
         run: |
           python - <<'PY'
-          import r22_phase5_component13_torsion_mask0_finite_census as fc
+          import r22_phase5_component13_torsion_mask105_finite_census as fc
           import r22_phase5_monomial_lift as ml
           import r22_phase5_torsion_sheet as ts
 
@@ -51,31 +51,37 @@ jobs:
               raise AssertionError(('finite branch count',len(rows)))
           by_id = {(r['a'],r['b'],r['sign']):r for r in rows}
           signs = ('+','-')
+
           for sign in signs:
-              if by_id[(0,0,sign)]['consistent']:
-                  raise AssertionError(('expected affine inconsistency',by_id[(0,0,sign)]))
+              r = by_id[(0,0,sign)]
+              if r['consistent']:
+                  raise AssertionError(('expected affine inconsistency',r))
+
           for a in (1,2):
               for sign in signs:
-                  r=by_id[(a,0,sign)]
-                  if not (r['consistent'] and r['rank']==11 and r['free_dimension']==7 and r['forced_zero_z']==(13,14)):
+                  r = by_id[(a,0,sign)]
+                  if not (r['consistent'] and r['rank']==11 and r['free_dimension']==7 and r['forced_zero_z']==(7,8)):
                       raise AssertionError(('bad p-rank11 branch',r))
+
           for b in (1,2):
               for sign in signs:
-                  r=by_id[(0,b,sign)]
-                  if not (r['consistent'] and r['rank']==11 and r['free_dimension']==7 and r['forced_zero_z']==(7,8)):
+                  r = by_id[(0,b,sign)]
+                  if not (r['consistent'] and r['rank']==11 and r['free_dimension']==7 and r['forced_zero_z']==(11,18)):
                       raise AssertionError(('bad q-rank11 branch',r))
+
           for a in (1,2):
               for b in (1,2):
                   for sign in signs:
-                      r=by_id[(a,b,sign)]
+                      r = by_id[(a,b,sign)]
                       if not (r['consistent'] and r['rank']==10 and r['free_dimension']==8 and r['forced_zero_z']==()):
                           raise AssertionError(('bad rank10 branch',r))
-          print({'component':13,'mask':0,'D_amplitude_class':1,'finite_total':18,'affine_inconsistent':2,'p_rank11':4,'q_rank11':4,'rank10':8})
-          print('RESULT: component 13 / mask 0 / D class 1 finite stratification is exactly 18=2+4+4+8')
+
+          print({'component':13,'mask':105,'D_amplitude_class':1,'finite_total':18,'affine_inconsistent':2,'p_rank11':4,'q_rank11':4,'rank10':8})
+          print('RESULT: component 13 / mask 105 / D class 1 finite stratification is exactly 18=2+4+4+8')
           PY
 
-  replay-d1c0-mask0-terminal:
-    needs: replay-d1c0-mask0-finite-census
+  replay-d1c1-mask105-terminal:
+    needs: replay-d1c1-mask105-finite-census
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -85,6 +91,6 @@ jobs:
           python-version: '3.12'
       - name: Install exact dependencies
         run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Close all 4+4+8 non-affine finite branches with fixed source cells
+      - name: Close all 2+4+4+8 finite branches with fixed source cells
         working-directory: experiments
-        run: python r22_phase5_component13_torsion_mask0_terminal_certificate.py
+        run: python r22_phase5_component13_torsion_mask105_terminal_certificate.py
