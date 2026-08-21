@@ -1,4 +1,4 @@
-name: R22 theorem synthesis readiness
+name: R22 encoding soundness audit
 
 on:
   pull_request:
@@ -11,110 +11,16 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  replay-theorem-scope-readiness:
+  encoding-soundness-audit:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - name: Audit theorem-synthesis scope without promoting the theorem
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-
-          status = Path('STATUS.md').read_text()
-          seed = Path('notes/56-r22-pauli-seed-normal-form-completeness.md').read_text()
-          ledger = Path('notes/57-r22-global-theorem-case-ledger.md').read_text()
-          second = Path('notes/55-r22-second-d-sheet-phase5-closure.md').read_text()
-
-          required_status = (
-              'exactly 16 A/B/C components modulo the full complex gauge torus',
-              'Pauli seed normal form',
-              'exactly two gauge-inequivalent physical D-amplitude classes',
-              'all 32 physical deep branches',
-              '44\\text{ top-level terminal leaves}',
-              'Only after all replay sub-gates succeed',
-              'No theorem promotion or merge is authorized yet',
-          )
-          missing = [x for x in required_status if x not in status]
-          if missing:
-              raise AssertionError(('STATUS theorem-boundary mismatch', missing))
-
-          # Check executable-output fingerprints rather than prose/LaTeX spelling.
-          required_seed = (
-              'seed_only_D_pentagons = 48',
-              'seed_blocks_verified_as_GL2_conjugation_endomorphisms = 24',
-              'singleton_square_profile = {1: 96}',
-              "pair_relation_profile = {'anticommute': 96}",
-              '2^8 Pauli chirality census is projectively exhaustive',
-          )
-          missing_seed = [x for x in required_seed if x not in seed]
-          if missing_seed:
-              raise AssertionError(('Pauli normal-form archive lost a theorem-scope invariant', missing_seed))
-
-          required_ledger = ('32', '44', '0,105,150,255', 'D class')
-          missing_ledger = [x for x in required_ledger if x not in ledger]
-          if missing_ledger:
-              raise AssertionError(('global ledger archive lost a theorem-scope invariant', missing_ledger))
-
-          if 'CLOSED / EXACT' not in second or '16 / 16' not in second.replace('16/16', '16 / 16'):
-              raise AssertionError('second-D-sheet synthesis archive is not closed 16/16')
-
-          print({
-              'scope_ready': True,
-              'theorem_promoted': False,
-              'claim_boundary': 'implemented Meng-Yu R(2,2) fusion-category coherence/categorification equations',
-              'next_artifact': 'theorem-level synthesis note',
-          })
-          print('RESULT: replayed proof tree is scope-ready for theorem synthesis; this gate does NOT promote the theorem')
-          PY
-
-  replay-final-consistency:
-    needs: replay-theorem-scope-readiness
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
-          fetch-depth: 0
-      - name: Verify canonical replay ancestry
-        run: |
-          set -euo pipefail
-          for sha in \
-            d3dc59a7bafb7055a8324c55ce6fa638e15f6997 \
-            db2612717126ed51234687e670efb8f4f5768dce \
-            cc07c4e3c16b222d3ab02cd796d96c295629a657 \
-            c62c2a8147bc808ce49000b2b0bcd0b82271d03a \
-            4991d33823a4be462e47f64b893b35c7c61ad012 \
-            69c5084c3ecad45b9ad9bfc99ed388626f0c0d2d \
-            13825380c0d0648ab05b1e268512e4425620101d \
-            6f0d619510ad8eec1ff0c1c94b300aff81ee3e02 \
-            aa9c099b2b322bac2ef0fbd330fa130647cbd7b1
-          do
-            git cat-file -e "${sha}^{commit}"
-            git merge-base --is-ancestor "$sha" HEAD
-          done
-          echo 'RESULT: canonical replay A/B/C/D and final five-task batch are present in one proof branch'
-      - name: Verify terminal artifact manifest and non-promotion boundary
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-
-          required = [
-              'experiments/r22_theorem_case_ledger.py',
-              'notes/55-r22-second-d-sheet-phase5-closure.md',
-              'notes/56-r22-pauli-seed-normal-form-completeness.md',
-              'notes/57-r22-global-theorem-case-ledger.md',
-              'experiments/r22_phase5_component13_torsion_mask0_terminal_certificate.py',
-              'experiments/r22_phase5_component13_torsion_mask105_terminal_certificate.py',
-              'experiments/r22_phase5_component13_torsion_mask150_terminal_certificate.py',
-              'experiments/r22_phase5_component13_torsion_mask255_terminal_certificate.py',
-          ]
-          missing = [p for p in required if not Path(p).is_file()]
-          if missing:
-              raise AssertionError(('missing theorem artifacts', missing))
-          status = Path('STATUS.md').read_text()
-          if 'No theorem promotion or merge is authorized yet' not in status:
-              raise AssertionError('non-promotion boundary disappeared before theorem synthesis')
-          print({'required_artifacts': len(required), 'missing': 0, 'non_promotion_boundary': True})
-          print('RESULT: final replay artifacts and ancestry are internally consistent; theorem synthesis is the next explicit write step')
-          PY
+          python-version: '3.12'
+      - name: Install exact dependencies
+        run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
+      - name: Prove R(2,2) encoding soundness and candidate-space cover
+        working-directory: experiments
+        run: python r22_encoding_soundness_audit.py
