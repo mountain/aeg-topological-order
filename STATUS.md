@@ -4,7 +4,7 @@
 
 `T10 R(2,2) THEOREM SYNTHESIS — CANONICAL REPLAY CLOSED / ENCODING-FAITHFULNESS AUDIT NEXT`
 
-The theorem-completeness work remains on draft PR `#12`, branch `agent/r22-theorem-closure`. **No unconditional theorem promotion or merge is authorized yet.**
+The theorem-completeness work remains on draft PR `#12`, branch `agent/r22-theorem-closure`. **No theorem promotion or merge is authorized yet.**
 
 The branch-completeness and canonical-replay work is complete. The remaining theorem gate is now an interface-equivalence audit: verify that the repository's multiplicity-aware F-symbol/pentagon/gauge engine is exactly the unrestricted standard fusion-category categorification problem for Meng--Yu `R(2,2)` over `C`, with no hidden extra structure.
 
