@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  replay-d1b3-mask255-source-relations:
+  replay-d1c0-mask0-local-relations:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -21,40 +21,61 @@ jobs:
           python-version: '3.12'
       - name: Install exact dependencies
         run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Re-derive class-1 local relations and bridge them to the finite-audit table
+      - name: Fresh source-validate the five-cell class-1 local model
+        working-directory: experiments
+        run: python r22_phase5_component13_torsion_mask0_local_relations.py
+
+  replay-d1c0-mask0-finite-census:
+    needs: replay-d1c0-mask0-local-relations
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install exact dependencies
+        run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
+      - name: Rebuild all 18 finite branches and assert the exact 2+4+4+8 stratification
         working-directory: experiments
         run: |
           python - <<'PY'
-          import sympy as sp
-          import r22_phase5_component5_torsion_local_relations as lr
-          import r22_phase5_component5_torsion_finite_audit as tf
-          import r22_phase5_ratio_classes as rc
+          import r22_phase5_component13_torsion_mask0_finite_census as fc
+          import r22_phase5_monomial_lift as ml
+          import r22_phase5_torsion_sheet as ts
 
-          mask = 255
-          out = lr.derive(5, mask)
-          rel = tf.relation(mask)
-          z0 = sp.Symbol('z0')
-          if out['F_components'] != 21 or out['kernel_variables'] != 23 or out['unique_kernel_polynomials'] != 219:
-              raise AssertionError(('unexpected class-1 component-5 kernel fingerprint', out))
-          def parsed(s):
-              return sp.sympify(s, locals={'I': sp.I, 'z0': z0})
-          expected = {
-              'z2z3_over_p2z0': rc.gc_expr(rel['Z23']),
-              'z1z8_over_q2z0': rc.gc_expr(rel['Z18']),
-              'p3_if_z0_nonzero': rc.gc_expr(rel['P3']),
-              'q3_if_z0_nonzero': rc.gc_expr(rel['Q3']),
-              'P5_monic_in_z0': z0**2 + 2*z0 - sp.Rational(1, 2),
-          }
-          for key, target in expected.items():
-              got = parsed(out[key])
-              if sp.simplify(got - target) != 0:
-                  raise AssertionError(('source-derived relation/table mismatch', key, got, target, out))
-          print({'component':5,'mask':mask,'D_amplitude_class':1,'source_table_bridge':True,'relations':{k:out[k] for k in expected}})
-          print('RESULT: fresh source-derived class-1 relations exactly match the finite-audit relation table')
+          with ts.second_sheet_provider():
+              _quotient, unique = ml.compile_unique(fc.CID, fc.MASK)
+          rows = [fc.branch_census(unique,a,b,sign) for b in range(3) for a in range(3) for sign in (1,-1)]
+          if len(rows) != 18:
+              raise AssertionError(('finite branch count',len(rows)))
+          by_id = {(r['a'],r['b'],r['sign']):r for r in rows}
+          signs = ('+','-')
+          for sign in signs:
+              if by_id[(0,0,sign)]['consistent']:
+                  raise AssertionError(('expected affine inconsistency',by_id[(0,0,sign)]))
+          for a in (1,2):
+              for sign in signs:
+                  r=by_id[(a,0,sign)]
+                  if not (r['consistent'] and r['rank']==11 and r['free_dimension']==7 and r['forced_zero_z']==(13,14)):
+                      raise AssertionError(('bad p-rank11 branch',r))
+          for b in (1,2):
+              for sign in signs:
+                  r=by_id[(0,b,sign)]
+                  if not (r['consistent'] and r['rank']==11 and r['free_dimension']==7 and r['forced_zero_z']==(7,8)):
+                      raise AssertionError(('bad q-rank11 branch',r))
+          for a in (1,2):
+              for b in (1,2):
+                  for sign in signs:
+                      r=by_id[(a,b,sign)]
+                      if not (r['consistent'] and r['rank']==10 and r['free_dimension']==8 and r['forced_zero_z']==()):
+                          raise AssertionError(('bad rank10 branch',r))
+          print({'component':13,'mask':0,'D_amplitude_class':1,'finite_total':18,'affine_inconsistent':2,'p_rank11':4,'q_rank11':4,'rank10':8})
+          print('RESULT: component 13 / mask 0 / D class 1 finite stratification is exactly 18=2+4+4+8')
           PY
 
-  replay-d1b3-mask255-zero-closure:
-    needs: replay-d1b3-mask255-source-relations
+  replay-d1c0-mask0-terminal:
+    needs: replay-d1c0-mask0-finite-census
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -64,54 +85,6 @@ jobs:
           python-version: '3.12'
       - name: Install exact dependencies
         run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Exclude z0=0 before any localization
+      - name: Close all 4+4+8 non-affine finite branches with fixed source cells
         working-directory: experiments
-        run: |
-          python - <<'PY'
-          import r22_phase5_component5_torsion_zero_closure as zc
-          out = zc.audit(5, 255)
-          if out['total'] != 4 or out['closed'] != 4 or out['survivors']:
-              raise AssertionError(out)
-          print('RESULT: component 5 / mask 255 / D class 1 raw z0=0 frontier is 4/4 closed')
-          PY
-
-  replay-d1b3-mask255-finite-census:
-    needs: replay-d1b3-mask255-zero-closure
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Install exact dependencies
-        run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Rebuild all 18 finite branches and assert the exact 10+8 split
-        working-directory: experiments
-        run: |
-          python - <<'PY'
-          import r22_phase5_component5_torsion_finite_audit as fa
-          out = fa.audit(5, 255)
-          expected_survivors = {(a,b,root) for (a,b) in ((1,1),(2,1),(1,2),(2,2)) for root in ('positive','negative')}
-          survivors = {(r['a'],r['b'],r['root']) for r in out['survivors']}
-          expected_profile = {'(11, 9, (6, 7, 9, 10))': 10, '(10, 10, ())': 8}
-          if out['total'] != 18 or out['closed_by_affine_or_7_targets'] != 10 or survivors != expected_survivors or out['rank_profile'] != expected_profile:
-              raise AssertionError({'out':out,'expected_survivors':sorted(expected_survivors),'expected_profile':expected_profile})
-          print({'component':5,'mask':255,'D_amplitude_class':1,'total':18,'closed_first_gate':10,'rank10_survivors':sorted(survivors)})
-          print('RESULT: component 5 / mask 255 / D class 1 finite census is exactly 18=10+8')
-          PY
-
-  replay-d1b3-mask255-rank10:
-    needs: replay-d1b3-mask255-finite-census
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Install exact dependencies
-        run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Close all eight rank-10 branches with resultant and sign-split source certificates
-        working-directory: experiments
-        run: python r22_phase5_component5_torsion_mask255_rank10_certificate.py
+        run: python r22_phase5_component13_torsion_mask0_terminal_certificate.py
