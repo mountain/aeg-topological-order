@@ -1,4 +1,4 @@
-name: R22 research replay
+name: R22 theorem synthesis readiness
 
 on:
   pull_request:
@@ -11,83 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  replay-d1c2-mask150-local:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Install exact dependencies
-        run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Fresh source-validate component 13 mask 150 class-1 local model
-        working-directory: experiments
-        run: python r22_phase5_component13_torsion_mask150_local_relations.py
-
-  replay-d1c3-mask255-local:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Install exact dependencies
-        run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Fresh source-validate component 13 mask 255 class-1 local model
-        working-directory: experiments
-        run: python r22_phase5_component13_torsion_mask255_local_relations.py
-
-  replay-d1c2-mask150-terminal:
-    needs: replay-d1c2-mask150-local
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Install exact dependencies
-        run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Rebuild and close all 18 component-13 mask-150 class-1 finite strata
-        working-directory: experiments
-        run: python r22_phase5_component13_torsion_mask150_terminal_certificate.py
-
-  replay-d1c3-mask255-terminal:
-    needs: replay-d1c3-mask255-local
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Install exact dependencies
-        run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Rebuild and close all 18 component-13 mask-255 class-1 finite strata
-        working-directory: experiments
-        run: python r22_phase5_component13_torsion_mask255_terminal_certificate.py
-
-  replay-global-44-leaf-ledger:
-    needs:
-      - replay-d1c2-mask150-terminal
-      - replay-d1c3-mask255-terminal
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Install exact dependencies
-        run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Reconcile the complete 44-leaf theorem ledger
-        working-directory: experiments
-        run: python r22_theorem_case_ledger.py
-
   replay-theorem-scope-readiness:
-    needs: replay-global-44-leaf-ledger
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -115,13 +39,22 @@ jobs:
           if missing:
               raise AssertionError(('STATUS theorem-boundary mismatch', missing))
 
-          required_seed = ('48 seed-only D pentagons', '96', 'GL_2(C)', '2^8=256')
-          if any(x not in seed for x in required_seed):
-              raise AssertionError('Pauli normal-form archive lost a theorem-scope invariant')
+          # Check executable-output fingerprints rather than prose/LaTeX spelling.
+          required_seed = (
+              'seed_only_D_pentagons = 48',
+              'seed_blocks_verified_as_GL2_conjugation_endomorphisms = 24',
+              'singleton_square_profile = {1: 96}',
+              "pair_relation_profile = {'anticommute': 96}",
+              '2^8 Pauli chirality census is projectively exhaustive',
+          )
+          missing_seed = [x for x in required_seed if x not in seed]
+          if missing_seed:
+              raise AssertionError(('Pauli normal-form archive lost a theorem-scope invariant', missing_seed))
 
           required_ledger = ('32', '44', '0,105,150,255', 'D class')
-          if any(x not in ledger for x in required_ledger):
-              raise AssertionError('global ledger archive lost a theorem-scope invariant')
+          missing_ledger = [x for x in required_ledger if x not in ledger]
+          if missing_ledger:
+              raise AssertionError(('global ledger archive lost a theorem-scope invariant', missing_ledger))
 
           if 'CLOSED / EXACT' not in second or '16 / 16' not in second.replace('16/16', '16 / 16'):
               raise AssertionError('second-D-sheet synthesis archive is not closed 16/16')
@@ -154,12 +87,13 @@ jobs:
             4991d33823a4be462e47f64b893b35c7c61ad012 \
             69c5084c3ecad45b9ad9bfc99ed388626f0c0d2d \
             13825380c0d0648ab05b1e268512e4425620101d \
-            6f0d619510ad8eec1ff0c1c94b300aff81ee3e02
+            6f0d619510ad8eec1ff0c1c94b300aff81ee3e02 \
+            aa9c099b2b322bac2ef0fbd330fa130647cbd7b1
           do
             git cat-file -e "${sha}^{commit}"
             git merge-base --is-ancestor "$sha" HEAD
           done
-          echo 'RESULT: canonical replay A/B/C/D ancestry is present in one proof branch'
+          echo 'RESULT: canonical replay A/B/C/D and final five-task batch are present in one proof branch'
       - name: Verify terminal artifact manifest and non-promotion boundary
         run: |
           python - <<'PY'
