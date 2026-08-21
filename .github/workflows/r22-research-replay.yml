@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  replay-c1-exact-d-both-classes:
+  replay-d0a-class0-component7:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -21,12 +21,15 @@ jobs:
           python-version: '3.12'
       - name: Install exact dependencies
         run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Replay all 32 exact physical D witnesses
+      - name: Replay coordinate-free class-0 terminal certificates for component 7
         working-directory: experiments
-        run: python r22_epsminus_d_torsion_branch.py
+        run: |
+          for mask in 0 105 150 255; do
+            python r22_phase5_two_cell_certificate.py --component 7 --mask $mask
+          done
 
-  replay-c2-class0-e:
-    needs: replay-c1-exact-d-both-classes
+  replay-d0a-class0-component15:
+    needs: replay-d0a-class0-component7
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -36,141 +39,9 @@ jobs:
           python-version: '3.12'
       - name: Install exact dependencies
         run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Replay class-0 E layer on all 16 deep branches
+      - name: Replay coordinate-free class-0 terminal certificates for component 15
         working-directory: experiments
-        run: python r22_epsminus_e_filter.py
-
-  replay-c3-class0-f-component5:
-    needs: replay-c2-class0-e
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Install exact dependencies
-        run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Replay class-0 parametric F gate component 5
-        working-directory: experiments
-        run: python r22_epsminus_f_parametric.py --component 5
-
-  replay-c3-class0-f-component7:
-    needs: replay-c3-class0-f-component5
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Install exact dependencies
-        run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Replay class-0 parametric F gate component 7
-        working-directory: experiments
-        run: python r22_epsminus_f_parametric.py --component 7
-
-  replay-c3-class0-f-component13:
-    needs: replay-c3-class0-f-component7
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Install exact dependencies
-        run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Replay class-0 parametric F gate component 13
-        working-directory: experiments
-        run: python r22_epsminus_f_parametric.py --component 13
-
-  replay-c3-class0-f-component15:
-    needs: replay-c3-class0-f-component13
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Install exact dependencies
-        run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Replay class-0 parametric F gate component 15
-        working-directory: experiments
-        run: python r22_epsminus_f_parametric.py --component 15
-
-  replay-c4-class1-e:
-    needs: replay-c3-class0-f-component15
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Install exact dependencies
-        run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Replay class-1 E layer on all 16 deep branches
-        working-directory: experiments
-        run: python r22_epsminus_e_torsion_census.py
-
-  replay-c5-class1-f-component5:
-    needs: replay-c4-class1-e
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Install exact dependencies
-        run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Replay class-1 parametric F gate component 5
-        working-directory: experiments
-        run: python r22_epsminus_f_torsion_census.py --component 5
-
-  replay-c5-class1-f-component7:
-    needs: replay-c5-class1-f-component5
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Install exact dependencies
-        run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Replay class-1 parametric F gate component 7
-        working-directory: experiments
-        run: python r22_epsminus_f_torsion_census.py --component 7
-
-  replay-c5-class1-f-component13:
-    needs: replay-c5-class1-f-component7
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Install exact dependencies
-        run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Replay class-1 parametric F gate component 13
-        working-directory: experiments
-        run: python r22_epsminus_f_torsion_census.py --component 13
-
-  replay-c5-class1-f-component15:
-    needs: replay-c5-class1-f-component13
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Install exact dependencies
-        run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Replay class-1 parametric F gate component 15
-        working-directory: experiments
-        run: python r22_epsminus_f_torsion_census.py --component 15
+        run: |
+          for mask in 0 105 150 255; do
+            python r22_phase5_two_cell_certificate.py --component 15 --mask $mask
+          done
