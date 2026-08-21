@@ -2,21 +2,23 @@
 
 ## Current stage
 
-`T9 R(2,2) THEOREM-CLOSURE AUDIT — FINITE CASE LEDGER CLOSED / FINAL CANONICAL SERIAL REPLAY NEXT`
+`T10 R(2,2) THEOREM SYNTHESIS — CANONICAL REPLAY CLOSED / ENCODING-FAITHFULNESS AUDIT NEXT`
 
-The theorem-completeness work remains on draft PR `#12`, branch `agent/r22-theorem-closure`. No theorem promotion or merge is authorized yet.
+The theorem-completeness work remains on draft PR `#12`, branch `agent/r22-theorem-closure`. **No unconditional theorem promotion or merge is authorized yet.**
+
+The branch-completeness and canonical-replay work is complete. The remaining theorem gate is now an interface-equivalence audit: verify that the repository's multiplicity-aware F-symbol/pentagon/gauge engine is exactly the unrestricted standard fusion-category categorification problem for Meng--Yu `R(2,2)` over `C`, with no hidden extra structure.
 
 ## Closed theorem gates
 
 1. **Scalar quotient:** exactly 16 A/B/C components modulo the full complex gauge torus.
 2. **Immediate local obstructions:** all 8 epsilon-plus scalar components and shallow epsilon-minus components `4,6,12,14` are independently excluded.
-3. **Pauli seed normal form:** original seed-only D pentagons are exactly `24 singleton + 24 pair`; across deep components `5,7,13,15`, all `96/96` singleton relations are `U^2=I` and all `96/96` pair relations are anticommutators. Hence every invertible seed triple is independently `GL_2(C)`-conjugate to `(X,Z,+/-Y)`. Actions run `32394416585`; archive `notes/56-r22-pauli-seed-normal-form-completeness.md`.
-4. **Deep chirality census:** on each deep scalar component, the now-projectively-exhaustive `2^8=256` seed assignments reduce exactly to masks `0,105,150,255` with profile `192 structural + 60 phase + 4 survivors`.
-5. **D-amplitude quotient:** exactly two gauge-inequivalent physical D-amplitude classes per deep chirality survivor. Thus the physical deep frontier is `4 x 4 x 2 = 32` branches.
+3. **Pauli seed normal form:** original seed-only D pentagons are exactly `24 singleton + 24 pair`; across deep components `5,7,13,15`, all `96/96` singleton relations are `U^2=I` and all `96/96` pair relations are anticommutators. Hence every invertible seed triple is independently `GL_2(C)`-conjugate to `(X,Z,+/-Y)`. Archive `notes/56-r22-pauli-seed-normal-form-completeness.md`.
+4. **Deep chirality census:** on each deep scalar component, the projectively exhaustive `2^8=256` seed assignments reduce exactly to masks `0,105,150,255`.
+5. **D-amplitude quotient:** exactly two gauge-inequivalent physical D-amplitude classes per deep chirality survivor, giving `4 x 4 x 2 = 32` physical deep branches.
 6. **Phases 1–4:** all 32 physical deep branches have exact D witnesses and pass through Phase 4.
-7. **Phase 5, D class 0:** accepted canonical chain closes all 16 branches.
-8. **Phase 5, D class 1:** theorem audit closes all 16 branches. Full archive `notes/55-r22-second-d-sheet-phase5-closure.md`; final branch `component 13 / mask 255 / class 1` closes 18/18 finite strata in Actions run `32393826437`.
-9. **Executable global case ledger:** the complete finite quotient tree is exact, exhaustive, and non-overlapping. Actions run `32394807045` verifies
+7. **Phase 5, D class 0:** all 16 branches close by exact terminal certificates.
+8. **Phase 5, D class 1:** all 16 branches close exactly, including the historically missing second physical D-amplitude sheet. Archive `notes/55-r22-second-d-sheet-phase5-closure.md`.
+9. **Executable global case ledger:** the finite quotient tree is exact, exhaustive, and non-overlapping:
    \[
    8\ \epsilon_+\text{ terminal leaves}
    +4\ \epsilon_-\text{ shallow terminal leaves}
@@ -30,47 +32,42 @@ The theorem-completeness work remains on draft PR `#12`, branch `agent/r22-theor
    \{5,7,13,15\}\times\{0,105,150,255\}\times\{0,1\},
    \]
    and every leaf is attached to a frozen terminal certificate. Verifier `experiments/r22_theorem_case_ledger.py`; archive `notes/57-r22-global-theorem-case-ledger.md`.
+10. **Canonical theorem replay:** Replay A/B/C/D and both physical D sheets have been replayed on one proof branch. The final five-task batch `aa9c099b2b322bac2ef0fbd330fa130647cbd7b1` closed component-13 masks `150` and `255` and revalidated the 44-leaf ledger in Actions `#385`. The subsequent theorem-scope and ancestry/artifact consistency audit passed in Actions `#386` after a prose-string harness bug was corrected in `be402b7def970ec7bc44c6475b23f6a3c2abc25f`.
+11. **Theorem synthesis:** `notes/58-r22-theorem-synthesis.md` separates the exact computational coherence theorem from the stronger mathematical promotion candidate.
 
-## Current theorem boundary
+## Exact conclusion currently justified
 
-The theorem audit has now closed all known **local algebra, projective-normal-form, gauge-component, chirality, D-amplitude, branch-completeness, and terminal-case bookkeeping gaps**.
+For the exact `R(2,2)` multiplicity-aware associativity/coherence system generated by this repository, with invertible F-data and quotient by the implemented full complex trivalent basis gauge, there is no solution.
 
-In particular:
+Equivalently, every branch of the implemented exact pentagon system terminates in an exact contradiction after the complete scalar, projective, gauge and physical-D quotient tree is exhausted.
 
-- the historical sign-only scalar-gauge issue is repaired by the full-complex scalar quotient;
-- the previously missing second physical D-amplitude sheet is fully propagated and terminally obstructed;
-- the historical Pauli seed choice is proved to be a complete `GL_2(C)` normal form, not an ansatz;
-- the resulting global finite case tree contains exactly 44 terminal leaves with no omissions or duplicate physical quotient classes.
+This conclusion is no longer restricted by sign-only gauge, a Pauli ansatz, one physical D sheet, numerical search, or an incomplete branch census.
 
-This is the point at which the research changes character: no additional branch search is currently justified. The remaining theorem gate is a fresh canonical replay of the already-frozen proof tree.
+## Mathematical promotion candidate
 
-## Open frontier — final canonical serial replay
+The intended mathematical theorem is
 
-The final replay must begin from fresh checkout/state and reconstruct the theorem in serial sub-gates, each within the 10-minute Actions limit:
-
-1. **Replay A — scalar/local frontier**
-   - full-complex scalar component inventory;
-   - epsilon-plus exhaustive local-F obstruction;
-   - shallow epsilon-minus local-F obstruction.
-
-2. **Replay B — deep projective/gauge frontier**
-   - Pauli seed normal-form completeness;
-   - all four deep `256 -> 4` chirality traces;
-   - cross-D amplitude Smith/gauge audit proving exactly two physical D classes.
-
-3. **Replay C — downstream existence frontier**
-   - both D classes exact at D;
-   - E and F/Phase-4 replay for every retained branch.
-
-4. **Replay D — terminal frontier**
-   - class-0 Phase-5 certificates;
-   - class-1 Phase-5 certificates;
-   - require terminal branch IDs/counts to agree with the executable 44-leaf ledger.
-
-Only after all replay sub-gates succeed on the same frozen theorem branch should the repository write the theorem-level synthesis and decide whether to promote
 \[
-\boxed{R(2,2)\text{ is non-categorifiable}.}
+\boxed{R(2,2)\text{ is non-categorifiable over }\mathbf C.}
 \]
+
+This statement is **not yet promoted unconditionally** by the repository. Promotion requires the final encoding-faithfulness audit below.
+
+## Open frontier — encoding-faithfulness audit
+
+The next checkpoint must prove that the implemented coherence engine is an exact presentation of the unrestricted fusion-category categorification problem for the based fusion ring `R(2,2)`.
+
+At minimum, audit:
+
+1. **Object/multiplicity inventory:** exactly the fusion multiplicity spaces prescribed by `R(2,2)` are generated.
+2. **F-variable inventory and invertibility:** every allowed associator matrix entry is represented and no physical solution is removed by normalization.
+3. **Pentagon exhaustiveness:** all multiplicity-aware associativity pentagons are generated; no required equation is omitted.
+4. **Gauge correctness:** the quotient is exactly standard independent basis change on trivalent fusion spaces, including full complex torus and `GL_2(C)` actions where multiplicity is two.
+5. **No hidden structure:** no spherical, pivotal, unitary, braided, ribbon, or other extra assumption is imposed in a way that could create an artificial obstruction.
+
+If these five items are closed, the exact computational coherence theorem promotes directly to the unconditional non-categorifiability theorem above.
+
+No additional local branch search is currently justified.
 
 ## Verification discipline
 
@@ -78,8 +75,7 @@ Only after all replay sub-gates succeed on the same frozen theorem branch should
 - exact Smith/lattice calculations for monomial components;
 - source-provenance terminal certificates;
 - localization only after nonzeroness is proved;
-- no global Gröbner solve;
+- no global Gröbner solve as theorem evidence;
 - no floating-point nonlinear solve or continuation;
-- 10-minute maximum per Actions research job;
-- split replay stages rather than increasing timeouts;
+- bounded Actions jobs rather than timeout increases;
 - named `z_j` coordinates are implementation charts, not invariant theorem evidence.
