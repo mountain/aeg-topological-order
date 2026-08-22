@@ -2,135 +2,99 @@
 
 ## Current stage
 
-`T9 R(2,2) THEOREM-CLOSURE AUDIT — PHASES 1–4 CLOSED / COMPONENTS 5,7,13,15 PHASE 5 CLOSED / GLOBAL REPLAY PENDING`
+`T11 R(2,2) THEOREM CLOSURE — NON-CATEGORIFIABILITY PROMOTED / FINAL REVIEW NEXT`
 
-Canonical checkpoints:
+The theorem-audit work remains on PR `#12`, branch `agent/r22-theorem-closure`. The mathematical theorem has now been promoted on the branch; merge is still withheld pending final diff/reproducibility review.
 
-- Phase 1–4: `notes/23-r22-phases1-4-closure.md`;
-- component 5 Phase 5: `notes/31-r22-component5-phase5-closure.md`;
-- component 13 Phase 5: `notes/36-r22-component13-phase5-closure.md`;
-- component 7 Phase 5: `notes/41-r22-component7-phase5-closure.md`;
-- component 15 Phase 5: `notes/42-r22-component15-phase5-closure.md`.
+## Theorem
 
-## Theorem boundary
+### Computer-assisted theorem
 
-The target is the categorifiability of the Meng–Yu rank-six self-dual fusion ring `R(2,2)`. The epsilon-plus half is independently excluded.
-
-For epsilon-minus, the deep scalar components after the accepted early exact reductions are
+The Meng--Yu rank-six self-dual based fusion ring `R(2,2)` admits no fusion-category categorification over the complex numbers:
 
 \[
-\boxed{5,7,13,15}.
+\boxed{R(2,2)\text{ is non-categorifiable over }\mathbf C.}
 \]
 
-Phase 1 leaves exactly the chirality masks
+Final theorem archive:
 
-\[
-\boxed{0,105,150,255}
-\]
+`notes/59-r22-encoding-soundness-and-noncategorifiability.md`
 
-for every deep scalar component. Phases 2–4 are canonically closed and show no obstruction.
+Pre-promotion synthesis snapshot:
 
-All four deep scalar components are now obstructed at Phase 5 on the research record:
+`notes/58-r22-theorem-synthesis.md`
 
-\[
-\boxed{5,7,13,15\;\text{CLOSED / EXACT}.}
-\]
+## Closed theorem gates
 
-This opens the theorem-closure audit. The global `R(2,2)` non-categorifiability statement is **not yet promoted** until the accepted branch-exhaustion chain and all component closures are replayed together from fresh state and checked for exhaustiveness.
+1. **Fusion/object encoding:** the independent encoding audit checks all 36 fusion products for the six simples and obtains exactly 48 nonzero trivalent fusion spaces, with multiplicity profile `40 x 1 + 8 x 2`.
+2. **Associator inventory:** all 400 F-blocks are generated from fusion multiplicities; every non-unit block is initially a full independent matrix. The audit counts 1881 non-unit free F entries; only 127 strict-unit blocks are canonically normalized.
+3. **Pentagon soundness and coverage:** the primitive engine imposes the standard multiplicity-aware pentagon. The independent audit finds 3168 pentagon blocks, of which all 1833 non-unit external blocks partition exactly into `A=81, B=216, C=432, D=432, E=384, F=192, FINAL=96`.
+4. **Standard basis gauge:** before projective normalization the gauge is exactly `29` multiplicity-one `C*` basis changes plus independent `GL_2(C)` on the `8` multiplicity-two spaces. After the proved Pauli/Clifford normal form, the stabilizer is exactly the eight scalar centers.
+5. **No hidden extra structure:** the theorem engine depends only on fusion multiplicities, associators, invertibility, pentagon coherence and trivalent basis gauge. The encoding audit scans 117 `r22_*.py` modules and finds no theorem-engine dependency on braiding, unitarity, spherical, pivotal or ribbon constraints.
+6. **Scalar quotient:** exactly 16 A/B/C components modulo the full complex gauge torus; epsilon-plus and shallow epsilon-minus components close by exact local obstructions.
+7. **Pauli seed normal form:** the seed-only D system is exactly `24 singleton + 24 pair`; all `96/96` singleton equations give `U^2=I`, all `96/96` pair equations anticommute, and every invertible seed triple is independently `GL_2(C)`-conjugate to `(X,Z,+/-Y)`.
+8. **Deep chirality census:** the projectively exhaustive `2^8=256` assignments reduce exactly to masks `0,105,150,255` on each deep scalar component.
+9. **D-amplitude quotient:** exactly two gauge-inequivalent physical D classes per deep scalar/mask survivor, giving `4 x 4 x 2 = 32` deep physical branches.
+10. **Downstream and Phase 5:** all 32 deep branches pass D/E/F/Phase 4 exactly; all 16 class-0 and all 16 class-1 Phase-5 branches terminate in exact obstruction certificates.
+11. **Global case ledger:** the complete finite cover is exact and non-overlapping:
+    \[
+    8\ \epsilon_+ + 4\ \epsilon_-\text{ shallow} + 32\ \epsilon_-\text{ deep} = 44
+    \]
+    top-level terminal leaves, each attached to a frozen certificate.
+12. **Canonical theorem replay:** Replay A/B/C/D, both physical D sheets and the fresh 44-leaf ledger were replayed on one proof branch. Actions `#385` closed the final mathematical replay jobs; Actions `#386` passed theorem-scope and ancestry/artifact consistency.
+13. **Encoding soundness / candidate-space cover:** `experiments/r22_encoding_soundness_audit.py` passed in Actions `#391` (`run 32494702491`, job `96810257750`). It establishes the one-sided cover
+    \[
+    \{\text{genuine categorifications}\}/\text{legitimate gauge}
+    \longrightarrow
+    \{\text{audited candidate branches}\},
+    \]
+    while the canonical replay proves the target candidate space empty.
 
-## Phase 5 — scalar component 15 CLOSED
+## Final logical implication
 
-Component `15` is a `17 active + 4 coherence-forced-zero` Phase-4 type. Every surviving chirality mask was independently fresh-compiled and source-validated.
+Assume a categorification of `R(2,2)` over `C` exists. By the encoding-soundness audit, after legitimate strict-unit normalization and trivalent basis gauge, its associator data lies in the candidate space audited by this branch. The scalar/projective/D-amplitude quotient tree partitions that space into exactly 44 terminal leaves. Every leaf is closed by an exact necessary pentagon/invertibility contradiction. Hence the candidate space is empty, contradiction.
 
-For masks
+Therefore `R(2,2)` is non-categorifiable over `C`.
 
-\[
-\boxed{0,105,150,255},
-\]
+## Reproducibility anchors
 
-the fresh Phase-5 kernels all have:
+- `notes/44-r22-scalar-component-inventory-audit.md`
+- `notes/55-r22-second-d-sheet-phase5-closure.md`
+- `notes/56-r22-pauli-seed-normal-form-completeness.md`
+- `notes/57-r22-global-theorem-case-ledger.md`
+- `notes/58-r22-theorem-synthesis.md`
+- `notes/59-r22-encoding-soundness-and-noncategorifiability.md`
+- `experiments/r22_theorem_case_ledger.py`
+- `experiments/r22_encoding_soundness_audit.py`
 
-- 17 active weighted F components;
-- 19 kernel variables;
-- 38,080 raw nonzero final entries;
-- 147 unique kernel polynomials;
-- total-degree profile `1` linear, `2` quadratic, `144` cubic relations;
-- no generic constant contradiction.
-
-The canonical verifier
+Encoding audit checkpoint:
 
 ```text
-experiments/r22_phase5_two_cell_certificate.py
+commit 986ad2cb1d1c908e856320312ef2b6fc7c70774a
+Actions #391
+run 32494702491
+job 96810257750
+conclusion SUCCESS
 ```
 
-avoids hard-coded F-coordinate names. In each fresh kernel it locates the same two fixed final-pentagon provenances
+## Current frontier — final review / release packaging
 
-```text
-(XXXXX)_(0,0)
-(XXXX;1)_(0,0)
-```
+No new local branch search is justified unless independent review identifies a concrete soundness or completeness defect.
 
-and discovers the active scale coordinate `s` from the first relation. The two cells give
+Remaining work is release work:
 
-\[
-\boxed{s=0},
-\]
+1. final PR diff review for accidental assumptions, stale statements and non-reproducible artifacts;
+2. run a compact release/reproducibility check against the promoted theorem archives;
+3. update any remaining repository-facing documents that still describe `R(2,2)` as open;
+4. mark PR `#12` ready only after that review;
+5. merge and tag the theorem-closure checkpoint after final SCM review.
 
-and
+## Verification discipline
 
-\[
-\boxed{s^2-\frac12=0},
-\]
-
-hence
-
-\[
-\boxed{-\frac12=0}.
-\]
-
-Fresh four-mask serial replay `32256425671` reports:
-
-```text
-mask 0    scale=z6  contradiction=-1/2  closed=True
-mask 105  scale=z2  contradiction=-1/2  closed=True
-mask 150  scale=z5  contradiction=-1/2  closed=True
-mask 255  scale=z8  contradiction=-1/2  closed=True
-```
-
-Therefore
-
-\[
-\boxed{\text{scalar component 15 is completely obstructed at Phase 5}.}
-\]
-
-Full synthesis: `notes/42-r22-component15-phase5-closure.md`.
-
-## Verification-method correction
-
-The component-15 mask-150 audit exposed a limitation in the historical named-coordinate stability probe: the F-component partition and target pentagon polynomial were reconstructed in separate quotient builds, so implementation-dependent weighted-union-find representatives could rename the same active coordinate between builds.
-
-This is a coordinate-label issue, not a new mathematical branch. The theorem interface is therefore changed from “this source cell is a fixed `z_j`” to the provenance-based statement “the first fixed source cell defines `s`, and the second is `s^2-1/2`.”
-
-The component-15 closure already uses this coordinate-free verifier. Component `7` should be replayed through the same verifier during the theorem-closure audit so that the final theorem does not depend on the older named-coordinate reproducibility argument.
-
-## Open frontier — theorem closure
-
-No deep epsilon-minus scalar component remains locally open.
-
-Priority order:
-
-1. fresh coordinate-free replay of component `7`, masks `0,105,150,255`;
-2. fresh replay of the accepted component `5` and `13` Phase-5 closures;
-3. fresh replay of the epsilon-plus obstruction and canonical Phase-1–4 branch-exhaustion chain;
-4. audit case exhaustiveness from the original `R(2,2)` coherence problem to all terminal obstructions;
-5. write the theorem-level synthesis and only then decide whether to promote
-
-\[
-\boxed{R(2,2)\text{ is non-categorifiable}.}
-\]
-
-No Gröbner computation is authorized before small exact local structure is exhausted. The 10-minute per-job guardrail remains in force.
-
-## SCM boundary
-
-`main` records accepted, reproducible research state. Exploratory and theorem-closure work remains on `agent/*` branches. New conclusions require fresh exact replay and archive notes before promotion.
+- full-complex gauge, not sign-only gauge;
+- exact Smith/lattice and Gaussian-rational arithmetic;
+- source-provenance terminal certificates;
+- localization only after nonzeroness is proved;
+- no floating-point nonlinear search, continuation or timeout-based nonexistence evidence;
+- bounded Actions jobs;
+- named `z_j` coordinates are implementation charts, not invariant theorem evidence.

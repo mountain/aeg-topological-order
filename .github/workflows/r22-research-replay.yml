@@ -1,4 +1,4 @@
-name: R22 research replay
+name: R22 theorem release verification
 
 on:
   pull_request:
@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  component15-all-masks-coordinate-free-replay:
+  encoding-soundness:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -21,9 +21,128 @@ jobs:
           python-version: '3.12'
       - name: Install exact dependencies
         run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
-      - name: Fresh replay all component 15 masks serially
+      - name: Reprove encoding soundness and candidate-space cover
         working-directory: experiments
+        run: python r22_encoding_soundness_audit.py
+
+  global-case-ledger:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install exact dependencies
+        run: python -m pip install --disable-pip-version-check numpy sympy z3-solver
+      - name: Reconcile the exhaustive 44-leaf theorem ledger
+        working-directory: experiments
+        run: python r22_theorem_case_ledger.py
+
+  source-integrity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile theorem and audit Python sources
         run: |
-          for mask in 0 105 150 255; do
-            python r22_phase5_two_cell_certificate.py --component 15 --mask $mask
+          python - <<'PY'
+          from pathlib import Path
+          import py_compile
+
+          paths = sorted(Path('experiments').glob('r22_*.py'))
+          if len(paths) < 100:
+              raise AssertionError(('unexpectedly small r22 source manifest', len(paths)))
+          for path in paths:
+              py_compile.compile(str(path), doraise=True)
+          print({'r22_python_sources_compiled': len(paths)})
+          print('RESULT: all R(2,2) theorem/audit Python sources compile cleanly')
+          PY
+
+  theorem-artifact-manifest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify promoted theorem archive and status boundary
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          required = [
+              'STATUS.md',
+              'notes/44-r22-scalar-component-inventory-audit.md',
+              'notes/55-r22-second-d-sheet-phase5-closure.md',
+              'notes/56-r22-pauli-seed-normal-form-completeness.md',
+              'notes/57-r22-global-theorem-case-ledger.md',
+              'notes/58-r22-theorem-synthesis.md',
+              'notes/59-r22-encoding-soundness-and-noncategorifiability.md',
+              'experiments/r22_theorem_case_ledger.py',
+              'experiments/r22_encoding_soundness_audit.py',
+          ]
+          missing = [p for p in required if not Path(p).is_file()]
+          if missing:
+              raise AssertionError(('missing release artifacts', missing))
+
+          status = Path('STATUS.md').read_text()
+          theorem = Path('notes/59-r22-encoding-soundness-and-noncategorifiability.md').read_text()
+          pre = Path('notes/58-r22-theorem-synthesis.md').read_text()
+
+          required_status = (
+              'T11 R(2,2) THEOREM CLOSURE',
+              'NON-CATEGORIFIABILITY PROMOTED',
+              'R(2,2)\\text{ is non-categorifiable over }\\mathbf C',
+              'final PR diff review',
+          )
+          missing_status = [x for x in required_status if x not in status]
+          if missing_status:
+              raise AssertionError(('STATUS release boundary mismatch', missing_status))
+
+          required_theorem = (
+              'THEOREM PROMOTED (COMPUTER-ASSISTED)',
+              'encoding_soundness = True',
+              'candidate_branch_superset = EMPTY by canonical exact replay',
+              'Actions #391',
+              'QED',
+          )
+          missing_theorem = [x for x in required_theorem if x not in theorem]
+          if missing_theorem:
+              raise AssertionError(('theorem archive fingerprint mismatch', missing_theorem))
+
+          if 'NOT YET PROMOTED BY THIS NOTE' not in pre:
+              raise AssertionError('note 58 is no longer an identifiable historical pre-promotion snapshot')
+
+          print({'release_artifacts': len(required), 'missing': 0, 'promoted_theorem_archive': True})
+          print('RESULT: promoted theorem artifacts and historical boundary are internally consistent')
+          PY
+
+  release-summary:
+    needs:
+      - encoding-soundness
+      - global-case-ledger
+      - source-integrity
+      - theorem-artifact-manifest
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verify release checkpoint ancestry and summarize
+        run: |
+          set -euo pipefail
+          for sha in \
+            d3dc59a7bafb7055a8324c55ce6fa638e15f6997 \
+            db2612717126ed51234687e670efb8f4f5768dce \
+            cc07c4e3c16b222d3ab02cd796d96c295629a657 \
+            aa9c099b2b322bac2ef0fbd330fa130647cbd7b1 \
+            986ad2cb1d1c908e856320312ef2b6fc7c70774a
+          do
+            git cat-file -e "${sha}^{commit}"
+            git merge-base --is-ancestor "$sha" HEAD
           done
+          echo "head=$(git rev-parse HEAD)"
+          echo 'RESULT: R(2,2) theorem release verification is complete; PR is eligible for final human/diff review'

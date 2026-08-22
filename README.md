@@ -4,13 +4,40 @@
 
 This repository tests whether Arithmetic Expression Geometry (AEG), viewed as an explicit geometry of operation histories and relations, can provide a useful computational representation of fusion-category and string-net structures associated with topological order.
 
-The first benchmark is deliberately small and exact:
+The repository began with a deliberately small exact benchmark:
 
 \[
 \boxed{\text{Reconstruct the Fibonacci fusion category from fusion grammar and coherence.}}
 \]
 
 The goal is **not** to replace category theory. Category theory already captures the correct abstract structure. The question is whether AEG can expose a sparse, explicit, computationally useful history geometry underlying the same coherence data.
+
+## Current theorem result — `R(2,2)`
+
+A later theorem track studies the Meng--Yu rank-six self-dual based fusion ring `R(2,2)`. The theorem-audit branch has now established the following computer-assisted result:
+
+\[
+\boxed{R(2,2)\text{ is non-categorifiable over }\mathbf C.}
+\]
+
+The proof is an exact finite obstruction proof. Its main completeness gates are:
+
+- the scalar A/B/C quotient has exactly 16 components modulo the full complex trivalent gauge torus;
+- the Pauli/Clifford D-layer seed is proved to be a complete `GL_2(C)` normal form rather than an ansatz;
+- the deep physical frontier is exactly `4` scalar components × `4` chirality masks × `2` D-amplitude classes = `32` branches;
+- together with the 12 immediate scalar/shallow obstructions, the executable theorem ledger has exactly `44` non-overlapping terminal leaves;
+- every leaf closes by an exact pentagon/invertibility certificate;
+- an independent encoding-soundness audit proves that every genuine categorification modulo legitimate trivalent basis gauge maps into the audited candidate space, with no hidden unitary, spherical, pivotal, braided, or ribbon assumption.
+
+Primary theorem/reproducibility entry points:
+
+- `notes/59-r22-encoding-soundness-and-noncategorifiability.md` — promoted theorem and proof interface;
+- `notes/57-r22-global-theorem-case-ledger.md` — exhaustive 44-leaf finite cover;
+- `experiments/r22_encoding_soundness_audit.py` — encoding soundness / candidate-space cover;
+- `experiments/r22_theorem_case_ledger.py` — executable global case ledger;
+- `STATUS.md` — current theorem/release state.
+
+Earlier numbered R(2,2) notes record intermediate audit frontiers. Statements such as “OPEN”, “not promoted”, or “next gate” inside those notes are historical checkpoint statements unless the note explicitly says otherwise; `notes/59` and `STATUS.md` are authoritative for the current theorem state.
 
 ## Core translation hypothesis
 
