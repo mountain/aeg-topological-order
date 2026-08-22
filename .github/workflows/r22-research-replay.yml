@@ -67,7 +67,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - name: Verify promoted theorem archive and status boundary
+      - name: Verify promoted theorem archive and release status
         run: |
           python - <<'PY'
           from pathlib import Path
@@ -92,10 +92,11 @@ jobs:
           pre = Path('notes/58-r22-theorem-synthesis.md').read_text()
 
           required_status = (
-              'T11 R(2,2) THEOREM CLOSURE',
-              'NON-CATEGORIFIABILITY PROMOTED',
+              'T12 R(2,2) THEOREM RELEASE',
+              'MERGED TO MAIN / TAG PENDING',
               'R(2,2)\\text{ is non-categorifiable over }\\mathbf C',
-              'final PR diff review',
+              '5676b783e923dfca9d6b3a332eb8c2a2303e3e1b',
+              'release archival',
           )
           missing_status = [x for x in required_status if x not in status]
           if missing_status:
@@ -115,8 +116,8 @@ jobs:
           if 'NOT YET PROMOTED BY THIS NOTE' not in pre:
               raise AssertionError('note 58 is no longer an identifiable historical pre-promotion snapshot')
 
-          print({'release_artifacts': len(required), 'missing': 0, 'promoted_theorem_archive': True})
-          print('RESULT: promoted theorem artifacts and historical boundary are internally consistent')
+          print({'release_artifacts': len(required), 'missing': 0, 'promoted_theorem_archive': True, 'merged_to_main': True, 'tag_pending': True})
+          print('RESULT: promoted theorem artifacts and post-merge release status are internally consistent')
           PY
 
   release-summary:
@@ -139,10 +140,11 @@ jobs:
             db2612717126ed51234687e670efb8f4f5768dce \
             cc07c4e3c16b222d3ab02cd796d96c295629a657 \
             aa9c099b2b322bac2ef0fbd330fa130647cbd7b1 \
-            986ad2cb1d1c908e856320312ef2b6fc7c70774a
+            986ad2cb1d1c908e856320312ef2b6fc7c70774a \
+            5676b783e923dfca9d6b3a332eb8c2a2303e3e1b
           do
             git cat-file -e "${sha}^{commit}"
             git merge-base --is-ancestor "$sha" HEAD
           done
           echo "head=$(git rev-parse HEAD)"
-          echo 'RESULT: R(2,2) theorem release verification is complete; PR is eligible for final human/diff review'
+          echo 'RESULT: R(2,2) post-merge theorem release is internally consistent; stable tag creation is the remaining release action'
