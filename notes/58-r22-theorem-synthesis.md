@@ -1,5 +1,7 @@
 # R(2,2) theorem synthesis after canonical replay
 
+> **Historical pre-promotion checkpoint.** This note records the state after canonical replay but before the encoding-soundness audit. Its “not yet promoted” boundary has been superseded by `notes/59-r22-encoding-soundness-and-noncategorifiability.md`, which closes the interface audit and promotes the computer-assisted theorem that `R(2,2)` is non-categorifiable over `C`.
+
 ## Status
 
 **COMPUTATIONAL THEOREM CLOSURE: CLOSED / EXACT.**
