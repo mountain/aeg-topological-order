@@ -1,6 +1,54 @@
 # Research Plan
 
-## Dependency graph
+## Completed theorem track — Meng--Yu `R(2,2)`
+
+The repository now contains a closed computer-assisted theorem track for the rank-six self-dual based fusion ring `R(2,2)`:
+
+\[
+\boxed{R(2,2)\text{ is non-categorifiable over }\mathbf C.}
+\]
+
+The completed dependency chain is:
+
+```text
+full-C* scalar quotient (16 components)
+        |
+        v
+immediate epsilon-plus / shallow epsilon-minus obstructions
+        |
+        v
+Pauli seed GL2 normal-form completeness
+        |
+        v
+256 chirality assignments -> {0,105,150,255}
+        |
+        v
+two physical D-amplitude classes per survivor
+        |
+        v
+32 deep physical branches through D/E/F
+        |
+        v
+Phase-5 terminal certificates for both D sheets
+        |
+        v
+44-leaf exhaustive global ledger
+        |
+        v
+fresh canonical replay
+        |
+        v
+encoding soundness + genuine-solution cover
+        |
+        v
+R(2,2) non-categorifiability theorem
+```
+
+Authoritative theorem entry points are `notes/59-r22-encoding-soundness-and-noncategorifiability.md` and `STATUS.md`. Earlier numbered R(2,2) notes are chronological audit records and may retain historical “open” or “next gate” language.
+
+Remaining work on this theorem track is release/review work: final reproducibility review, PR merge, and tagging. New local branch search is not planned unless review identifies a concrete defect.
+
+## Original Fibonacci dependency graph
 
 ```text
 T0  Freeze Fibonacci input grammar and allowed axioms
