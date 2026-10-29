@@ -2,9 +2,9 @@
 
 ## Current stage
 
-`T11 R(2,2) THEOREM CLOSURE — NON-CATEGORIFIABILITY PROMOTED / FINAL REVIEW NEXT`
+`T12 R(2,2) THEOREM RELEASE — MERGED TO MAIN / TAG PENDING`
 
-The theorem-audit work remains on PR `#12`, branch `agent/r22-theorem-closure`. The mathematical theorem has now been promoted on the branch; merge is still withheld pending final diff/reproducibility review.
+The theorem-closure audit was merged through PR `#12` into `main` at merge commit `5676b783e923dfca9d6b3a332eb8c2a2303e3e1b` after final release verification. The mathematical theorem is promoted and the research branch-search phase is closed.
 
 ## Theorem
 
@@ -49,6 +49,7 @@ Pre-promotion synthesis snapshot:
     \{\text{audited candidate branches}\},
     \]
     while the canonical replay proves the target candidate space empty.
+14. **Release verification:** Actions `#394` and the documentation-synchronized replay `#398` each passed the five release gates: encoding soundness, 44-leaf ledger, source integrity, theorem artifact manifest and release ancestry/summary.
 
 ## Final logical implication
 
@@ -67,27 +68,24 @@ Therefore `R(2,2)` is non-categorifiable over `C`.
 - `experiments/r22_theorem_case_ledger.py`
 - `experiments/r22_encoding_soundness_audit.py`
 
-Encoding audit checkpoint:
+Key release checkpoints:
 
 ```text
-commit 986ad2cb1d1c908e856320312ef2b6fc7c70774a
-Actions #391
-run 32494702491
-job 96810257750
-conclusion SUCCESS
+encoding audit: 986ad2cb1d1c908e856320312ef2b6fc7c70774a / Actions #391 / SUCCESS
+release verification: 278c28add7063bbd3ff89463aa4b791b63b7cd16 / Actions #394 / SUCCESS
+final synchronized release verification: Actions #398 / SUCCESS
+PR #12 merge: 5676b783e923dfca9d6b3a332eb8c2a2303e3e1b
 ```
 
-## Current frontier — final review / release packaging
+## Current frontier — release archival
 
-No new local branch search is justified unless independent review identifies a concrete soundness or completeness defect.
+The theorem and its executable proof artifacts are on `main`. No further local branch search is planned unless independent review identifies a concrete soundness or completeness defect.
 
-Remaining work is release work:
+Remaining release housekeeping is limited to:
 
-1. final PR diff review for accidental assumptions, stale statements and non-reproducible artifacts;
-2. run a compact release/reproducibility check against the promoted theorem archives;
-3. update any remaining repository-facing documents that still describe `R(2,2)` as open;
-4. mark PR `#12` ready only after that review;
-5. merge and tag the theorem-closure checkpoint after final SCM review.
+1. create a stable theorem-closure tag pointing to the final release checkpoint;
+2. optionally produce a compact human-readable paper proof whose lemmas point to the executable certificates;
+3. treat subsequent objections as review issues against the frozen theorem artifacts rather than reopening exploratory search by default.
 
 ## Verification discipline
 
