@@ -37,6 +37,56 @@ DEEP = tuple(sh.DEEP)
 MASKS = tuple(sh.DEEP_SURVIVOR_MASKS)
 D_CLASSES = (0, 1)
 
+# ---------------------------------------------------------------------------
+# TWO-BIT PARAMETRISATION OF THE COMPLETE SCALAR QUOTIENT, AND THE DICHOTOMY.
+#
+# Both organising bits are SIGNS OF SINGLE SCALARS, and both are derived:
+#
+#     eps(c) = 0  iff  c is epsilon = +1        (r22_epsplus_local_f_obstruction)
+#     chi(c) = +/-1 from the scalar at CHI_KEY  (r22_epsminus_shallow_... , sh.chi)
+#
+# and the 16 components split as
+#
+#     eps = +1                     8   local-F SINGULARITY   (det F^{XXX}_X = 0)
+#     eps = -1, chi = +1           4   local-F SINGULARITY
+#     eps = -1, chi = -1           4   WINDING at Phase 5
+#
+# with the leaf census 8 + 4 + 4*4*2 = 44.  The two obstruction types are dual in
+# kind: a block that pentagon coherence requires to be invertible is forced
+# singular (a multiplicative/rank obstruction, certified by a determinant
+# identity), versus a system of amplitude ratios that must be consistent being
+# infeasible (an additive/holonomy obstruction, certified by a circulation with
+# non-trivial holonomy).  chi is a Z/2 datum -- rank one, the cheapest possible
+# invariant -- while the deep obstruction is a Z/4 cycle holonomy; the case tree is
+# therefore organised entirely by two Z/2 signs, and the only Z/4 structure in the
+# whole theorem lives on the 32-leaf deep frontier.
+# The assertions below make the parametrisation executable rather than prose.
+# ---------------------------------------------------------------------------
+ALL_COMPONENTS = tuple(range(len(ep.COMPONENT_REPS)))
+assert len(ALL_COMPONENTS) == 16
+assert set(EPS_PLUS) | set(SHALLOW) | set(DEEP) == set(ALL_COMPONENTS)
+assert not (set(EPS_PLUS) & set(SHALLOW))
+assert not (set(EPS_PLUS) & set(DEEP))
+assert not (set(SHALLOW) & set(DEEP))
+assert all(sh.chi(c) == +1 for c in SHALLOW)
+assert all(sh.chi(c) == -1 for c in DEEP)
+# eps and chi are independent: all four combinations occur
+assert {(c in EPS_PLUS, sh.chi(c)) for c in ALL_COMPONENTS} == {
+    (True, +1), (True, -1), (False, +1), (False, -1)}
+
+OBSTRUCTION = {}
+for _c in ALL_COMPONENTS:
+    if _c in EPS_PLUS or _c in SHALLOW:
+        OBSTRUCTION[_c] = "singularity"
+    else:
+        OBSTRUCTION[_c] = "winding"
+
+N_SINGULARITY_LEAVES = len(EPS_PLUS) + len(SHALLOW)          # 12
+N_WINDING_LEAVES = len(DEEP) * len(MASKS) * len(D_CLASSES)   # 32
+assert N_SINGULARITY_LEAVES == 12
+assert N_WINDING_LEAVES == 32
+assert N_SINGULARITY_LEAVES + N_WINDING_LEAVES == 44
+
 # The class-0 canonical chain has one component-level Phase-5 synthesis per
 # deep scalar component; each synthesis contains all four masks.
 CLASS0_CERT = {

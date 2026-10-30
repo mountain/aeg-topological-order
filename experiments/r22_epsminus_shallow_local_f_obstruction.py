@@ -35,9 +35,75 @@ from r22_local_associator import pentagon
 from r22_scale_audit import f_class
 
 TARGET = ("X", "X", "X", "X")
-SHALLOW = (4, 6, 12, 14)
-DEEP = (5, 7, 13, 15)
 DEEP_SURVIVOR_MASKS = (0, 105, 150, 255)
+
+# ---------------------------------------------------------------------------
+# DERIVED, NOT FROZEN.
+#
+# The epsilon = -1 scalar components were historically split by two literal lists
+#
+#     SHALLOW = (4, 6, 12, 14)   <- det(F^{XXX}_X) is identically zero
+#     DEEP    = (5, 7, 13, 15)   <- det(F^{XXX}_X) is not, so they survive
+#
+# with no stated reason.  The split is the sign of ONE scalar, exactly as eps itself
+# already is (see r22_epsplus_local_f_obstruction.EPS_INDEX).  Write
+#
+#     chi(c) = sign of the scalar at CHI_KEY  (+1 if the bit is clear, -1 if set)
+#
+# Then over all 16 scalar components
+#
+#     det(F^{XXX}_X) identically zero   <=>   eps = +1  OR  chi = +1 ,
+#
+# so the epsilon = -1 half partitions as
+#
+#     SHALLOW = { c in eps-1 : chi(c) = +1 }      (local-F singularity)
+#     DEEP    = { c in eps-1 : chi(c) = -1 }      (survives to the Phase-5 frontier)
+#
+# Eight distinct scalars give the identical separator; CHI_KEY is the
+# lexicographically first of them.  The frozen tuples are retained below ONLY as a
+# regression assertion, so that this file fails loudly if the derivation and the
+# historical lists ever disagree.
+# ---------------------------------------------------------------------------
+from r22_epsplus_local_f_obstruction import (  # noqa: E402
+    COMPONENT_REPS as _COMPONENT_REPS,
+    EPS_PLUS as _EPS_PLUS,
+    SC_INDEX as _SC_INDEX,
+)
+
+CHI_KEY = ("X", "X", "h", "1")
+CHI_EQUIVALENT_KEYS = (
+    ("X", "X", "h", "1"), ("X", "X", "h", "h"),
+    ("X", "Y", "h", "g"), ("X", "Y", "h", "k"),
+    ("Y", "X", "h", "g"), ("Y", "X", "h", "k"),
+    ("Y", "Y", "h", "1"), ("Y", "Y", "h", "h"),
+)
+
+_FROZEN_SHALLOW = (4, 6, 12, 14)
+_FROZEN_DEEP = (5, 7, 13, 15)
+
+
+def chi(cid: int) -> int:
+    """The controlling scalar's sign for scalar component `cid`."""
+    return -1 if ((_COMPONENT_REPS[cid] >> _SC_INDEX[CHI_KEY]) & 1) else 1
+
+
+def is_epsilon_plus(cid: int) -> bool:
+    return cid in _EPS_PLUS
+
+
+EPS_MINUS = tuple(c for c in range(len(_COMPONENT_REPS)) if c not in _EPS_PLUS)
+SHALLOW = tuple(c for c in EPS_MINUS if chi(c) == 1)
+DEEP = tuple(c for c in EPS_MINUS if chi(c) == -1)
+
+assert SHALLOW == _FROZEN_SHALLOW, (SHALLOW, _FROZEN_SHALLOW)
+assert DEEP == _FROZEN_DEEP, (DEEP, _FROZEN_DEEP)
+assert len(_EPS_PLUS) + len(SHALLOW) + len(DEEP) == len(_COMPONENT_REPS) == 16
+
+# the separator must not depend on which of the eight equivalent scalars is used
+for _k in CHI_EQUIVALENT_KEYS:
+    _sh = tuple(c for c in EPS_MINUS if not ((_COMPONENT_REPS[c] >> _SC_INDEX[_k]) & 1))
+    _dp = tuple(c for c in EPS_MINUS if ((_COMPONENT_REPS[c] >> _SC_INDEX[_k]) & 1))
+    assert _sh == SHALLOW and _dp == DEEP, (_k, _sh, _dp)
 
 # All four possible positions of the single external stabilizer h.
 LOCAL_EXTERNALS = (
